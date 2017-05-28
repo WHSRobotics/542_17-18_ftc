@@ -26,3 +26,11 @@ build/
 
 *ASUS_PC_01*
 
+
+gradle/wrapper/gradle-wrapper\.properties
+
+FtcRobotController/build\.gradle
+
+TeamCode/build\.gradle
+
+build\.gradle
