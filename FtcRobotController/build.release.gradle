@@ -7,5 +7,5 @@ dependencies {
     compile (name:'Analytics-release', ext:'aar')
     compile (name:'WirelessP2p-release', ext:'aar')
 
-    compile project (':WHS-corelib')
+    //compile project (':WHS-corelib')
 }
