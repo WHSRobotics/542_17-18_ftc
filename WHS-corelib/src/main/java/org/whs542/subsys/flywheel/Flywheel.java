@@ -6,9 +6,9 @@ package org.whs542.subsys.flywheel;
 
 public interface Flywheel {
 
-    void operateFlywheelWithToggle(double gamepadInput);
+    void operateWithToggle(double gamepadInput);
 
-    void operateFlywheelWithToggle(boolean gamepadInput);
+    void operateWithToggle(boolean gamepadInput);
 
-    void operateFlywheel(double power);
+    void operate(double power);
 }

@@ -3,7 +3,7 @@ package org.whs542.util;
 /**
  * Complex Timer class
  *
- * @see SoftwareTimer
+ * @see SimpleTimer
  */
 public class Timer {
 

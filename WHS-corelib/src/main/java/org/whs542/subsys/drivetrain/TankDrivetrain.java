@@ -6,7 +6,22 @@ package org.whs542.subsys.drivetrain;
 
 public interface TankDrivetrain {
 
-    void operateDriveTrainWithOrientation(double left, double right);
+    void operateWithOrientation(double leftPower, double rightPower);
 
-    void operateDriveTrain(double left, double right);
+    void operateWithOrientationScaled(double leftPower, double rightPower);
+
+    void operate(double leftPower, double rightPower);
+
+    void operateLeft(double leftPower);
+
+    void operateRight(double rightPower);
+
+    void switchOrientation(boolean gamepadInput);
+
+    String getOrientation();
+
+    double[] getEncoderDistance();
+
+    double encToMM(double encoderTicks);
+
 }
