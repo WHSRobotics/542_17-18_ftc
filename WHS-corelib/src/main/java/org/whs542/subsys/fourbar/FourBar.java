@@ -5,7 +5,9 @@ package org.whs542.subsys.fourbar;
  */
 
 public interface FourBar {
-    void operateFourBar(boolean up, boolean down);
 
-    void operateFourBar(double power);
+    void operate(boolean up, boolean down);
+
+    void operate(double power);
+
 }

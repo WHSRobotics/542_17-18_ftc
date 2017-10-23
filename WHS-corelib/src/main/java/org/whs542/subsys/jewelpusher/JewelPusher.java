@@ -6,9 +6,8 @@ package org.whs542.subsys.jewelpusher;
 
 public interface JewelPusher {
 
-    void operateJewelPusherWithToggle(double gamepadInput);
+    void autoPushJewel(double gamepadInput);
 
-    void operateJewelPusherWithToggle(boolean gamepadInput);
+    void operate(double power);
 
-    void operateJewelPusher(double power);
 }

@@ -6,9 +6,9 @@ package org.whs542.subsys.linearslides;
 
 public interface LinearSlides {
 
-    void operateLinearSlidesWithToggle(double gamepadInput);
+    void operateWithToggle(double gamepadInput);
 
-    void operateLinearSlidesWithToggle(boolean gamepadInput);
+    void operateWithToggle(boolean gamepadInput);
 
-    void operateLinearSlides(double power);
+    void operate(double power);
 }

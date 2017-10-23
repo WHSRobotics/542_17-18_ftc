@@ -6,9 +6,9 @@ package org.whs542.subsys.intake;
 
 public interface Intake {
 
-    void operateIntakeWithToggle(double gamepadInput);
+    void operateWithToggle(double gamepadInput);
 
-    void operateIntakeWithToggle(boolean gamepadInput);
+    void operateWithToggle(boolean gamepadInput);
 
-    void operateIntake(double power);
+    void operate(double power);
 }
