@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * Created by Jason on 10/20/2017.
  */
 
-public class IntakeImpl implements Intake {
+public class RollerIntake implements Intake {
 
     private DcMotor intakeMotor;
     private static final double INTAKE_POWER =  1.0;
