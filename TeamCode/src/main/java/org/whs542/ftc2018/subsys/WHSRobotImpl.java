@@ -13,7 +13,7 @@ import org.whs542.util.Functions;
 import org.whs542.util.Position;
 
 /**
- *
+ * Created by Jason on 10/20/2017.
  */
 
 public class WHSRobotImpl extends WHSRobot {
@@ -22,6 +22,8 @@ public class WHSRobotImpl extends WHSRobot {
     public Intake intake;
     public FourBar fourBar;
     public JewelPusher jewelPusher;
+    public IMU imu;
+    public Color color;
 
     Coordinate currentCoord;
     public double targetHeading; //field frame
@@ -41,14 +43,39 @@ public class WHSRobotImpl extends WHSRobot {
     public boolean rotateToTargetInProgress;
     public boolean driveToTargetInProgress;
 
-
-
     public WHSRobotImpl (HardwareMap hardwareMap){
         drivetrain = new TileRunner(hardwareMap);
         intake = new RollerIntake(hardwareMap);
         fourBar = new FourBarImpl(hardwareMap);
         jewelPusher = new JewelPusherImpl(hardwareMap);
         currentCoord = new Coordinate(0.0, 0.0, 0.0, 0.0);
+        imu = new IMU(hardwareMap, 0);
+        color = new Color(hardwareMap);
+    }
+
+    public TileRunner drivetrain;
+    public RollerIntake intake;
+    public JewelPusherImpl pusher;
+    public FourBarImpl fourBar;
+    public Color colorSensor;
+
+    public boolean driveToTargetInProgress;
+    public boolean rotateToTargetInProgress;
+    public boolean vuforiaTargetDetected;
+
+    public String currentRobotState;
+
+    public void WHSRobotImpl(HardwareMap robotMap) {
+        drivetrain = new TileRunner(robotMap);
+        intake = new RollerIntake(robotMap);
+        pusher = new JewelPusherImpl(robotMap);
+        fourBar = new FourBarImpl(robotMap);
+        colorSensor = new Color(robotMap);
+
+        driveToTargetInProgress = false;
+        rotateToTargetInProgress = false;
+        vuforiaTargetDetected = false;
+        currentRobotState = "";
     }
 
     @Override
