@@ -1,5 +1,6 @@
 package org.whs542.subsys.robot;
 
+import org.whs542.subsys.intake.Intake;
 import org.whs542.util.Coordinate;
 import org.whs542.util.Position;
 
@@ -7,20 +8,21 @@ import org.whs542.util.Position;
  * Created by Jason on 10/20/2017.
  */
 
-public interface WHSRobot {
+public abstract class WHSRobot {
 
-    void driveToTarget(Position targetPos);
 
-    void rotateToTarget(double targetHeading); //-180 to 180 degrees
+    public abstract void driveToTarget(Position targetPos);
 
-    Position estimatePosition();
+    public abstract void rotateToTarget(double targetHeading); //-180 to 180 degrees
 
-    double estimateHeading();
+    public abstract Position estimatePosition();
 
-    void setInitialCoordinate(Coordinate initCoord);
+    public abstract double estimateHeading();
 
-    void setCoordinate(Coordinate coord);
+    public abstract void setInitialCoordinate(Coordinate initCoord);
 
-    void getCoordinate();
+    public abstract void setCoordinate(Coordinate coord);
+
+    public abstract void getCoordinate();
 
 }

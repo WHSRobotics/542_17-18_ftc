@@ -16,7 +16,7 @@ public class JewelPusherImpl implements JewelPusher {
     private static final double JEWEL_POWER = 1.0;
     Toggler jewelToggler = new Toggler(2);
 
-    public void JewelPusherImpl(HardwareMap jewelMap) {
+    public JewelPusherImpl(HardwareMap jewelMap) {
         jewelServo = jewelMap.servo.get("jewel-pusher");
     }
 
