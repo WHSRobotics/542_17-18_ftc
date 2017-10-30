@@ -53,31 +53,6 @@ public class WHSRobotImpl extends WHSRobot {
         color = new Color(hardwareMap);
     }
 
-    public TileRunner drivetrain;
-    public RollerIntake intake;
-    public JewelPusherImpl pusher;
-    public FourBarImpl fourBar;
-    public Color colorSensor;
-
-    public boolean driveToTargetInProgress;
-    public boolean rotateToTargetInProgress;
-    public boolean vuforiaTargetDetected;
-
-    public String currentRobotState;
-
-    public void WHSRobotImpl(HardwareMap robotMap) {
-        drivetrain = new TileRunner(robotMap);
-        intake = new RollerIntake(robotMap);
-        pusher = new JewelPusherImpl(robotMap);
-        fourBar = new FourBarImpl(robotMap);
-        colorSensor = new Color(robotMap);
-
-        driveToTargetInProgress = false;
-        rotateToTargetInProgress = false;
-        vuforiaTargetDetected = false;
-        currentRobotState = "";
-    }
-
     @Override
     public void driveToTarget(Position targetPos) {
         Position vectorToTarget = Functions.subtractPositions(targetPos, currentCoord.getPos()); //field frame
@@ -226,26 +201,27 @@ public class WHSRobotImpl extends WHSRobot {
     public double estimateHeading() {
         double currentHeading;
 
-
-            currentHeading = Functions.normalizeAngle(imu.getHeading() + imu.getImuBias()); //-180 to 180 deg
-            currentCoord.setHeading(currentHeading); //updates global variable
+        currentHeading = Functions.normalizeAngle(imu.getHeading() + imu.getImuBias()); //-180 to 180 deg
+        currentCoord.setHeading(currentHeading); //updates global variable
 
         return currentHeading;
     }
 
     @Override
     public void setInitialCoordinate(Coordinate initCoord) {
-
+        currentCoord = initCoord;
+        imu.setImuBias(currentCoord.getHeading());
     }
 
     @Override
     public void setCoordinate(Coordinate coord) {
-
+        currentCoord = coord;
+        imu.setImuBias(currentCoord.getHeading());
     }
 
     @Override
-    public void getCoordinate() {
-
+    public Coordinate getCoordinate() {
+        return currentCoord;
     }
 
 

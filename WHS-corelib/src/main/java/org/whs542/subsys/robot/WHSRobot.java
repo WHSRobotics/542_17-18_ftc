@@ -10,7 +10,6 @@ import org.whs542.util.Position;
 
 public abstract class WHSRobot {
 
-
     public abstract void driveToTarget(Position targetPos);
 
     public abstract void rotateToTarget(double targetHeading); //-180 to 180 degrees
@@ -23,6 +22,6 @@ public abstract class WHSRobot {
 
     public abstract void setCoordinate(Coordinate coord);
 
-    public abstract void getCoordinate();
+    public abstract Coordinate getCoordinate();
 
 }

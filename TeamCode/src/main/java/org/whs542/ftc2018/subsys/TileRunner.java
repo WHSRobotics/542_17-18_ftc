@@ -111,4 +111,11 @@ public class TileRunner implements TankDrivetrain {
         return 0;
     }
 
+    @Override
+    public void setRunMode(DcMotor.RunMode runMode) {
+        frontLeft.setMode(runMode);
+        frontRight.setMode(runMode);
+        backLeft.setMode(runMode);
+        backRight.setMode(runMode);
+    }
 }
