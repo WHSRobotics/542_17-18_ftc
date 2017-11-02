@@ -8,6 +8,7 @@ import org.whs542.subsys.fourbar.FourBar;
 import org.whs542.subsys.intake.Intake;
 import org.whs542.subsys.jewelpusher.JewelPusher;
 import org.whs542.subsys.robot.WHSRobot;
+import org.whs542.subsys.vlift.VLift;
 import org.whs542.util.Coordinate;
 import org.whs542.util.Functions;
 import org.whs542.util.Position;
@@ -24,6 +25,7 @@ public class WHSRobotImpl extends WHSRobot {
     public JewelPusher jewelPusher;
     public IMU imu;
     public Color color;
+    public VLift lift;
 
     Coordinate currentCoord;
     public double targetHeading; //field frame
@@ -51,6 +53,7 @@ public class WHSRobotImpl extends WHSRobot {
         currentCoord = new Coordinate(0.0, 0.0, 0.0, 0.0);
         imu = new IMU(hardwareMap, 0);
         color = new Color(hardwareMap);
+        lift = new VLiftImpl(hardwareMap);
     }
 
     @Override

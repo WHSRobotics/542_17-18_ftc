@@ -30,6 +30,8 @@ public class WHSTeleOp extends OpMode {
 
         telemetry.addData("Drivetrain Orientation: ", robot.drivetrain.getOrientation());
 
+        robot.lift.operateLift(gamepad2.right_bumper);
+        robot.lift.operateLift(gamepad2.right_trigger);
 
     }
 

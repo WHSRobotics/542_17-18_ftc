@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class RollerIntake implements Intake {
 
     private DcMotor intakeMotor;
-    private static final double INTAKE_POWER =  1.0;
+    private static final double INTAKE_POWER = 1.0;
     private Toggler intakeToggler = new Toggler(2);
 
     public RollerIntake(HardwareMap intakeMap) {intakeMotor = intakeMap.dcMotor.get("intake");}
