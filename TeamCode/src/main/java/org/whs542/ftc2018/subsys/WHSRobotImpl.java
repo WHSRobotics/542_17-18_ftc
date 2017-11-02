@@ -30,7 +30,6 @@ public class WHSRobotImpl extends WHSRobot {
     Coordinate currentCoord;
     public double targetHeading; //field frame
 
-    private static final double RADIUS_TO_DRIVETRAIN = 365/2; //in mm
     private static final double DEADBAND_MAX_DRIVE_HEADING_DEVIATION = 10; //in degrees
     private static final double DEADBAND_MAX_DRIVE_POSITION_DEVIATION = 300; //in mm
     private static final double[] DRIVE_TO_TARGET_POWER_LEVEL = {0.33, 0.6, 0.7, 0.9};
@@ -39,7 +38,6 @@ public class WHSRobotImpl extends WHSRobot {
     private static final double[] ROTATE_TO_TARGET_POWER_LEVEL = {0.35, 0.6, 0.75};
     private static final double DEADBAND_ROTATE_TO_TARGET = 3.5; //in degrees
     private static final double[] ROTATE_TO_TARGET_THRESHOLD = {DEADBAND_ROTATE_TO_TARGET, 45, 90};
-    private static final double DRIVE_CORRECTION_GAIN = 0.0007;
     public double rightMultiplier = 1.0;
 
     public boolean rotateToTargetInProgress;
@@ -109,13 +107,12 @@ public class WHSRobotImpl extends WHSRobot {
     @Override
     public void rotateToTarget(double targetHeading) {
         double angleToTarget = targetHeading - currentCoord.getHeading();
-        angleToTarget=Functions.normalizeAngle(angleToTarget); //-180 to 180 deg
+        angleToTarget = Functions.normalizeAngle(angleToTarget); //-180 to 180 deg
 
         drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         if(angleToTarget<-DEADBAND_ROTATE_TO_TARGET)
         {
-
 
             if(angleToTarget < -ROTATE_TO_TARGET_THRESHOLD[2]){
                 drivetrain.operateLeft(ROTATE_TO_TARGET_POWER_LEVEL[2]);

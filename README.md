@@ -1,10 +1,13 @@
-# WHSlib
+# 542_17-18_ftc [![Build Status](https://travis-ci.org/WHSRobotics/542_17-18_ftc.svg)](https://travis-ci.org/WHSRobotics/542_17-18_ftc)
+
+Competition code for the '17-'18 season.
+
+
+The rest of this README comes from the FTC sdk.
 # ftc_app
 FTC Android Studio project to create FTC Robot Controller app.
 
-[![Build Status](https://travis-ci.org/WHSRobotics/542_17-18_ftc.svg)](https://travis-ci.org/WHSRobotics/542_17-18_ftc.svg?branch=dev)
 
-[Travis Builds](https://travis-ci.org/WHSRobotics/542_17-18_ftc)
 
 If you are new to the *FIRST* Tech Challenge software and control system, you should visit the online wiki to learn how to install, configure, and use the software and control system:
 
