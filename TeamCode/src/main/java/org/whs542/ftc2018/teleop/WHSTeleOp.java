@@ -21,7 +21,7 @@ public class WHSTeleOp extends OpMode {
     @Override
     public void loop() {
 
-        robot.intake.operateWithToggle(gamepad1.right_bumper);
+        robot.intake.operateWithToggle(gamepad1.right_bumper, gamepad1.right_trigger);
 
         robot.drivetrain.operateWithOrientation(gamepad1.left_stick_y, gamepad1.right_stick_y);
         robot.drivetrain.switchOrientation(gamepad1.a);
@@ -32,7 +32,6 @@ public class WHSTeleOp extends OpMode {
         telemetry.addData("Drivetrain Orientation: ", robot.drivetrain.getOrientation());
 
         robot.lift.operateLift(gamepad2.right_bumper);
-        robot.lift.operateLift(gamepad2.right_trigger);
 
     }
 

@@ -8,7 +8,7 @@ public interface Intake {
 
     void operateWithToggle(boolean intakeGamepadInput, double outtakeGamepadInput);
 
-    void operateWithToggle(boolean gamepadInput);
+    //void operateWithToggle(boolean gamepadInput);
 
     void operate(double power);
 }

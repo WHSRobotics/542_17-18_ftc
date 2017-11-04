@@ -21,6 +21,6 @@ public class IntakeTest extends OpMode {
 
     @Override
     public void loop() {
-        intake.operateWithToggle();
+        intake.operateWithToggle(gamepad1.right_bumper, gamepad1.right_trigger);
     }
 }

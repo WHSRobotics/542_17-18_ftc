@@ -20,8 +20,6 @@ public class JewelPusherImpl implements JewelPusher {
     private static final double PUSH_LEFT_POSITION = 0;
     private static final double PUSH_MIDDLE_POSITION = 0.15;
     private static final double PUSH_RIGHT_POSITION = 0.3;
-    private static final double JEWEL_POWER = 1.0;
-    Toggler jewelToggler = new Toggler(2);
     private Color colorSensor;
     private static final int COLOR_SENSOR_THRESHOLD = 10;
 

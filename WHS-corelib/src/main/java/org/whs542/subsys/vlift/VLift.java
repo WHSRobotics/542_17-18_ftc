@@ -6,10 +6,9 @@ package org.whs542.subsys.vlift;
 
 public interface VLift {
 
-    void operateLift(double position);
+    void operateLift(double leftPosition, double rightPosition);
 
     void operateLift(boolean gamepadInput);
 
-    void operateLift(float gamepadInput);
 
 }

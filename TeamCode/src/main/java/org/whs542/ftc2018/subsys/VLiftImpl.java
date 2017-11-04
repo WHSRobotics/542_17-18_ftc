@@ -13,7 +13,6 @@ public class VLiftImpl implements VLift {
 
     private Servo leftLiftServo;
     private Servo rightLiftServo;
-    private Servo gateServo;
     //TODO: Actually set these values
     private static final double LEFT_LIFT_DOWN_POSITION = 0;
     private static final double LEFT_LIFT_UP_POSITION = 1;
@@ -26,13 +25,13 @@ public class VLiftImpl implements VLift {
     public VLiftImpl(HardwareMap liftMap) {
         leftLiftServo = liftMap.servo.get("leftLiftServo");
         rightLiftServo = liftMap.servo.get("rightLiftServo");
-        gateServo = liftMap.servo.get("gateServo");
     }
 
     @Override
-    public void operateLift(double position) {
-        leftLiftServo.setPosition(position);
-        rightLiftServo.setPosition(position);
+    public void operateLift(double leftPosition, double rightPosition) {
+        leftLiftServo.setPosition(leftPosition);
+        rightLiftServo.setPosition(rightPosition);
+
     }
 
     @Override
@@ -44,16 +43,6 @@ public class VLiftImpl implements VLift {
         else {
             leftLiftServo.setPosition(LEFT_LIFT_DOWN_POSITION);
             rightLiftServo.setPosition(RIGHT_LIFT_DOWN_POSITION);
-        }
-    }
-
-    @Override
-    public void operateLift(float gamepadInput) {
-        if (gamepadInput > GAMEPAD_THRESHOLD) {
-            gateServo.setPosition(GATE_OPEN_POSITION);
-        }
-        else {
-            gateServo.setPosition(GATE_CLOSED_POSITION);
         }
     }
 }
