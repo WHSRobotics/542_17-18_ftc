@@ -14,25 +14,48 @@ public class FourBarImpl implements FourBar {
 
     private DcMotor leftMotor;
     private DcMotor rightMotor;
-    private static final double FOURBAR_POWER = 1.0;
+    private static final double FOUR_BAR_POWER = 1.0;
+    private static final int[] FOUR_BAR_LEVEL_POSITIONS = {0, 1000, 2000, 3000}; //In encoder ticks
+    private String fourBarLevel;
     //private Toggler fourBarToggler = new Toggler(2);
 
     public FourBarImpl(HardwareMap fourBarMap) {
-        leftMotor = fourBarMap.dcMotor.get("left_fb");
-        rightMotor = fourBarMap.dcMotor.get("right_fb");
+        leftMotor = fourBarMap.dcMotor.get("leftFourBar");
+        rightMotor = fourBarMap.dcMotor.get("rightFourBar");
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     @Override
-    public void operate(boolean up, boolean down) {
-        if (up) { //lifting
-            leftMotor.setPower(FOURBAR_POWER);
-            rightMotor.setPower(FOURBAR_POWER);
-        } else if (down) { //descending
-            leftMotor.setPower(-FOURBAR_POWER);
-            rightMotor.setPower(-FOURBAR_POWER);
-        } else {
-            leftMotor.setPower(0);
-            rightMotor.setPower(0);
+    public void operate(boolean level0GamepadInput, boolean level1GamepadInput, boolean level2GamepadInput, boolean level3GamepadInput) {
+        if (level0GamepadInput){
+            leftMotor.setTargetPosition(FOUR_BAR_LEVEL_POSITIONS[0]);
+            rightMotor.setTargetPosition(FOUR_BAR_LEVEL_POSITIONS[0]);
+            leftMotor.setPower(FOUR_BAR_POWER);
+            rightMotor.setPower(FOUR_BAR_POWER);
+            fourBarLevel = "Scoring on top of 0 glyphs";
+        }
+        else if (level1GamepadInput){
+            leftMotor.setTargetPosition(FOUR_BAR_LEVEL_POSITIONS[1]);
+            rightMotor.setTargetPosition(FOUR_BAR_LEVEL_POSITIONS[1]);
+            leftMotor.setPower(FOUR_BAR_POWER);
+            rightMotor.setPower(FOUR_BAR_POWER);
+            fourBarLevel = "Scoring on top of 1 glyph";
+        }
+        else if (level2GamepadInput){
+            leftMotor.setTargetPosition(FOUR_BAR_LEVEL_POSITIONS[2]);
+            rightMotor.setTargetPosition(FOUR_BAR_LEVEL_POSITIONS[2]);
+            leftMotor.setPower(FOUR_BAR_POWER);
+            rightMotor.setPower(FOUR_BAR_POWER);
+            fourBarLevel = "Scoring on top of 2 glyphs";
+        }
+        else {
+            leftMotor.setTargetPosition(FOUR_BAR_LEVEL_POSITIONS[3]);
+            rightMotor.setTargetPosition(FOUR_BAR_LEVEL_POSITIONS[3]);
+            leftMotor.setPower(FOUR_BAR_POWER);
+            rightMotor.setPower(FOUR_BAR_POWER);
+            fourBarLevel = "Scoring on top of 3 glyphs";
         }
     }
 
@@ -40,5 +63,10 @@ public class FourBarImpl implements FourBar {
     public void operate(double power) {
         leftMotor.setPower(power);
         rightMotor.setPower(power);
+    }
+
+    @Override
+    public String getFourBarLevel() {
+        return fourBarLevel;
     }
 }
