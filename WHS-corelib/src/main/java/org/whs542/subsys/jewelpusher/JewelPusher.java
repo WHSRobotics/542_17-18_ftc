@@ -6,8 +6,18 @@ package org.whs542.subsys.jewelpusher;
 
 public interface JewelPusher {
 
-    void autoPushJewel(double gamepadInput);
+    JewelColor getJewelColor();
 
-    void operate(double power);
+    enum JewelColor {
+        RED, BLUE, ERROR
+    }
+
+    void operateArm(double armPosition);
+
+    void operateArm(boolean downPosition);
+
+    void operatePusher(double pushPosition);
+
+    void operatePusher(boolean leftPosition, boolean rightPosition);
 
 }

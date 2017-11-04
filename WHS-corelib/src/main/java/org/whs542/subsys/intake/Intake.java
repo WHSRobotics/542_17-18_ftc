@@ -6,7 +6,7 @@ package org.whs542.subsys.intake;
 
 public interface Intake {
 
-    void operateWithToggle(double gamepadInput);
+    void operateWithToggle(boolean intakeGamepadInput, double outtakeGamepadInput);
 
     void operateWithToggle(boolean gamepadInput);
 
