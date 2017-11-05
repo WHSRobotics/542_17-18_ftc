@@ -21,35 +21,37 @@ public class WHSAuto extends OpMode {
     static final int BLUE = 1;
     public static final int ALLIANCE = RED;
 
-    //States
-    enum States {
-        INIT, HIT_JEWEL, DRIVE_INTO_SAFEZONE, DRIVE_TO_BOX, PLACE_GLYPH, END;
-        private static States[] vals = values();
-        public States next() {
+    //State Definitions
+    static final int INIT = 0;
+    static final int HIT_JEWEL = 1;
+    static final int DRIVE_INTO_SAFEZONE = 2;
+    static final int DRIVE_TO_BOX = 3;
+    static final int PLACE_GLYPH = 4;
+    static final int END = 5;
 
-
-                return vals[(this.ordinal()+1) % vals.length];
-        }
-    }
-    States currentState;
-    String currentStateDesc;
-    static final int NUM_OF_STATES = States.values().length;
+    static final int NUM_OF_STATES = 6;
 
     boolean[] stateEnabled = new boolean[NUM_OF_STATES + 1];
 
-    public void defineStateEnabled() {
-        stateEnabled[States.INIT.ordinal()] = true;
-        stateEnabled[States.HIT_JEWEL.ordinal()] = true;
-        stateEnabled[States.DRIVE_INTO_SAFEZONE.ordinal()] = true;
-        stateEnabled[States.DRIVE_TO_BOX.ordinal()] = true;
-        stateEnabled[States.PLACE_GLYPH.ordinal()] = true;
-        stateEnabled[States.END.ordinal()] = true;
+    public void defineStateEnabledStatus() {
+        stateEnabled[INIT] = true;
+        stateEnabled[HIT_JEWEL] = true;
+        stateEnabled[DRIVE_INTO_SAFEZONE] = true;
+        stateEnabled[DRIVE_TO_BOX] = true;
+        stateEnabled[PLACE_GLYPH] = true;
+        stateEnabled[END] = true;
     }
+
+    int currentState;
+    String currentStateDesc;
+
+    boolean performedStateEntry;
+    boolean performStateExit;
 
     @Override
     public void init() {
         robot = new WHSRobotImpl(hardwareMap);
-        currentState = States.INIT; //set the initial state
+        currentState = INIT;
 
         telemetry.setMsTransmissionInterval(50); //set driver station update frequency
         telemetry.log().setCapacity(6); //set max number of lines logged by telemetry
@@ -65,7 +67,7 @@ public class WHSAuto extends OpMode {
         switch (currentState) {
             case INIT:
                 currentStateDesc = "beginning AutoOp";
-                currentState = currentState.next();
+                advanceState();
                 break;
             case HIT_JEWEL:
                 currentStateDesc = "slapping jewel";
@@ -90,5 +92,15 @@ public class WHSAuto extends OpMode {
 
         //Logging the current state
         telemetry.log().add(currentStateDesc);
+    }
+
+    public void advanceState() {
+        if(stateEnabled[(currentState + 1)]) {
+            currentState = currentState + 1;
+        }
+        else {
+            currentState = currentState + 1;
+            advanceState();
+        }
     }
 }
