@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.whs542.subsys.jewelpusher.JewelPusher;
-import org.whs542.util.Toggler;
 
 /**
  * Created by Jason on 10/20/2017.
@@ -12,20 +11,21 @@ import org.whs542.util.Toggler;
 
 public class JewelPusherImpl implements JewelPusher {
 
-    private Servo armServo;
-    private Servo pushServo;
+    private Servo extendServo;
+    private Servo swivelServo;
     //TODO: change these to actual values
-    private static final double ARM_DOWN_POSITION = 1;
-    private static final double ARM_UP_POSITION = 0;
-    private static final double PUSH_LEFT_POSITION = 0;
-    private static final double PUSH_MIDDLE_POSITION = 0.15;
-    private static final double PUSH_RIGHT_POSITION = 0.3;
+    private static final double UNFOLDED_POSITION = 1;
+    private static final double FOLDED_POSITION = 0;
+    private static final double SWIVEL_START_POSITION = 0;
+    private static final double SWIVEL_LEFT_POSITION = 0.5;
+    private static final double SWIVEL_MIDDLE_POSITION = 0.4;
+    private static final double SWIVEL_RIGHT_POSITION = 0.6;
     private Color colorSensor;
     private static final int COLOR_SENSOR_THRESHOLD = 10;
 
     public JewelPusherImpl(HardwareMap jewelMap) {
-        armServo = jewelMap.servo.get("armServo");
-        pushServo = jewelMap.servo.get("pushServo");
+        extendServo = jewelMap.servo.get("extendServo");
+        swivelServo = jewelMap.servo.get("swivelServo");
         colorSensor = new Color(jewelMap);
     }
 
@@ -41,32 +41,32 @@ public class JewelPusherImpl implements JewelPusher {
     }
 
     @Override
-    public void operateArm(double armPosition) {
-        armServo.setPosition(armPosition);
+    public void extendArm(double extendPosition) {
+        extendServo.setPosition(extendPosition);
     }
 
     @Override
-    public void operateArm(boolean downPosition) {
-        if (downPosition) {
-            armServo.setPosition(ARM_DOWN_POSITION);
+    public void extendArm(boolean unfoldedPosition) {
+        if (unfoldedPosition) {
+            extendServo.setPosition(UNFOLDED_POSITION);
         } else {
-            armServo.setPosition(ARM_UP_POSITION);
+            extendServo.setPosition(FOLDED_POSITION);
         }
     }
 
     @Override
-    public void operatePusher(double pushPosition) {
-        armServo.setPosition(pushPosition);
+    public void operateSwivel(double swivelPosition) {
+        extendServo.setPosition(swivelPosition);
     }
 
     @Override
-    public void operatePusher(boolean leftPosition, boolean rightPosition) {
+    public void operateSwivel(boolean leftPosition, boolean rightPosition) {
         if (leftPosition) {
-            pushServo.setPosition(PUSH_LEFT_POSITION);
+            swivelServo.setPosition(SWIVEL_LEFT_POSITION);
         } else if (rightPosition){
-            pushServo.setPosition(PUSH_RIGHT_POSITION);
+            swivelServo.setPosition(SWIVEL_RIGHT_POSITION);
         } else {
-            pushServo.setPosition(PUSH_MIDDLE_POSITION);
+            swivelServo.setPosition(SWIVEL_MIDDLE_POSITION);
         }
     }
 }

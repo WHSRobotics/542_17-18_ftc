@@ -18,9 +18,6 @@ public class VLiftImpl implements VLift {
     private static final double LEFT_LIFT_UP_POSITION = 1;
     private static final double RIGHT_LIFT_DOWN_POSITION = 1;
     private static final double RIGHT_LIFT_UP_POSITION = 0;
-    private static final double GAMEPAD_THRESHOLD = 0.05;
-    private static final double GATE_OPEN_POSITION = 1;
-    private static final double GATE_CLOSED_POSITION = 0;
 
     public VLiftImpl(HardwareMap liftMap) {
         leftLiftServo = liftMap.servo.get("leftLiftServo");

@@ -12,12 +12,12 @@ public interface JewelPusher {
         RED, BLUE, ERROR
     }
 
-    void operateArm(double armPosition);
+    void extendArm(double armPosition);
 
-    void operateArm(boolean downPosition);
+    void extendArm(boolean downPosition);
 
-    void operatePusher(double pushPosition);
+    void operateSwivel(double pushPosition);
 
-    void operatePusher(boolean leftPosition, boolean rightPosition);
+    void operateSwivel(boolean leftPosition, boolean rightPosition);
 
 }
