@@ -157,6 +157,16 @@ public class WHSRobotImpl extends WHSRobot {
     }
 
     @Override
+    public boolean driveToTargetInProgress() {
+        return driveToTargetInProgress;
+    }
+
+    @Override
+    public boolean rotateToTargetInProgress() {
+        return rotateToTargetInProgress;
+    }
+
+    @Override
     public Position estimatePosition() {
 
         Position estimatedPos;

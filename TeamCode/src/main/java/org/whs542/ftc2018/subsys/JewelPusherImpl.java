@@ -11,20 +11,18 @@ import org.whs542.subsys.jewelpusher.JewelPusher;
 
 public class JewelPusherImpl implements JewelPusher {
 
-    private Servo extendServo;
+    private Servo armServo;
     private Servo swivelServo;
     //TODO: change these to actual values
-    private static final double UNFOLDED_POSITION = 1;
-    private static final double FOLDED_POSITION = 0;
-    private static final double SWIVEL_START_POSITION = 0;
-    private static final double SWIVEL_LEFT_POSITION = 0.5;
-    private static final double SWIVEL_MIDDLE_POSITION = 0.4;
-    private static final double SWIVEL_RIGHT_POSITION = 0.6;
-    private Color colorSensor;
+
+    static final double[] ARM_POSITONS = {0.0, 0.5, 1.0};               //UP, MIDDLE, DOWN
+    static final double[] SWIVEL_POSITIONS = {0.0, 0.5, 0.55, 0.6};     //STORED,LEFT, MIDDLE, RIGHT
+
+    public Color colorSensor;
     private static final int COLOR_SENSOR_THRESHOLD = 10;
 
     public JewelPusherImpl(HardwareMap jewelMap) {
-        extendServo = jewelMap.servo.get("extendServo");
+        armServo = jewelMap.servo.get("armServo");
         swivelServo = jewelMap.servo.get("swivelServo");
         colorSensor = new Color(jewelMap);
     }
@@ -41,32 +39,22 @@ public class JewelPusherImpl implements JewelPusher {
     }
 
     @Override
-    public void extendArm(double extendPosition) {
-        extendServo.setPosition(extendPosition);
+    public void operateArm(double armPosition) {
+        armServo.setPosition(armPosition);
     }
 
     @Override
-    public void extendArm(boolean unfoldedPosition) {
-        if (unfoldedPosition) {
-            extendServo.setPosition(UNFOLDED_POSITION);
-        } else {
-            extendServo.setPosition(FOLDED_POSITION);
-        }
+    public void operateArm(ArmPosition armPosition) {
+        armServo.setPosition(ARM_POSITONS[armPosition.ordinal()]);
     }
 
     @Override
     public void operateSwivel(double swivelPosition) {
-        extendServo.setPosition(swivelPosition);
+        armServo.setPosition(swivelPosition);
     }
 
     @Override
-    public void operateSwivel(boolean leftPosition, boolean rightPosition) {
-        if (leftPosition) {
-            swivelServo.setPosition(SWIVEL_LEFT_POSITION);
-        } else if (rightPosition){
-            swivelServo.setPosition(SWIVEL_RIGHT_POSITION);
-        } else {
-            swivelServo.setPosition(SWIVEL_MIDDLE_POSITION);
-        }
+    public void operateSwivel(SwivelPosition swivelPosition) {
+        swivelServo.setPosition(SWIVEL_POSITIONS[swivelPosition.ordinal()]);
     }
 }

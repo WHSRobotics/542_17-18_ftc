@@ -1,6 +1,7 @@
 package org.whs542.ftc2018.subsys;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.whs542.subsys.fourbar.FourBar;
@@ -15,6 +16,7 @@ public class FourBarImpl implements FourBar {
     private DcMotor leftMotor;
     private DcMotor rightMotor;
     private static final double FOUR_BAR_POWER = 1.0;
+    //TODO: Change these to actual values
     private static final int[] FOUR_BAR_LEVEL_POSITIONS = {0, 1000, 2000, 3000}; //In encoder ticks
     private String fourBarLevel;
     //private Toggler fourBarToggler = new Toggler(2);
@@ -22,6 +24,8 @@ public class FourBarImpl implements FourBar {
     public FourBarImpl(HardwareMap fourBarMap) {
         leftMotor = fourBarMap.dcMotor.get("leftFourBar");
         rightMotor = fourBarMap.dcMotor.get("rightFourBar");
+        //TODO: See if this is correct
+        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);

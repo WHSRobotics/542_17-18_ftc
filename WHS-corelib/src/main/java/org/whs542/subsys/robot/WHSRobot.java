@@ -14,6 +14,10 @@ public abstract class WHSRobot {
 
     public abstract void rotateToTarget(double targetHeading); //-180 to 180 degrees
 
+    public abstract boolean driveToTargetInProgress();
+
+    public abstract boolean rotateToTargetInProgress();
+
     public abstract Position estimatePosition();
 
     public abstract double estimateHeading();

@@ -1,23 +1,33 @@
 package org.whs542.subsys.jewelpusher;
 
+
 /**
  * Created by Jason on 10/20/2017.
  */
 
 public interface JewelPusher {
 
-    JewelColor getJewelColor();
-
-    enum JewelColor {
+    enum JewelColor  {
         RED, BLUE, ERROR
     }
 
-    void extendArm(double armPosition);
+    enum SwivelPosition {
+        STORED, LEFT, MIDDLE, RIGHT;
+    }
 
-    void extendArm(boolean downPosition);
+    enum ArmPosition {
+        UP, MIDDLE, DOWN
+    }
+
+    JewelColor getJewelColor();
+
+    void operateArm(double armPosition);
+
+    void operateArm(ArmPosition armPosition);
 
     void operateSwivel(double pushPosition);
 
-    void operateSwivel(boolean leftPosition, boolean rightPosition);
+    void operateSwivel(SwivelPosition swivelPosition);
+
 
 }

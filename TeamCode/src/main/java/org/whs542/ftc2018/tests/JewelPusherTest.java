@@ -20,7 +20,7 @@ public class JewelPusherTest extends OpMode {
 
     @Override
     public void loop() {
-        jewelPusher.extendArm(gamepad1.left_trigger);
+        jewelPusher.operateArm(gamepad1.left_trigger);
         jewelPusher.operateSwivel(gamepad1.right_trigger);
     }
 }
