@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.whs542.ftc2018.subsys.WHSRobotImpl;
 import org.whs542.subsys.jewelpusher.JewelPusher;
 import org.whs542.util.Coordinate;
+import org.whs542.util.Position;
 import org.whs542.util.SimpleTimer;
 
 /**
@@ -17,13 +18,18 @@ public class WHSAuto extends OpMode {
 
     WHSRobotImpl robot;
 
-    //Starting Coordinates
+    //coordinates and positions
     static Coordinate[][] startingCoordinateArray = new Coordinate[2][2];
+    static Position[][] safeZonePositionsArray = new Position[2][2];
+
     static final int RED = 0;
     static final int BLUE = 1;
     static final int ALLIANCE = RED;
     static final int CORNER = 0;
     static final int OFF_CENTER = 1;
+    static final int BALANCING_STONE = CORNER;
+    static final int SAFEZONE_1 = 0;
+    static final int SAFEZONE_2 = 1;
 
     //State Definitions
     static final int INIT = 0;
@@ -74,6 +80,22 @@ public class WHSAuto extends OpMode {
         performStateEntry = true;
         performStateExit = false;
 
+        //starting coordinate array
+        Coordinate[][] startingCoordinates = new Coordinate[2][2];
+        startingCoordinates[RED][CORNER] = new Coordinate(200, 200, 150, 90); //upper left
+        startingCoordinates[RED][OFF_CENTER] = new Coordinate(200, -100, 150, 90); //lower left
+        startingCoordinates[BLUE][CORNER] = new Coordinate(-200, 200, 150, 90); //upper right
+        startingCoordinates[BLUE][OFF_CENTER] = new Coordinate(-200, -100, 150, 270); //lower right
+
+        //safe zone positions array
+        Position[][] safeZonePositions = new Position[2][2];
+        safeZonePositions[RED][SAFEZONE_1] = new Position(-250, 50, 150); //mid left
+        safeZonePositions[RED][SAFEZONE_2] = new Position(-150, -250, 150); //lower left
+        safeZonePositions[BLUE][SAFEZONE_1] = new Position(250, 50, 150); //mid right
+        safeZonePositions[BLUE][SAFEZONE_2] = new Position(150, -250, 150); //lower right
+
+        //setting positions
+
         telemetry.setMsTransmissionInterval(50); //set driver station update frequency
         telemetry.log().setCapacity(6); //set max number of lines logged by telemetry
     }
@@ -88,13 +110,31 @@ public class WHSAuto extends OpMode {
         switch (currentState) {
             case INIT:
                 currentStateDesc = "beginning AutoOp";
+                robot.setInitialCoordinate(startingCoordinateArray[ALLIANCE][BALANCING_STONE]);
                 advanceState();
                 break;
             case HIT_JEWEL:
                 //State Entry
+                currentStateDesc = "hitting jewel";
+                robot.jewelPusher.operateArm(1.0);
+                if (robot.jewelPusher.getJewelColor().ordinal() == ALLIANCE) {
+                    robot.jewelPusher.operateSwivel(1.0);
+                }
                 break;
             case DRIVE_INTO_SAFEZONE:
                 currentStateDesc = "driving off platform into safe zone";
+                if (ALLIANCE == RED) {
+                    if (robot.getCoordinate() == startingCoordinateArray[RED][CORNER]) {
+                        //drive to mid left
+                        robot.driveToTarget(safeZonePositionsArray[RED][SAFEZONE_1]);
+                    } else {
+                        //drive to lower left
+                        robot.driveToTarget(safeZonePositionsArray[RED][SAFEZONE_2]);
+                    }
+                } else if (ALLIANCE == BLUE) {
+                    //drive to mid right
+                    robot.driveToTarget(safeZonePositionsArray[RED][SAFEZONE_1]);
+                }
                 advanceState();
                 break;
             case DRIVE_TO_BOX:
