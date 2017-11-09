@@ -24,7 +24,7 @@ public class IMUTest extends OpMode {
     @Override
     public void loop() {
         drivetrain.operate(0, 0);
-        
+
         double heading = imu.getHeading();
 
         double[] threeHeading = imu.getThreeHeading();

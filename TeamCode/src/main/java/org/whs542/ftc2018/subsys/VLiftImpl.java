@@ -13,11 +13,10 @@ public class VLiftImpl implements VLift {
 
     private Servo leftLiftServo;
     private Servo rightLiftServo;
-    //TODO: Actually set these values
-    private static final double LEFT_LIFT_DOWN_POSITION = 0;
-    private static final double LEFT_LIFT_UP_POSITION = 1;
-    private static final double RIGHT_LIFT_DOWN_POSITION = 1;
-    private static final double RIGHT_LIFT_UP_POSITION = 0;
+    public static final double LEFT_LIFT_DOWN_POSITION = 0.423;
+    public static final double LEFT_LIFT_UP_POSITION = 0.928;
+    public static final double RIGHT_LIFT_DOWN_POSITION = 0.6;
+    public static final double RIGHT_LIFT_UP_POSITION = 0.105;
 
     public VLiftImpl(HardwareMap liftMap) {
         leftLiftServo = liftMap.servo.get("leftLiftServo");

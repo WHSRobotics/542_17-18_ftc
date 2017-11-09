@@ -29,6 +29,9 @@ public class FourBarImpl implements FourBar {
 
         leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
     }
 
     @Override
@@ -72,5 +75,11 @@ public class FourBarImpl implements FourBar {
     @Override
     public String getFourBarLevel() {
         return fourBarLevel;
+    }
+
+    @Override
+    public double[] fourBarEncoderPositions() {
+        double[] arrayPositions = {leftMotor.getCurrentPosition(), rightMotor.getCurrentPosition()};
+        return arrayPositions;
     }
 }

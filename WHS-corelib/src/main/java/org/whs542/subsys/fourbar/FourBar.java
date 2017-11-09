@@ -12,6 +12,7 @@ public interface FourBar {
 
     String getFourBarLevel();
 
+    double[] fourBarEncoderPositions();
 
 
 }
