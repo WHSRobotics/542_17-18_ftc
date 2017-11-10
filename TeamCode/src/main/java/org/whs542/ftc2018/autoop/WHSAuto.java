@@ -60,14 +60,16 @@ public class WHSAuto extends OpMode {
 
     //Timers
     SimpleTimer swivelTimer = new SimpleTimer();
-    SimpleTimer armTimer = new SimpleTimer();
+    SimpleTimer armUpToMiddleTimer = new SimpleTimer();
+    SimpleTimer armMiddleToDownTimer = new SimpleTimer();
+    SimpleTimer armDownToMiddleTimer = new SimpleTimer();
+    SimpleTimer armMiddleToUpTimer = new SimpleTimer();
     SimpleTimer jewelDeadmanTimer = new SimpleTimer();
 
     //Timing Constants
     //TODO: actually set these
-    static final double SWIVEL_STORE_TO_MIDDLE_DELAY = 1.0;
+    static final double SWIVEL_STORE_TO_MIDDLE_DELAY = 0.5;
     static final double SWIVEL_KNOCK_DELAY = 0.5;
-    static final double ARM_UNFOLD_DELAY = 0.75;
     static final double ARM_FOLD_DELAY = 0.75;
     static final double JEWEL_DETECTION_DEADMAN = 2.0;
 
@@ -81,18 +83,16 @@ public class WHSAuto extends OpMode {
         performStateExit = false;
 
         //starting coordinate array
-        Coordinate[][] startingCoordinates = new Coordinate[2][2];
-        startingCoordinates[RED][CORNER] = new Coordinate(200, 200, 150, 90); //upper left
-        startingCoordinates[RED][OFF_CENTER] = new Coordinate(200, -100, 150, 90); //lower left
-        startingCoordinates[BLUE][CORNER] = new Coordinate(-200, 200, 150, 90); //upper right
-        startingCoordinates[BLUE][OFF_CENTER] = new Coordinate(-200, -100, 150, 270); //lower right
+        startingCoordinateArray[RED][CORNER] = new Coordinate(200, 200, 150, 90); //upper left
+        startingCoordinateArray[RED][OFF_CENTER] = new Coordinate(200, -100, 150, 90); //lower left
+        startingCoordinateArray[BLUE][CORNER] = new Coordinate(-200, 200, 150, 90); //upper right
+        startingCoordinateArray[BLUE][OFF_CENTER] = new Coordinate(-200, -100, 150, 270); //lower right
 
         //safe zone positions array
-        Position[][] safeZonePositions = new Position[2][2];
-        safeZonePositions[RED][SAFEZONE_1] = new Position(-250, 50, 150); //mid left
-        safeZonePositions[RED][SAFEZONE_2] = new Position(-150, -250, 150); //lower left
-        safeZonePositions[BLUE][SAFEZONE_1] = new Position(250, 50, 150); //mid right
-        safeZonePositions[BLUE][SAFEZONE_2] = new Position(150, -250, 150); //lower right
+        safeZonePositionsArray[RED][SAFEZONE_1] = new Position(-250, 50, 150); //mid left
+        safeZonePositionsArray[RED][SAFEZONE_2] = new Position(-150, -250, 150); //lower left
+        safeZonePositionsArray[BLUE][SAFEZONE_1] = new Position(250, 50, 150); //mid right
+        safeZonePositionsArray[BLUE][SAFEZONE_2] = new Position(150, -250, 150); //lower right
 
         //setting positions
 
@@ -116,25 +116,44 @@ public class WHSAuto extends OpMode {
             case HIT_JEWEL:
                 //State Entry
                 currentStateDesc = "hitting jewel";
-                robot.jewelPusher.operateArm(1.0);
-                if (robot.jewelPusher.getJewelColor().ordinal() == ALLIANCE) {
-                    robot.jewelPusher.operateSwivel(1.0);
+                if(performStateEntry){
+                    armUpToMiddleTimer.set(ARM_FOLD_DELAY);
+                    performStateEntry = false;
                 }
+                if(!armUpToMiddleTimer.isExpired()){
+                    robot.jewelPusher.operateArm(JewelPusher.ArmPosition.MIDDLE);
+                    armMiddleToDownTimer.set(ARM_FOLD_DELAY);
+                }
+                else if (!armMiddleToDownTimer.isExpired()){
+                    robot.jewelPusher.operateArm(JewelPusher.ArmPosition.DOWN);
+                    robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.MIDDLE);
+                    jewelDeadmanTimer.set(JEWEL_DETECTION_DEADMAN);
+                }
+                else if (!jewelDeadmanTimer.isExpired()) {
+                    /*checks if the color detected to the left of the swivel (assuming the color sensor is mounted on the left)
+                    **matches the alliance, and if so, swings left, otherwise swings right
+                     */
+                    if (robot.jewelPusher.getJewelColor().ordinal() == ALLIANCE) {
+                        robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.LEFT);
+                    } else {
+                        robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.RIGHT);
+                    }
+                    armDownToMiddleTimer.set(ARM_FOLD_DELAY);
+                }
+                else if (!armDownToMiddleTimer.isExpired()) {
+                    robot.jewelPusher.operateArm(JewelPusher.ArmPosition.MIDDLE);
+                    robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.MIDDLE);
+                    armMiddleToUpTimer.set(ARM_FOLD_DELAY);
+                } else if (!armMiddleToUpTimer.isExpired()) {
+                    robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.STORED);
+                    robot.jewelPusher.operateArm(JewelPusher.ArmPosition.UP);
+                }
+                advanceState();
                 break;
             case DRIVE_INTO_SAFEZONE:
                 currentStateDesc = "driving off platform into safe zone";
-                if (ALLIANCE == RED) {
-                    if (robot.getCoordinate() == startingCoordinateArray[RED][CORNER]) {
-                        //drive to mid left
-                        robot.driveToTarget(safeZonePositionsArray[RED][SAFEZONE_1]);
-                    } else {
-                        //drive to lower left
-                        robot.driveToTarget(safeZonePositionsArray[RED][SAFEZONE_2]);
-                    }
-                } else if (ALLIANCE == BLUE) {
-                    //drive to mid right
-                    robot.driveToTarget(safeZonePositionsArray[RED][SAFEZONE_1]);
-                }
+                //Change this
+
                 advanceState();
                 break;
             case DRIVE_TO_BOX:
