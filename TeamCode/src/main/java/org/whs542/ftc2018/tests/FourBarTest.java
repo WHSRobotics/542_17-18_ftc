@@ -26,5 +26,7 @@ public class FourBarTest extends OpMode {
         telemetry.addData("Four bar level: ", fourBar.getFourBarLevel());
         telemetry.addData("4Bar LPOS ", fourBar.fourBarEncoderPositions()[0]);
         telemetry.addData("4Bar RPOS ", fourBar.fourBarEncoderPositions()[1]);
+        //fourBar.operate(gamepad1.a, gamepad1.x, gamepad1.y);
+        fourBar.operate(gamepad1.a, gamepad1.x, gamepad1.y);
     }
 }

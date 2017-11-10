@@ -6,7 +6,7 @@ package org.whs542.subsys.fourbar;
 
 public interface FourBar {
 
-    void operate(boolean level0GamepadInput, boolean level1GamepadInput, boolean level2GamepadInput, boolean level3GamepadInput);
+    void operate(boolean level0GamepadInput, boolean level1GamepadInput, boolean level2GamepadInput);
 
     void operate(double power);
 

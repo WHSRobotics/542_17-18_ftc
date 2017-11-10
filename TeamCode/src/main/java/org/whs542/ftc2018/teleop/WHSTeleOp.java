@@ -26,7 +26,7 @@ public class WHSTeleOp extends OpMode {
         robot.drivetrain.operateWithOrientation(gamepad1.left_stick_y, gamepad1.right_stick_y);
         robot.drivetrain.switchOrientation(gamepad1.a);
 
-        robot.fourBar.operate(gamepad2.a, gamepad2.x, gamepad2.y, gamepad2.b);
+        robot.fourBar.operate(gamepad2.a, gamepad2.x, gamepad2.y);
         telemetry.addData("Four Bar Level: ", robot.fourBar.getFourBarLevel());
 
         telemetry.addData("Drivetrain Orientation: ", robot.drivetrain.getOrientation());
