@@ -23,18 +23,18 @@ public class TileRunner implements TankDrivetrain {
 
     public TileRunner (HardwareMap driveMap) {
 
-        frontLeft = driveMap.dcMotor.get("drive_fl");
-        frontRight = driveMap.dcMotor.get("drive_fr");
-        backLeft = driveMap.dcMotor.get("drive_bl");
-        backRight = driveMap.dcMotor.get("drive_br");
+        frontLeft = driveMap.dcMotor.get("driveFL");
+        frontRight = driveMap.dcMotor.get("driveFR");
+        backLeft = driveMap.dcMotor.get("driveBL");
+        backRight = driveMap.dcMotor.get("driveBR");
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         orientationSwitch.setState(1);
 
@@ -44,8 +44,8 @@ public class TileRunner implements TankDrivetrain {
     public void operateWithOrientation(double leftPower, double rightPower) {
         switch (orientationSwitch.currentState()) {
             case 0:
-                operateLeft(leftPower);
-                operateRight(rightPower);
+                operateLeft(rightPower);
+                operateRight(leftPower);
                 break;
             case 1:
                 operateLeft(-leftPower);
@@ -59,16 +59,7 @@ public class TileRunner implements TankDrivetrain {
         double rightScaledPower = Math.pow(rightPower, 3);
         double leftScaledPower = Math.pow(leftPower, 3);
 
-        switch (orientationSwitch.currentState()) {
-            case 0:
-                operateLeft(rightScaledPower);
-                operateRight(leftScaledPower);
-                break;
-            case 1:
-                operateLeft(-rightScaledPower);
-                operateRight(-leftScaledPower);
-                break;
-        }
+        operateWithOrientation(leftScaledPower, rightScaledPower);
     }
 
     @Override

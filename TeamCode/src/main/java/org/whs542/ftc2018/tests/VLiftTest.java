@@ -28,7 +28,7 @@ public class VLiftTest extends OpMode {
 
     @Override
     public void loop() {
-        /*leftAngleTog.changeState(gamepad1.dpad_up, gamepad1.dpad_down);
+        leftAngleTog.changeState(gamepad1.dpad_up, gamepad1.dpad_down);
         rightAngleTog.changeState(gamepad1.dpad_left, gamepad1.dpad_right);
         i++;
         if (i%10 == 0) {
@@ -37,15 +37,14 @@ public class VLiftTest extends OpMode {
         }
         lift.operateLift(leftAngleTog.currentState()/200f, rightAngleTog.currentState()/200f);
         telemetry.addData("Left: ", leftAngleTog.currentState()/200f);
-        telemetry.addData("Right: ", rightAngleTog.currentState()/200f);*/
+        telemetry.addData("Right: ", rightAngleTog.currentState()/200f);
 
-        lift.operateLift(gamepad2.a);
-        /*if(gamepad1.a) {
-            lift.operateLift(VLiftImpl.LEFT_LIFT_UP_POSITION, VLiftImpl.RIGHT_LIFT_UP_POSITION);
-        }
-        else {
-            lift.operateLift(VLiftImpl.LEFT_LIFT_DOWN_POSITION, VLiftImpl.RIGHT_LIFT_DOWN_POSITION);
-        }*/
+//        if(gamepad1.a) {
+//            lift.operateLift(VLiftImpl.LEFT_LIFT_UP_POSITION, VLiftImpl.RIGHT_LIFT_UP_POSITION);
+//        }
+//        else {
+//            lift.operateLift(VLiftImpl.LEFT_LIFT_DOWN_POSITION, VLiftImpl.RIGHT_LIFT_DOWN_POSITION);
+//        }
 
     }
 }

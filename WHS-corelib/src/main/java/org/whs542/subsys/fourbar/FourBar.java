@@ -14,5 +14,7 @@ public interface FourBar {
 
     double[] fourBarEncoderPositions();
 
+    double[] fourBarTargetPositions();
+
 
 }

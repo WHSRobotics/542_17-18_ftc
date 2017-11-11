@@ -22,11 +22,11 @@ public class FourBarTest extends OpMode {
     @Override
     public void loop() {
 
-        //fourBar.operate(gamepad1.a, gamepad1.x, gamepad1.y, gamepad1.b);
         telemetry.addData("Four bar level: ", fourBar.getFourBarLevel());
         telemetry.addData("4Bar LPOS ", fourBar.fourBarEncoderPositions()[0]);
         telemetry.addData("4Bar RPOS ", fourBar.fourBarEncoderPositions()[1]);
-        //fourBar.operate(gamepad1.a, gamepad1.x, gamepad1.y);
+        telemetry.addData("Left Target: ", fourBar.fourBarTargetPositions()[0]);
+        telemetry.addData("Right Target: ", fourBar.fourBarTargetPositions()[1]);
         fourBar.operate(gamepad1.a, gamepad1.x, gamepad1.y);
     }
 }
