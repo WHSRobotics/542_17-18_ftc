@@ -116,20 +116,18 @@ public class WHSAuto extends OpMode {
             case HIT_JEWEL:
                 //State Entry
                 currentStateDesc = "hitting jewel";
-                if(performStateEntry){
+                if (performStateEntry) {
                     armUpToMiddleTimer.set(ARM_FOLD_DELAY);
                     performStateEntry = false;
                 }
-                if(!armUpToMiddleTimer.isExpired()){
+                if (!armUpToMiddleTimer.isExpired()) {
                     robot.jewelPusher.operateArm(JewelPusher.ArmPosition.MIDDLE);
                     armMiddleToDownTimer.set(ARM_FOLD_DELAY);
-                }
-                else if (!armMiddleToDownTimer.isExpired()){
+                } else if (!armMiddleToDownTimer.isExpired()) {
                     robot.jewelPusher.operateArm(JewelPusher.ArmPosition.DOWN);
                     robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.MIDDLE);
                     jewelDeadmanTimer.set(JEWEL_DETECTION_DEADMAN);
-                }
-                else if (!jewelDeadmanTimer.isExpired()) {
+                } else if (!jewelDeadmanTimer.isExpired()) {
                     /*checks if the color detected to the left of the swivel (assuming the color sensor is mounted on the left)
                     **matches the alliance, and if so, swings left, otherwise swings right
                      */
@@ -139,16 +137,21 @@ public class WHSAuto extends OpMode {
                         robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.RIGHT);
                     }
                     armDownToMiddleTimer.set(ARM_FOLD_DELAY);
-                }
-                else if (!armDownToMiddleTimer.isExpired()) {
+                } else if (!armDownToMiddleTimer.isExpired()) {
                     robot.jewelPusher.operateArm(JewelPusher.ArmPosition.MIDDLE);
                     robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.MIDDLE);
                     armMiddleToUpTimer.set(ARM_FOLD_DELAY);
                 } else if (!armMiddleToUpTimer.isExpired()) {
                     robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.STORED);
                     robot.jewelPusher.operateArm(JewelPusher.ArmPosition.UP);
+                } else {
+                    performStateExit = true;
                 }
-                advanceState();
+                if (performStateExit) {
+                    performStateEntry = true;
+                    performStateExit = false;
+                    advanceState();
+                }
                 break;
             case DRIVE_INTO_SAFEZONE:
                 currentStateDesc = "driving off platform into safe zone";
@@ -166,7 +169,8 @@ public class WHSAuto extends OpMode {
                 break;
             case END:
                 currentStateDesc = "hooray we made it!";
-            default: break;
+            default:
+                break;
         }
 
         //Logging the current state
@@ -174,10 +178,9 @@ public class WHSAuto extends OpMode {
     }
 
     public void advanceState() {
-        if(stateEnabled[(currentState + 1)]) {
+        if (stateEnabled[(currentState + 1)]) {
             currentState = currentState + 1;
-        }
-        else {
+        } else {
             currentState = currentState + 1;
             advanceState();
         }
