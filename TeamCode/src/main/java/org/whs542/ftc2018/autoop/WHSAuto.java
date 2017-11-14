@@ -84,17 +84,17 @@ public class WHSAuto extends OpMode {
 
         //starting coordinate array
         Coordinate[][] startingCoordinates = new Coordinate[2][2];
-        startingCoordinates[RED][CORNER] = new Coordinate(1200, 1200, 150, 90); //upper right
-        startingCoordinates[RED][OFF_CENTER] = new Coordinate(1200, -600, 150, 90); //lower right
-        startingCoordinates[BLUE][CORNER] = new Coordinate(-1200, 1200, 150, 270); //upper left
-        startingCoordinates[BLUE][OFF_CENTER] = new Coordinate(-1200, -600, 150, 270); //lower left
+        startingCoordinates[RED][CORNER] = new Coordinate(-1200, -1200, 150, 0); //upper right
+        startingCoordinates[RED][OFF_CENTER] = new Coordinate(600, -1200, 150, 0); //lower right
+        startingCoordinates[BLUE][CORNER] = new Coordinate(-1200, 1200, 150, 0); //upper left
+        startingCoordinates[BLUE][OFF_CENTER] = new Coordinate(600, 1200, 150, 180); //lower left
 
         //safe zone positions array
         Position[][] safeZonePositions = new Position[2][2];
-        safeZonePositions[RED][SAFEZONE_1] = new Position(-1500, 300, 150); //mid right
-        safeZonePositions[RED][SAFEZONE_2] = new Position(-900, -1500, 150); //lower right
-        safeZonePositions[BLUE][SAFEZONE_1] = new Position(1500, 300, 150); //mid left
-        safeZonePositions[BLUE][SAFEZONE_2] = new Position(900, -1500, 150); //lower left
+        safeZonePositions[RED][SAFEZONE_2] = new Position(-300, 1500, 150); //mid right
+        safeZonePositions[RED][SAFEZONE_1] = new Position(-900, -300, 150); //lower right
+        safeZonePositions[BLUE][SAFEZONE_2] = new Position(-300, 1500, 150); //mid left
+        safeZonePositions[BLUE][SAFEZONE_1] = new Position(-300, 1500, 150); //lower left
 
         telemetry.setMsTransmissionInterval(50); //set driver station update frequency
         telemetry.log().setCapacity(6); //set max number of lines logged by telemetry

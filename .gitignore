@@ -34,3 +34,5 @@ FtcRobotController/build\.gradle
 TeamCode/build\.gradle
 
 build\.gradle
+*.gradle
+*.properties
