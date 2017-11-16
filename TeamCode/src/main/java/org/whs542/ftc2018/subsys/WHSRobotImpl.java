@@ -20,12 +20,7 @@ import org.whs542.util.Position;
 public class WHSRobotImpl extends WHSRobot {
 
     public TankDrivetrain drivetrain;
-    public Intake intake;
-    public FourBar fourBar;
-    public JewelPusher jewelPusher;
     public IMU imu;
-    public Color color;
-    public VLift lift;
 
     Coordinate currentCoord;
     public double targetHeading; //field frame
@@ -45,13 +40,8 @@ public class WHSRobotImpl extends WHSRobot {
 
     public WHSRobotImpl (HardwareMap hardwareMap){
         drivetrain = new TileRunner(hardwareMap);
-        intake = new RollerIntake(hardwareMap);
-        fourBar = new FourBarImpl(hardwareMap);
-        jewelPusher = new JewelPusherImpl(hardwareMap);
         currentCoord = new Coordinate(0.0, 0.0, 0.0, 0.0);
         imu = new IMU(hardwareMap, 0);
-        color = new Color(hardwareMap);
-        lift = new VLiftImpl(hardwareMap);
     }
 
     @Override
