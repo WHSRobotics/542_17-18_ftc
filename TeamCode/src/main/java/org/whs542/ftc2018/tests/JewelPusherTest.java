@@ -38,5 +38,6 @@ public class JewelPusherTest extends OpMode {
         jewelPusher.operateSwivel(swivelTog.currentState()/200f);
         telemetry.addData("Arm: ", armTog.currentState()/200f);
         telemetry.addData("Swivel: ", swivelTog.currentState()/200f);
+        telemetry.addData("Color: ", jewelPusher.getJewelColor());
     }
 }

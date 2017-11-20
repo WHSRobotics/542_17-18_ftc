@@ -15,11 +15,11 @@ public class JewelPusherImpl implements JewelPusher {
     private Servo swivelServo;
     //TODO: change these to actual values
 
-    static final double[] ARM_POSITONS = {0.625, 0.3, 0.005};               //UP, MIDDLE, DOWN
-    static final double[] SWIVEL_POSITIONS = {0.995, 0.3, 0.445, 0.73};     //STORED,LEFT, MIDDLE, RIGHT
+    static final double[] ARM_POSITONS = {0.725, 0.35, 0.0};               //UP, MIDDLE, DOWN
+    static final double[] SWIVEL_POSITIONS = {0.7, 0.22, 0.3, 0.505};     //STORED,LEFT, MIDDLE, RIGHT
 
     public Color colorSensor;
-    private static final int COLOR_SENSOR_THRESHOLD = 10;
+    private static final int COLOR_SENSOR_THRESHOLD = 75;
 
     public JewelPusherImpl(HardwareMap jewelMap) {
         armServo = jewelMap.servo.get("armServo");
