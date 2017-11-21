@@ -19,7 +19,7 @@ public class JewelPusherImpl implements JewelPusher {
     static final double[] SWIVEL_POSITIONS = {0.7, 0.125, 0.3, 0.505};     //STORED,LEFT, MIDDLE, RIGHT
 
     public Color colorSensor;
-    private static final int COLOR_SENSOR_THRESHOLD = 75;
+    private static final double COLOR_SENSOR_THRESHOLD = 1.5;
 
     public JewelPusherImpl(HardwareMap jewelMap) {
         armServo = jewelMap.servo.get("armServo");
@@ -29,9 +29,9 @@ public class JewelPusherImpl implements JewelPusher {
 
     @Override
     public JewelColor getJewelColor() {
-        if ((colorSensor.getR() - colorSensor.getB()) > COLOR_SENSOR_THRESHOLD) {
+        if ((colorSensor.getR() / colorSensor.getB()) > COLOR_SENSOR_THRESHOLD) {
             return JewelColor.RED;
-        } else if ((colorSensor.getB() - colorSensor.getR()) > COLOR_SENSOR_THRESHOLD) {
+        } else if ((colorSensor.getB() / colorSensor.getR()) > COLOR_SENSOR_THRESHOLD) {
             return JewelColor.BLUE;
         } else {
             return JewelColor.ERROR;
