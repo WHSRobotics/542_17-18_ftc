@@ -48,7 +48,7 @@ public class WHSRobotImpl extends WHSRobot {
         fourBar = new FourBarImpl(hardwareMap);*/
         jewelPusher = new JewelPusherImpl(hardwareMap);
         currentCoord = new Coordinate(0.0, 0.0, 150.0, 0.0);
-        imu = new IMU(hardwareMap, 0);
+        imu = new IMU(hardwareMap);
 /*
         lift = new VLiftImpl(hardwareMap);
 */

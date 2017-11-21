@@ -22,26 +22,6 @@ public class IMU {
     BNO055IMU imu;
     BNO055IMU.Parameters parameters;
 
-    public IMU(HardwareMap theMap, double initialH){
-        imu = theMap.get(BNO055IMU.class, "imu");
-
-        parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-        //File file = AppUtil.getInstance().getSettingsFile("AdafruitIMUCalibration.json");
-        //parameters.calibrationDataFile = ReadWriteFile.readFile(file);
-        //parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-        // and named "imu".
-        imu.initialize(parameters);
-        //initialHeading = initialH;
-        //setHeading(initialHeading);
-    }
 
     public IMU(HardwareMap theMap) {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
