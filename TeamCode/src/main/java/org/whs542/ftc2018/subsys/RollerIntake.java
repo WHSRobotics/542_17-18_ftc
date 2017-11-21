@@ -19,7 +19,10 @@ public class RollerIntake implements Intake {
     private Toggler outtakeToggler = new Toggler(2);
     private static final double GAMEPAD_THRESHOLD = 0.05;
 
-    public RollerIntake(HardwareMap intakeMap) {intakeMotor = intakeMap.dcMotor.get("intake");}
+    public RollerIntake(HardwareMap intakeMap) {
+        intakeMotor = intakeMap.dcMotor.get("intake");
+        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
+    }
 
     public void operateWithToggle(double gamepadInput) {
         if (gamepadInput > GAMEPAD_THRESHOLD) {

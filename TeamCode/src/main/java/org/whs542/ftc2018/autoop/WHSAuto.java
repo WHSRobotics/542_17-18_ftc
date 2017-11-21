@@ -46,7 +46,7 @@ public class WHSAuto extends OpMode {
     public void defineStateEnabledStatus() {
         stateEnabled[INIT] = true;
         stateEnabled[HIT_JEWEL] = true;
-        stateEnabled[DRIVE_INTO_SAFEZONE] = true;
+        stateEnabled[DRIVE_INTO_SAFEZONE] = false;
         stateEnabled[DRIVE_TO_BOX] = false;
         stateEnabled[PLACE_GLYPH] = false;
         stateEnabled[END] = true;

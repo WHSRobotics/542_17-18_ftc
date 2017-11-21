@@ -1,5 +1,6 @@
 package org.whs542.ftc2018.tests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.whs542.ftc2018.subsys.IMU;
@@ -9,21 +10,18 @@ import org.whs542.subsys.drivetrain.TankDrivetrain;
 /**
  * Created by ivanm on 11/4/2017.
  */
-
+@Autonomous(name = "IMU test", group = "tests")
 public class IMUTest extends OpMode {
 
     IMU imu;
-    TankDrivetrain drivetrain;
 
     @Override
     public void init() {
         imu = new IMU(hardwareMap);
-        drivetrain = new TileRunner(hardwareMap);
     }
 
     @Override
     public void loop() {
-        drivetrain.operate(0, 0);
 
         double heading = imu.getHeading();
 
