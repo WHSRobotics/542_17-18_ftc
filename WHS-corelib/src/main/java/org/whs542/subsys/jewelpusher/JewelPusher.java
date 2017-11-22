@@ -16,7 +16,7 @@ public interface JewelPusher {
     }
 
     enum ArmPosition {
-        UP, MIDDLE, DOWN
+        UP, DOWN
     }
 
     JewelColor getJewelColor();
