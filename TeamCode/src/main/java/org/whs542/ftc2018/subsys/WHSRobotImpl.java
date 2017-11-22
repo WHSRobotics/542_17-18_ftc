@@ -35,8 +35,8 @@ public class WHSRobotImpl extends WHSRobot {
     private static final double[] ROTATE_TO_TARGET_THRESHOLD = {DEADBAND_ROTATE_TO_TARGET, 45, 90};
     public double rightMultiplier = 1.0;
 
-    public boolean rotateToTargetInProgress;
-    public boolean driveToTargetInProgress;
+    private boolean rotateToTargetInProgress;
+    private boolean driveToTargetInProgress;
 
     public WHSRobotImpl (HardwareMap hardwareMap){
         drivetrain = new TileRunner(hardwareMap);
@@ -62,7 +62,7 @@ public class WHSRobotImpl extends WHSRobot {
             //if rotating, do nothing
         }
         else {
-            drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+           //drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[3]) {
                 drivetrain.operateRight(DRIVE_TO_TARGET_POWER_LEVEL[3] * rightMultiplier);

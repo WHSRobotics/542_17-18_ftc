@@ -27,8 +27,16 @@ public class DriveToTargetTest extends OpMode {
 
     @Override
     public void loop() {
-        if(robot.driveToTargetInProgress) {
+        if(robot.driveToTargetInProgress()) {
             robot.driveToTarget(new Position(1200, 0, 150));
         }
+        telemetry.addData("DriveToTarget in progress: ", robot.driveToTargetInProgress());
+        telemetry.addData("RotateToTarget in progress: ", robot.rotateToTargetInProgress());
+        telemetry.addData("IMU", robot.imu.getHeading());
+        telemetry.addData("X", robot.getCoordinate().getX());
+        telemetry.addData("Y", robot.getCoordinate().getY());
+        telemetry.addData("Z", robot.getCoordinate().getZ());
+        telemetry.addData("Heading", robot.getCoordinate().getHeading());
+
     }
 }

@@ -21,6 +21,20 @@ public class TileRunner implements TankDrivetrain {
 
     private Toggler orientationSwitch = new Toggler(2);
 
+    private static final double RADIUS_OF_WHEEL = 50;
+    private static final double CIRC_OF_WHEEL = RADIUS_OF_WHEEL * 2 * Math.PI;
+    private static final double ENCODER_TICKS_PER_REV = 1120;
+    //private static final double CALIBRATION_FACTOR = 72 / 72.25 * 24 / 24.5 * 0.5;
+    private static final double CALIBRATION_FACTOR = 72 / 72.25 * 24 / 24.5 * 0.70;
+    private static final double ENCODER_TICKS_PER_MM = CALIBRATION_FACTOR * ENCODER_TICKS_PER_REV / CIRC_OF_WHEEL;
+
+
+
+    public static double mmToEnc(double MM)
+    {
+        return MM * ENCODER_TICKS_PER_MM;
+    }
+
     public TileRunner (HardwareMap driveMap) {
 
         frontLeft = driveMap.dcMotor.get("driveFL");
@@ -92,14 +106,38 @@ public class TileRunner implements TankDrivetrain {
         return orientationSwitch.currentState() == 0 ? "reversed" : "normal";
     }
 
-    @Override
-    public double[] getEncoderDistance() {
-        return new double[0];
+    public double getEncoderPosition() {
+        double position = frontRight.getCurrentPosition() + frontLeft.getCurrentPosition() + backRight.getCurrentPosition() + backLeft.getCurrentPosition();
+        return position * 0.25;
+    }
+    public double[] getEncoderDistance()
+    {
+        double currentLeft = getLeftEncoderPosition();
+        double currentRight = getRightEncoderPosition();
+
+        double[] encoderDistances = {currentLeft - encoderValues[0], currentRight - encoderValues[1]};
+
+        encoderValues[0] = currentLeft;
+        encoderValues[1] = currentRight;
+
+        return encoderDistances;
+    }
+
+    public double getRightEncoderPosition()
+    {
+        double rightTotal = backRight.getCurrentPosition() + frontRight.getCurrentPosition();
+        return rightTotal * 0.5;
+    }
+
+    public double getLeftEncoderPosition()
+    {
+        double leftTotal = backLeft.getCurrentPosition() +frontLeft.getCurrentPosition();
+        return leftTotal * 0.5;
     }
 
     @Override
     public double encToMM(double encoderTicks) {
-        return 0;
+        return encoderTicks * (1/ENCODER_TICKS_PER_MM);
     }
 
     @Override
