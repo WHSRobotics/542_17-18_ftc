@@ -14,26 +14,20 @@ import org.whs542.util.Toggler;
 
 public class TileRunner implements TankDrivetrain {
 
-    private DcMotor frontLeft;
-    private DcMotor frontRight;
-    private DcMotor backLeft;
-    private DcMotor backRight;
+    public DcMotor frontLeft;
+    public DcMotor frontRight;
+    public DcMotor backLeft;
+    public DcMotor backRight;
 
     private Toggler orientationSwitch = new Toggler(2);
 
     private static final double RADIUS_OF_WHEEL = 50;
     private static final double CIRC_OF_WHEEL = RADIUS_OF_WHEEL * 2 * Math.PI;
-    private static final double ENCODER_TICKS_PER_REV = 1120;
-    //private static final double CALIBRATION_FACTOR = 72 / 72.25 * 24 / 24.5 * 0.5;
-    private static final double CALIBRATION_FACTOR = 72 / 72.25 * 24 / 24.5 * 0.70;
-    private static final double ENCODER_TICKS_PER_MM = CALIBRATION_FACTOR * ENCODER_TICKS_PER_REV / CIRC_OF_WHEEL;
+    private static final double ENCODER_TICKS_PER_REV = 1120;                                   //Neverest 40
+    private static final double GEAR_RATIO = 1;
+    private static final double ENCODER_TICKS_PER_MM = ENCODER_TICKS_PER_REV / (CIRC_OF_WHEEL * GEAR_RATIO);
 
-
-
-    public static double mmToEnc(double MM)
-    {
-        return MM * ENCODER_TICKS_PER_MM;
-    }
+    private double[] encoderValues = {0.0, 0.0};
 
     public TileRunner (HardwareMap driveMap) {
 
@@ -47,8 +41,9 @@ public class TileRunner implements TankDrivetrain {
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         orientationSwitch.setState(1);
 
@@ -110,7 +105,7 @@ public class TileRunner implements TankDrivetrain {
         double position = frontRight.getCurrentPosition() + frontLeft.getCurrentPosition() + backRight.getCurrentPosition() + backLeft.getCurrentPosition();
         return position * 0.25;
     }
-    public double[] getEncoderDistance()
+    public double[] getEncoderDelta()
     {
         double currentLeft = getLeftEncoderPosition();
         double currentRight = getRightEncoderPosition();

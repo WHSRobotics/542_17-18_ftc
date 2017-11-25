@@ -18,6 +18,7 @@ public class DriveToTargetTest extends OpMode {
     public void init() {
         robot = new WHSRobotImpl(hardwareMap);
         robot.setInitialCoordinate(new Coordinate(0, 0, 150, 0));
+        telemetry.setMsTransmissionInterval(10);
     }
 
     @Override
@@ -30,6 +31,9 @@ public class DriveToTargetTest extends OpMode {
         if(robot.driveToTargetInProgress()) {
             robot.driveToTarget(new Position(1200, 0, 150));
         }
+        robot.estimatePosition();
+        robot.estimateHeading();
+
         telemetry.addData("DriveToTarget in progress: ", robot.driveToTargetInProgress());
         telemetry.addData("RotateToTarget in progress: ", robot.rotateToTargetInProgress());
         telemetry.addData("IMU", robot.imu.getHeading());
@@ -37,6 +41,11 @@ public class DriveToTargetTest extends OpMode {
         telemetry.addData("Y", robot.getCoordinate().getY());
         telemetry.addData("Z", robot.getCoordinate().getZ());
         telemetry.addData("Heading", robot.getCoordinate().getHeading());
+        telemetry.addData("FL Power", robot.drivetrain.frontLeft.getPower());
+        telemetry.addData("BL Power", robot.drivetrain.backLeft.getPower());
+        telemetry.addData("FR Power", robot.drivetrain.frontRight.getPower());
+        telemetry.addData("BR Power", robot.drivetrain.backRight.getPower());
+        telemetry.addData("Distance to target", robot.distanceToTargetDebug);
 
     }
 }
