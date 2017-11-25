@@ -21,7 +21,6 @@ public class RollerIntake implements Intake {
 
     public RollerIntake(HardwareMap intakeMap) {
         intakeMotor = intakeMap.dcMotor.get("intake");
-        intakeMotor.setDirection(DcMotor.Direction.REVERSE);
     }
 
     public void operateWithToggle(double gamepadInput) {

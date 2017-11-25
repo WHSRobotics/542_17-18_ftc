@@ -18,7 +18,7 @@ public class VLiftTest extends OpMode {
 
     Toggler leftAngleTog;
     Toggler rightAngleTog;
-    //long i;
+    long i;
     @Override
     public void init() {
         rightAngleTog = new Toggler(200);
@@ -28,7 +28,7 @@ public class VLiftTest extends OpMode {
 
     @Override
     public void loop() {
-        /*leftAngleTog.changeState(gamepad1.dpad_up, gamepad1.dpad_down);
+        leftAngleTog.changeState(gamepad1.dpad_up, gamepad1.dpad_down);
         rightAngleTog.changeState(gamepad1.dpad_left, gamepad1.dpad_right);
         i++;
         if (i%10 == 0) {
@@ -38,8 +38,8 @@ public class VLiftTest extends OpMode {
         lift.operateLift(leftAngleTog.currentState()/200f, rightAngleTog.currentState()/200f);
         telemetry.addData("Left: ", leftAngleTog.currentState()/200f);
         telemetry.addData("Right: ", rightAngleTog.currentState()/200f);
-*/
-        lift.operateLift(gamepad2.right_bumper);
+
+        //lift.operateLift(gamepad2.right_bumper);
 
     }
 }
