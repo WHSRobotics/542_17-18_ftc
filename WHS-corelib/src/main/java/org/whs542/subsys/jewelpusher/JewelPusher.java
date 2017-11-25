@@ -12,7 +12,7 @@ public interface JewelPusher {
     }
 
     enum SwivelPosition {
-        STORED, LEFT, MIDDLE, RIGHT;
+        STORED, LEFT, MIDDLE, RIGHT, END_STORED;
     }
 
     enum ArmPosition {

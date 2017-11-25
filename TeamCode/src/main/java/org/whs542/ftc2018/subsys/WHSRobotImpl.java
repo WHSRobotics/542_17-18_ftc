@@ -43,15 +43,15 @@ public class WHSRobotImpl extends WHSRobot {
     public boolean driveToTargetInProgress;
 
     public WHSRobotImpl (HardwareMap hardwareMap){
-        /*drivetrain = new TileRunner(hardwareMap);
+        drivetrain = new TileRunner(hardwareMap);
         intake = new RollerIntake(hardwareMap);
-        fourBar = new FourBarImpl(hardwareMap);*/
+        fourBar = new FourBarImpl(hardwareMap);
         jewelPusher = new JewelPusherImpl(hardwareMap);
         currentCoord = new Coordinate(0.0, 0.0, 150.0, 0.0);
         imu = new IMU(hardwareMap);
-/*
+
         lift = new VLiftImpl(hardwareMap);
-*/
+
     }
 
     @Override

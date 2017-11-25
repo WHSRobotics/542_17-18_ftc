@@ -15,8 +15,8 @@ public class JewelPusherImpl implements JewelPusher {
     private Servo swivelServo;
     //TODO: change these to actual values
 
-    static final double[] ARM_POSITONS = {0.495, 0.96};               //UP, MIDDLE, DOWN
-    static final double[] SWIVEL_POSITIONS = {0.165, 0.335, 0.535, 0.675};     //STORED, LEFT, MIDDLE, RIGHT
+    static final double[] ARM_POSITONS = {0.1, 0.71};               //UP, DOWN
+    static final double[] SWIVEL_POSITIONS = {0.165, 0.32, 0.535, 0.75, 0.22};     //STORED, LEFT, MIDDLE, RIGHT, END_STORED
 
     public Color colorSensor;
     private static final double COLOR_SENSOR_THRESHOLD = 1.5;
@@ -29,9 +29,9 @@ public class JewelPusherImpl implements JewelPusher {
 
     @Override
     public JewelColor getJewelColor() {
-        if ((colorSensor.getR() / colorSensor.getB()) > COLOR_SENSOR_THRESHOLD) {
+        if ((colorSensor.getR() / (colorSensor.getB()+0.001)) > COLOR_SENSOR_THRESHOLD) {
             return JewelColor.RED;
-        } else if ((colorSensor.getB() / colorSensor.getR()) > COLOR_SENSOR_THRESHOLD) {
+        } else if ((colorSensor.getB() / (colorSensor.getR()+0.001)) > COLOR_SENSOR_THRESHOLD) {
             return JewelColor.BLUE;
         } else {
             return JewelColor.ERROR;

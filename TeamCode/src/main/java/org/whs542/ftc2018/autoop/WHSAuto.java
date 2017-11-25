@@ -24,7 +24,7 @@ public class WHSAuto extends OpMode {
 
     static final int RED = 0;
     static final int BLUE = 1;
-    static final int ALLIANCE = RED;
+    static final int ALLIANCE = BLUE;
     static final int CORNER = 0;
     static final int OFF_CENTER = 1;
     static final int BALANCING_STONE = CORNER;
@@ -46,8 +46,8 @@ public class WHSAuto extends OpMode {
     public void defineStateEnabledStatus() {
         stateEnabled[INIT] = true;
         stateEnabled[HIT_JEWEL] = true;
-        stateEnabled[DRIVE_INTO_SAFEZONE] = true;
-        stateEnabled[DRIVE_TO_BOX] = true;
+        stateEnabled[DRIVE_INTO_SAFEZONE] = false;
+        stateEnabled[DRIVE_TO_BOX] = false;
         stateEnabled[PLACE_GLYPH] = false;
         stateEnabled[END] = true;
     }
@@ -63,15 +63,20 @@ public class WHSAuto extends OpMode {
     SimpleTimer swivelStoreToMiddleTimer = new SimpleTimer();
     SimpleTimer swivelMiddleToStoreTimer = new SimpleTimer();
     SimpleTimer jewelKnockTimer = new SimpleTimer();
+    SimpleTimer jewelKnockTimer2 = new SimpleTimer();
     SimpleTimer armUpToDown = new SimpleTimer();
     SimpleTimer armDownToUpTimer = new SimpleTimer();
     SimpleTimer jewelDeadmanTimer = new SimpleTimer();
 
+    boolean isJewelAllianceColor;
+    boolean hasJewelBeenDetected;
+
     //Timing Constants
     //TODO: actually set these
     static final double SWIVEL_STORING_DELAY = 0.75;
-    static final double JEWEL_KNOCK_DELAY = 0.25;
-    static final double ARM_FOLD_DELAY = 0.75;
+    static final double JEWEL_KNOCK_DELAY = 0.55;
+    static final double JEWEL_KNOCK_DELAY2 = 0.4;
+    static final double ARM_FOLD_DELAY = 0.9;
     static final double JEWEL_DETECTION_DEADMAN = 2.0;
 
 
@@ -120,6 +125,7 @@ public class WHSAuto extends OpMode {
                 if (performStateEntry) {
                     swivelStoreToMiddleTimer.set(SWIVEL_STORING_DELAY);
                     performStateEntry = false;
+                    hasJewelBeenDetected = false;
                     subStateDesc = "entry";
                 }
                 if(!swivelStoreToMiddleTimer.isExpired()){
@@ -131,31 +137,49 @@ public class WHSAuto extends OpMode {
                     robot.jewelPusher.operateArm(JewelPusher.ArmPosition.DOWN);
                     jewelDeadmanTimer.set(JEWEL_DETECTION_DEADMAN);
                     subStateDesc = "arm up to down";
-                } else if (!jewelDeadmanTimer.isExpired()) {
+                }
+                else if (!hasJewelBeenDetected & !jewelDeadmanTimer.isExpired()) {
                     /*checks if the color detected to the left of the swivel (assuming the color sensor is mounted on the left)
                     **matches the alliance, and if so, swings left, otherwise swings right
                      */
-                    subStateDesc = "knocking jewel";
+                    subStateDesc = "detecting jewel color";
                     if(robot.jewelPusher.getJewelColor() == JewelPusher.JewelColor.ERROR){
-
+                        //do nothing
                     }
                     else if (robot.jewelPusher.getJewelColor().ordinal() == ALLIANCE) {
-                        robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.LEFT);
+                        isJewelAllianceColor = true;
+                        hasJewelBeenDetected = true;
                     } else {
-                        robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.RIGHT);
+                        isJewelAllianceColor = false;
+                        hasJewelBeenDetected = true;
                     }
                     jewelKnockTimer.set(JEWEL_KNOCK_DELAY);
-                } else if (!jewelKnockTimer.isExpired()) {
-                    subStateDesc = "reseting swivel to middle";
+                }
+                else if (!jewelKnockTimer.isExpired()) {
+                    subStateDesc = "knocking jewel";
+
+                    if(isJewelAllianceColor){
+                        robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.RIGHT);
+                    }
+                    else if (!isJewelAllianceColor) {
+                        robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.LEFT);
+                    } else {
+                        //do nothing
+                    }
+                    jewelKnockTimer2.set(JEWEL_KNOCK_DELAY2);
+                }
+                else if (!jewelKnockTimer2.isExpired()) {
+                    subStateDesc = "resetting swivel to middle";
                     robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.MIDDLE);
                     armDownToUpTimer.set(ARM_FOLD_DELAY);
-                } else if (!armDownToUpTimer.isExpired()) {
+                }
+                else if (!armDownToUpTimer.isExpired()) {
                     subStateDesc = "arm down to up";
                     robot.jewelPusher.operateArm(JewelPusher.ArmPosition.UP);
                     swivelMiddleToStoreTimer.set(SWIVEL_STORING_DELAY);
                 } else if (!swivelMiddleToStoreTimer.isExpired()){
-                    subStateDesc = "swivel middle to store";
-                    robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.STORED);
+                    subStateDesc = "swivel middle to store end";
+                    robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.END_STORED);
                 } else {
                     performStateExit = true;
                 }

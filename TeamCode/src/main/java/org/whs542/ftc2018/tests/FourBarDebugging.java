@@ -16,13 +16,15 @@ public class FourBarDebugging extends OpMode {
         leftMotor = hardwareMap.dcMotor.get("leftFourBar");
         rightMotor = hardwareMap.dcMotor.get("rightFourBar");
 
-        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
     @Override
     public void loop() {
         leftMotor.setPower(0.0);
         rightMotor.setPower(0.0);
+        telemetry.addData("Left Pos", leftMotor.getCurrentPosition());
+        telemetry.addData("Right Pos", rightMotor.getCurrentPosition());
     }
 }
