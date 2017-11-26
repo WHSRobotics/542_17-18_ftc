@@ -8,7 +8,7 @@ public interface VLift {
 
     void operateLift(double leftPosition, double rightPosition);
 
-    void operateLift(boolean gamepadInput);
+    void operateLift(boolean gamepadInput1, float gamepadInput2);
 
 
 }

@@ -13,10 +13,10 @@ public class VLiftImpl implements VLift {
 
     private Servo leftLiftServo;
     private Servo rightLiftServo;
-    public static final double LEFT_LIFT_DOWN_POSITION = 0.35; //0.17;
-    public static final double LEFT_LIFT_UP_POSITION = 0.82 ; //0.72;
-    public static final double RIGHT_LIFT_DOWN_POSITION = 0.60; //0.78;
-    public static final double RIGHT_LIFT_UP_POSITION = 0.13; //0.23;
+    public static final double[] LEFT_LIFT_POSITIONS = {0.35, 0.7, 0.82}; //Down, middle, up
+    public static final double[] RIGHT_LIFT_POSITIONS = {0.6, 0.25, 0.13}; //Down, middle, up
+    private static final double GAMEPAD_THRESHOLD = 0.05;
+
 
     public VLiftImpl(HardwareMap liftMap) {
         leftLiftServo = liftMap.servo.get("leftLiftServo");
@@ -31,14 +31,18 @@ public class VLiftImpl implements VLift {
     }
 
     @Override
-    public void operateLift(boolean gamepadInput) {
-        if (gamepadInput) {
-            leftLiftServo.setPosition(LEFT_LIFT_UP_POSITION);
-            rightLiftServo.setPosition(RIGHT_LIFT_UP_POSITION);
+    public void operateLift(boolean gamepadInput1, float gamepadInput2) {
+        if (gamepadInput2 > GAMEPAD_THRESHOLD) {
+            leftLiftServo.setPosition(LEFT_LIFT_POSITIONS[2]);
+            rightLiftServo.setPosition(RIGHT_LIFT_POSITIONS[2]);
+        }
+        else if (gamepadInput1) {
+            leftLiftServo.setPosition(LEFT_LIFT_POSITIONS[1]);
+            rightLiftServo.setPosition(RIGHT_LIFT_POSITIONS[1]);
         }
         else {
-            leftLiftServo.setPosition(LEFT_LIFT_DOWN_POSITION);
-            rightLiftServo.setPosition(RIGHT_LIFT_DOWN_POSITION);
+            leftLiftServo.setPosition(LEFT_LIFT_POSITIONS[0]);
+            rightLiftServo.setPosition(RIGHT_LIFT_POSITIONS[0]);
         }
     }
 }
