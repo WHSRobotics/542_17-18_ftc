@@ -46,7 +46,7 @@ public class WHSAuto extends OpMode {
     public void defineStateEnabledStatus() {
         stateEnabled[INIT] = true;
         stateEnabled[HIT_JEWEL] = true;
-        stateEnabled[DRIVE_INTO_SAFEZONE] = false;
+        stateEnabled[DRIVE_INTO_SAFEZONE] = true;
         stateEnabled[DRIVE_TO_BOX] = false;
         stateEnabled[PLACE_GLYPH] = false;
         stateEnabled[END] = true;
@@ -95,10 +95,10 @@ public class WHSAuto extends OpMode {
         startingCoordinateArray[BLUE][OFF_CENTER] = new Coordinate(600, 1200, 150, 0); //upper left
 
         //safe zone positions array
-        safeZonePositionsArray[BLUE][SAFEZONE_2] = new Position(-300, 1500, 150); //mid right
-        safeZonePositionsArray[BLUE][SAFEZONE_1] = new Position(1500, 900, 150); //upper right
-        safeZonePositionsArray[RED][SAFEZONE_2] = new Position(-300, -1500, 150); //mid left
-        safeZonePositionsArray[RED][SAFEZONE_1] = new Position(1500, -900, 150); //upper left
+        safeZonePositionsArray[RED][SAFEZONE_1] = new Position(-300, -1500, 150); //mid right
+        safeZonePositionsArray[RED][SAFEZONE_2] = new Position(1500, -900, 150); //upper right
+        safeZonePositionsArray[BLUE][SAFEZONE_1] = new Position(-300, 1500, 150); //mid left
+        safeZonePositionsArray[BLUE][SAFEZONE_2] = new Position(1500, 900, 150); //upper left
 
         defineStateEnabledStatus();
 
@@ -191,8 +191,8 @@ public class WHSAuto extends OpMode {
                 break;
             case DRIVE_INTO_SAFEZONE:
                 currentStateDesc = "driving off platform into safe zone";
-                //Change this
-
+                //works because the starting positions array corresponds to the safezone positions array
+                robot.driveToTarget(safeZonePositionsArray[ALLIANCE][BALANCING_STONE]);
                 advanceState();
                 break;
             case DRIVE_TO_BOX:
