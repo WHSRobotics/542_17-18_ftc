@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.whs542.ftc2018.subsys.WHSRobotImpl;
 import org.whs542.subsys.jewelpusher.JewelPusher;
 import org.whs542.util.Coordinate;
+import org.whs542.util.Functions;
 import org.whs542.util.Position;
 import org.whs542.util.SimpleTimer;
 
@@ -52,7 +53,7 @@ public class WHSAuto extends OpMode {
         stateEnabled[INIT] = true;
         stateEnabled[HIT_JEWEL] = true;
         stateEnabled[DRIVE_INTO_SAFEZONE] = true;
-        stateEnabled[DRIVE_TO_BOX] = false;
+        stateEnabled[DRIVE_TO_BOX] = true;
         stateEnabled[PLACE_GLYPH] = false;
         stateEnabled[END] = true;
     }
@@ -72,6 +73,9 @@ public class WHSAuto extends OpMode {
     SimpleTimer armUpToDown = new SimpleTimer();
     SimpleTimer armDownToUpTimer = new SimpleTimer();
     SimpleTimer jewelDeadmanTimer = new SimpleTimer();
+    SimpleTimer drivetoBoxTimer = new SimpleTimer();
+    SimpleTimer operateLiftTimer = new SimpleTimer();
+    SimpleTimer driveAwayTimer = new SimpleTimer();
 
     SimpleTimer jankDriveTimer = new SimpleTimer();
 
@@ -88,10 +92,15 @@ public class WHSAuto extends OpMode {
     static final double JEWEL_KNOCK_DELAY2 = 0.4;
     static final double ARM_FOLD_DELAY = 0.9;
     static final double JEWEL_DETECTION_DEADMAN = 2.0;
+    static final double DRIVE_TO_BOX_DURATION = 1.25;
+    static final double OPERATE_LIFT_DELAY = 1;
+    static final double DRIVE_AWAY_DURATION = 1;
 
     static final double JANK_DRIVE_DURATION = 4;
+    boolean rotateToBoxComplete = false;
 
     Position p;
+    double h;
 
     @Override
     public void init() {
@@ -237,13 +246,31 @@ public class WHSAuto extends OpMode {
             case DRIVE_TO_BOX:
                 currentStateDesc = "driving to box while scanning target";
                 if (performStateEntry) {
-                    robot.driveToTarget(boxPositionsArray[ALLIANCE][BALANCING_STONE]);
+                    if (ALLIANCE == RED) {
+                        h = Functions.normalizeAngle(270 - 3);
+                    } else if (ALLIANCE == BLUE) {
+                        h = Functions.normalizeAngle(90 - 3);
+                    }
+                    robot.rotateToTarget(h);
+                    performStateEntry = false;
                 }
 
-                if (robot.driveToTargetInProgress()) {
-                    robot.driveToTarget(boxPositionsArray[ALLIANCE][BALANCING_STONE]);
+                if (robot.rotateToTargetInProgress()) {
+                    robot.rotateToTarget(h);
+                    drivetoBoxTimer.set(DRIVE_TO_BOX_DURATION);
+                } else if (!drivetoBoxTimer.isExpired()) {
+                    rotateToBoxComplete = true;
+                    robot.drivetrain.operate(0.3, 0.3);
+                    operateLiftTimer.set(OPERATE_LIFT_DELAY);
+                } else if (drivetoBoxTimer.isExpired() && !operateLiftTimer.isExpired()) {
+                    robot.lift.operateLift(false, 1f);
+                    driveAwayTimer.set(DRIVE_AWAY_DURATION);
+                } else if (operateLiftTimer.isExpired() && !driveAwayTimer.isExpired()) {
+                    robot.lift.operateLift(false, 1f);
+                    robot.drivetrain.operate(0.3, 0.3);
                 } else {
                     performStateExit = true;
+                    robot.drivetrain.operate(0, 0);
                 }
 
                 if (performStateExit) {
@@ -251,7 +278,6 @@ public class WHSAuto extends OpMode {
                     performStateExit = false;
                     advanceState();
                 }
-                break;
             case PLACE_GLYPH:
                 currentStateDesc = "moving glyph";
                 advanceState();
