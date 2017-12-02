@@ -41,8 +41,8 @@ public class TileRunner implements TankDrivetrain {
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         orientationSwitch.setState(1);
@@ -53,12 +53,12 @@ public class TileRunner implements TankDrivetrain {
     public void operateWithOrientation(double leftPower, double rightPower) {
         switch (orientationSwitch.currentState()) {
             case 0:
-                operateLeft(rightPower);
-                operateRight(leftPower);
+                operateLeft(-rightPower);
+                operateRight(-leftPower);
                 break;
             case 1:
-                operateLeft(-leftPower);
-                operateRight(-rightPower);
+                operateLeft(leftPower);
+                operateRight(rightPower);
                 break;
         }
     }
