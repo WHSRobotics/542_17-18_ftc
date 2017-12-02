@@ -4,11 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.whs542.subsys.drivetrain.TankDrivetrain;
-import org.whs542.subsys.fourbar.FourBar;
-import org.whs542.subsys.intake.Intake;
-import org.whs542.subsys.jewelpusher.JewelPusher;
 import org.whs542.subsys.robot.WHSRobot;
-import org.whs542.subsys.vlift.VLift;
 import org.whs542.util.Coordinate;
 import org.whs542.util.Functions;
 import org.whs542.util.Position;
@@ -19,29 +15,26 @@ import org.whs542.util.Position;
 
 public class WHSRobotImpl extends WHSRobot {
 
-    public TankDrivetrain drivetrain;
-    public Intake intake;
-    public FourBar fourBar;
-    public JewelPusher jewelPusher;
+    public TileRunner drivetrain;
     public IMU imu;
     public VLift lift;
 
     Coordinate currentCoord;
     public double targetHeading; //field frame
 
-    private static final double DEADBAND_MAX_DRIVE_HEADING_DEVIATION = 10; //in degrees
-    private static final double DEADBAND_MAX_DRIVE_POSITION_DEVIATION = 300; //in mm
-    private static final double[] DRIVE_TO_TARGET_POWER_LEVEL = {0.33, 0.6, 0.7, 0.9};
-    public static final double DEADBAND_DRIVE_TO_TARGET = 110; //in mm
+    private static final double DEADBAND_DRIVE_TO_TARGET = 110; //in mm
+    private static final double DEADBAND_ROTATE_TO_TARGET = 3.5; //in degrees
+    private static final double[] DRIVE_TO_TARGET_POWER_LEVEL = {0.4, 0.4, 0.4, 0.4};
     private static final double[] DRIVE_TO_TARGET_THRESHOLD = {DEADBAND_DRIVE_TO_TARGET, 300, 600, 1200};
     private static final double[] ROTATE_TO_TARGET_POWER_LEVEL = {0.35, 0.6, 0.75};
-    private static final double DEADBAND_ROTATE_TO_TARGET = 3.5; //in degrees
     private static final double[] ROTATE_TO_TARGET_THRESHOLD = {DEADBAND_ROTATE_TO_TARGET, 45, 90};
-    public double rightMultiplier = 1.0;
+    private double rightMultiplier = 1.0;
+    private int count = 0;
 
     public boolean rotateToTargetInProgress;
     public boolean driveToTargetInProgress;
 
+    public double distanceToTargetDebug = 0;
     public WHSRobotImpl (HardwareMap hardwareMap){
         drivetrain = new TileRunner(hardwareMap);
         intake = new RollerIntake(hardwareMap);
@@ -60,38 +53,47 @@ public class WHSRobotImpl extends WHSRobot {
         vectorToTarget = field2body(vectorToTarget); //body frame
 
         double distanceToTarget = Functions.calculateMagnitude(vectorToTarget);
-
+        distanceToTargetDebug = distanceToTarget;
         double degreesToRotate = Math.atan2(vectorToTarget.getY(), vectorToTarget.getX()); //from -pi to pi rad
         //double degreesToRotate = Math.atan2(targetPos.getY(), targetPos.getX()); //from -pi to pi rad
         degreesToRotate = degreesToRotate * 180 / Math.PI;
         /*double*/ targetHeading = Functions.normalizeAngle(currentCoord.getHeading() + degreesToRotate); //-180 to 180 deg
-
-        rotateToTarget(targetHeading);
+        if(count == 0) {
+            rotateToTarget(targetHeading);
+            count++;
+        }
+        else if(rotateToTargetInProgress) {
+            rotateToTarget(targetHeading);
+        }
 
         if (rotateToTargetInProgress) {
             //if rotating, do nothing
         }
         else {
-            drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[3]) {
-                drivetrain.operateRight(DRIVE_TO_TARGET_POWER_LEVEL[3] * rightMultiplier);
+            /*if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[3]) {
+                drivetrain.operateRight(DRIVE_TO_TARGET_POWER_LEVEL[3]);
                 drivetrain.operateLeft(DRIVE_TO_TARGET_POWER_LEVEL[3]);
                 driveToTargetInProgress = true;
             }
             else if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[2]) {
-                drivetrain.operateRight(DRIVE_TO_TARGET_POWER_LEVEL[2] * rightMultiplier);
+                drivetrain.operateRight(DRIVE_TO_TARGET_POWER_LEVEL[2]);
                 drivetrain.operateLeft(DRIVE_TO_TARGET_POWER_LEVEL[2]);
                 driveToTargetInProgress = true;
             }
             else if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[1]) {
-                drivetrain.operateRight(DRIVE_TO_TARGET_POWER_LEVEL[1] * rightMultiplier);
+                drivetrain.operateRight(DRIVE_TO_TARGET_POWER_LEVEL[1]);
                 drivetrain.operateLeft(DRIVE_TO_TARGET_POWER_LEVEL[1]);
                 driveToTargetInProgress = true;
             }
             else if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[0]) {
-                drivetrain.operateRight(DRIVE_TO_TARGET_POWER_LEVEL[0] * rightMultiplier);
+                drivetrain.operateRight(DRIVE_TO_TARGET_POWER_LEVEL[0]);
                 drivetrain.operateLeft(DRIVE_TO_TARGET_POWER_LEVEL[0]);
+                driveToTargetInProgress = true;
+            }*/
+            if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[0]){
+                drivetrain.operateLeft(0.4);
+                drivetrain.operateRight(0.4);
                 driveToTargetInProgress = true;
             }
             else {
@@ -99,7 +101,7 @@ public class WHSRobotImpl extends WHSRobot {
                 drivetrain.operateLeft(0.0);
                 driveToTargetInProgress = false;
                 rotateToTargetInProgress = false;
-
+                count = 0;
             }
         }
     }
@@ -109,7 +111,7 @@ public class WHSRobotImpl extends WHSRobot {
         double angleToTarget = targetHeading - currentCoord.getHeading();
         angleToTarget = Functions.normalizeAngle(angleToTarget); //-180 to 180 deg
 
-        drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         if(angleToTarget<-DEADBAND_ROTATE_TO_TARGET)
         {
@@ -172,20 +174,20 @@ public class WHSRobotImpl extends WHSRobot {
         Position estimatedPos;
         if(rotateToTargetInProgress) {
             //if rotating, do NOT update position and get rid of encoder values as it turns
-            double[] encoderValues = drivetrain.getEncoderDistance();
+            double[] encoderValues = drivetrain.getEncoderDelta();
 
             estimatedPos = currentCoord.getPos();
         }
         else {
             if (driveToTargetInProgress & !rotateToTargetInProgress) {
-                double[] encoderValues = drivetrain.getEncoderDistance();
+                double[] encoderValues = drivetrain.getEncoderDelta();
                 double encoderPosL = encoderValues[0];
                 double encoderPosR = encoderValues[1];
 
-                double encoderAvg = (encoderPosL + encoderPosR) * 0.5;
+                double encoderAvg = Math.abs((encoderPosL + encoderPosR) * 0.5);
 
                 double hdg = currentCoord.getHeading();
-                double dist = Functions.encToMM(encoderAvg);
+                double dist = drivetrain.encToMM(encoderAvg);
 
                 double xPos = currentCoord.getX() + dist * Functions.cosd(hdg);
                 double yPos = currentCoord.getY() + dist * Functions.sind(hdg);
@@ -195,7 +197,7 @@ public class WHSRobotImpl extends WHSRobot {
                 currentCoord.setX(xPos);
                 currentCoord.setY(yPos);
             } else if (rotateToTargetInProgress) {
-                drivetrain.getEncoderDistance();
+                drivetrain.getEncoderDelta();
                 estimatedPos = currentCoord.getPos();
 
             } else {

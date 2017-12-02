@@ -22,7 +22,7 @@ public interface TankDrivetrain {
 
     String getOrientation();
 
-    double[] getEncoderDistance();
+    double[] getEncoderDelta();
 
     double encToMM(double encoderTicks);
 

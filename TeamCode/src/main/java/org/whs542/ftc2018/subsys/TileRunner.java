@@ -14,12 +14,20 @@ import org.whs542.util.Toggler;
 
 public class TileRunner implements TankDrivetrain {
 
-    private DcMotor frontLeft;
-    private DcMotor frontRight;
-    private DcMotor backLeft;
-    private DcMotor backRight;
+    public DcMotor frontLeft;
+    public DcMotor frontRight;
+    public DcMotor backLeft;
+    public DcMotor backRight;
 
     private Toggler orientationSwitch = new Toggler(2);
+
+    private static final double RADIUS_OF_WHEEL = 50;
+    private static final double CIRC_OF_WHEEL = RADIUS_OF_WHEEL * 2 * Math.PI;
+    private static final double ENCODER_TICKS_PER_REV = 1120;                                   //Neverest 40
+    private static final double GEAR_RATIO = 1;
+    private static final double ENCODER_TICKS_PER_MM = ENCODER_TICKS_PER_REV / (CIRC_OF_WHEEL * GEAR_RATIO);
+
+    private double[] encoderValues = {0.0, 0.0};
 
     public TileRunner (HardwareMap driveMap) {
 
@@ -36,6 +44,8 @@ public class TileRunner implements TankDrivetrain {
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
+
+
         orientationSwitch.setState(1);
 
     }
@@ -44,12 +54,12 @@ public class TileRunner implements TankDrivetrain {
     public void operateWithOrientation(double leftPower, double rightPower) {
         switch (orientationSwitch.currentState()) {
             case 0:
-                operateLeft(rightPower);
-                operateRight(leftPower);
+                operateLeft(-rightPower);
+                operateRight(-leftPower);
                 break;
             case 1:
-                operateLeft(-leftPower);
-                operateRight(-rightPower);
+                operateLeft(leftPower);
+                operateRight(rightPower);
                 break;
         }
     }
@@ -92,14 +102,43 @@ public class TileRunner implements TankDrivetrain {
         return orientationSwitch.currentState() == 0 ? "reversed" : "normal";
     }
 
-    @Override
-    public double[] getEncoderDistance() {
-        return new double[0];
+
+
+    public double getRightEncoderPosition()
+    {
+        /*double rightTotal = backRight.getCurrentPosition() + frontRight.getCurrentPosition();
+        return rightTotal * 0.5;*/
+        return frontRight.getCurrentPosition();
     }
+
+    public double getLeftEncoderPosition()
+    {
+        /*double leftTotal = backLeft.getCurrentPosition() +frontLeft.getCurrentPosition();
+        return leftTotal * 0.5;*/
+        return frontLeft.getCurrentPosition();
+    }
+
+    public double getEncoderPosition() {
+        double position = frontRight.getCurrentPosition() + frontLeft.getCurrentPosition() + backRight.getCurrentPosition() + backLeft.getCurrentPosition();
+        return position * 0.25;
+    }
+    public double[] getEncoderDelta()
+    {
+        double currentLeft = getLeftEncoderPosition();
+        double currentRight = getRightEncoderPosition();
+
+        double[] encoderDistances = {currentLeft - encoderValues[0], currentRight - encoderValues[1]};
+
+        encoderValues[0] = currentLeft;
+        encoderValues[1] = currentRight;
+
+        return encoderDistances;
+    }
+
 
     @Override
     public double encToMM(double encoderTicks) {
-        return 0;
+        return encoderTicks * (1/ENCODER_TICKS_PER_MM);
     }
 
     @Override

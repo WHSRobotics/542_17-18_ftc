@@ -10,7 +10,7 @@ import org.whs542.subsys.drivetrain.TankDrivetrain;
 /**
  * Created by ivanm on 11/4/2017.
  */
-@Autonomous(name = "IMU test", group = "tests")
+@Autonomous(name = "IMUTest", group = "tests")
 public class IMUTest extends OpMode {
 
     IMU imu;
@@ -27,17 +27,13 @@ public class IMUTest extends OpMode {
 
         double[] threeHeading = imu.getThreeHeading();
 
-        double accel = imu.getAccelerationMag();
 
-        String headingValue = String.valueOf(heading);
-        String accelValue = String.valueOf(accel);
 
-        telemetry.addData("Heading: ", headingValue);
-        telemetry.addData("Acceleration: ", accelValue);
+        telemetry.addData("Heading: ", heading);
 
-        if(gamepad1.x){
-            //imu.calibrateHeading();
-        }
+       /* if(gamepad1.x){
+            imu.();
+        }*/
 
         telemetry.addData("x", threeHeading[0]);
         telemetry.addData("y", threeHeading[1]);
