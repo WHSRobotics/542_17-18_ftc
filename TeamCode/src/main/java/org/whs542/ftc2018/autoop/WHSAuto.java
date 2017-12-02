@@ -1,5 +1,7 @@
 package org.whs542.ftc2018.autoop;
 
+import android.support.annotation.Nullable;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -49,8 +51,8 @@ public class WHSAuto extends OpMode {
     public void defineStateEnabledStatus() {
         stateEnabled[INIT] = true;
         stateEnabled[HIT_JEWEL] = true;
-        stateEnabled[DRIVE_INTO_SAFEZONE] = false;
-        stateEnabled[DRIVE_TO_BOX] = true;
+        stateEnabled[DRIVE_INTO_SAFEZONE] = true;
+        stateEnabled[DRIVE_TO_BOX] = false;
         stateEnabled[PLACE_GLYPH] = false;
         stateEnabled[END] = true;
     }
@@ -71,17 +73,25 @@ public class WHSAuto extends OpMode {
     SimpleTimer armDownToUpTimer = new SimpleTimer();
     SimpleTimer jewelDeadmanTimer = new SimpleTimer();
 
-    boolean isJewelAllianceColor;
+    SimpleTimer jankDriveTimer = new SimpleTimer();
+
+    //boolean isJewelAllianceColor;
+    enum JewelDetection {
+        MATCH, NOT_MATCH, ERROR
+    }
+    JewelDetection jewelDetection;
     boolean hasJewelBeenDetected;
 
     //Timing Constants
-    //TODO: actually set these
     static final double SWIVEL_STORING_DELAY = 0.75;
-    static final double JEWEL_KNOCK_DELAY = 0.55;
+    static final double JEWEL_KNOCK_DELAY = 0.75;
     static final double JEWEL_KNOCK_DELAY2 = 0.4;
     static final double ARM_FOLD_DELAY = 0.9;
     static final double JEWEL_DETECTION_DEADMAN = 2.0;
 
+    static final double JANK_DRIVE_DURATION = 4;
+
+    Position p;
 
     @Override
     public void init() {
@@ -95,7 +105,7 @@ public class WHSAuto extends OpMode {
         startingCoordinateArray[RED][CORNER] = new Coordinate(-1200, -1200, 150, 0); //lower right
         startingCoordinateArray[RED][OFF_CENTER] = new Coordinate(600, -1200, 150, 0); //upper right
         startingCoordinateArray[BLUE][CORNER] = new Coordinate(-1200, 1200, 150, 180); //lower left
-        startingCoordinateArray[BLUE][OFF_CENTER] = new Coordinate(600, 1200, 150, 0); //upper left
+        startingCoordinateArray[BLUE][OFF_CENTER] = new Coordinate(600, 1200, 150, 180); //upper left
 
         //safe zone positions array
         safeZonePositionsArray[RED][SAFEZONE_1] = new Position(-300, -1200, 150); //mid right
@@ -153,13 +163,13 @@ public class WHSAuto extends OpMode {
                      */
                     subStateDesc = "detecting jewel color";
                     if(robot.jewelPusher.getJewelColor() == JewelPusher.JewelColor.ERROR){
-                        //do nothing
+                        jewelDetection = JewelDetection.ERROR;
                     }
                     else if (robot.jewelPusher.getJewelColor().ordinal() == ALLIANCE) {
-                        isJewelAllianceColor = true;
+                        jewelDetection = JewelDetection.MATCH;
                         hasJewelBeenDetected = true;
                     } else {
-                        isJewelAllianceColor = false;
+                        jewelDetection = JewelDetection.NOT_MATCH;
                         hasJewelBeenDetected = true;
                     }
                     jewelKnockTimer.set(JEWEL_KNOCK_DELAY);
@@ -167,10 +177,10 @@ public class WHSAuto extends OpMode {
                 else if (!jewelKnockTimer.isExpired()) {
                     subStateDesc = "knocking jewel";
 
-                    if(isJewelAllianceColor){
+                    if(jewelDetection == JewelDetection.MATCH){
                         robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.RIGHT);
                     }
-                    else if (!isJewelAllianceColor) {
+                    else if (jewelDetection == JewelDetection.NOT_MATCH) {
                         robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.LEFT);
                     } else {
                         //do nothing
@@ -201,12 +211,19 @@ public class WHSAuto extends OpMode {
             case DRIVE_INTO_SAFEZONE:
                 currentStateDesc = "driving off platform into safe zone";
                 if(performStateEntry){
-                    robot.driveToTarget(safeZonePositionsArray[ALLIANCE][BALANCING_STONE]);
+
+                    if(ALLIANCE == RED){
+                        p = safeZonePositionsArray[RED][SAFEZONE_1];
+                    }
+                    if(ALLIANCE == BLUE){
+                        p = safeZonePositionsArray[BLUE][SAFEZONE_1];
+                    }
+                    robot.driveToTarget(p);
                     performStateEntry = false;
                 }
 
                 if(robot.driveToTargetInProgress()){
-                    robot.driveToTarget(safeZonePositionsArray[ALLIANCE][BALANCING_STONE]);
+                    robot.driveToTarget(p);
                 } else {
                     performStateExit = true;
                 }

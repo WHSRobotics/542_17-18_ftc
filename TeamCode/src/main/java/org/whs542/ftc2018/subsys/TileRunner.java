@@ -54,12 +54,12 @@ public class TileRunner implements TankDrivetrain {
     public void operateWithOrientation(double leftPower, double rightPower) {
         switch (orientationSwitch.currentState()) {
             case 0:
-                operateLeft(-rightPower);
-                operateRight(-leftPower);
+                operateLeft(-leftPower);
+                operateRight(-rightPower);
                 break;
             case 1:
-                operateLeft(leftPower);
-                operateRight(rightPower);
+                operateLeft(rightPower);
+                operateRight(leftPower);
                 break;
         }
     }
@@ -99,7 +99,7 @@ public class TileRunner implements TankDrivetrain {
 
     @Override
     public String getOrientation() {
-        return orientationSwitch.currentState() == 0 ? "reversed" : "normal";
+        return orientationSwitch.currentState() == 0 ? "normal" : "reversed";
     }
 
 
