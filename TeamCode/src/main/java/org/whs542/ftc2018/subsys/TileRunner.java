@@ -106,14 +106,16 @@ public class TileRunner implements TankDrivetrain {
 
     public double getRightEncoderPosition()
     {
-        double rightTotal = backRight.getCurrentPosition() + frontRight.getCurrentPosition();
-        return rightTotal * 0.5;
+        /*double rightTotal = backRight.getCurrentPosition() + frontRight.getCurrentPosition();
+        return rightTotal * 0.5;*/
+        return frontRight.getCurrentPosition();
     }
 
     public double getLeftEncoderPosition()
     {
-        double leftTotal = backLeft.getCurrentPosition() +frontLeft.getCurrentPosition();
-        return leftTotal * 0.5;
+        /*double leftTotal = backLeft.getCurrentPosition() +frontLeft.getCurrentPosition();
+        return leftTotal * 0.5;*/
+        return frontLeft.getCurrentPosition();
     }
 
     public double getEncoderPosition() {

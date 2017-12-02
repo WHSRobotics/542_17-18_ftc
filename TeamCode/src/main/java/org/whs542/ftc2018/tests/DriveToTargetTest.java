@@ -7,6 +7,7 @@ import org.whs542.ftc2018.subsys.WHSRobotImpl;
 import org.whs542.subsys.robot.WHSRobot;
 import org.whs542.util.Coordinate;
 import org.whs542.util.Position;
+import org.whs542.util.SimpleTimer;
 
 /**
  * Created by Amar2 on 11/15/2017.
@@ -45,8 +46,7 @@ public class DriveToTargetTest extends OpMode {
         telemetry.addData("BL Power", robot.drivetrain.backLeft.getPower());
         telemetry.addData("FR Power", robot.drivetrain.frontRight.getPower());
         telemetry.addData("BR Power", robot.drivetrain.backRight.getPower());
-        //Method currently not in WHSRobotImpl
-        // telemetry.addData("Distance to target", robot.distanceToTargetDebug);
+        telemetry.addData("Distance to target", robot.distanceToTargetDebug);
         telemetry.addData("BLdelta", robot.drivetrain.backLeft.getCurrentPosition());
         telemetry.addData("BRdelta", robot.drivetrain.backRight.getCurrentPosition());
         telemetry.addData("FLdelta", robot.drivetrain.frontLeft.getCurrentPosition());
