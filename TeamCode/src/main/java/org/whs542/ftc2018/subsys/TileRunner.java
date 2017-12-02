@@ -102,22 +102,7 @@ public class TileRunner implements TankDrivetrain {
         return orientationSwitch.currentState() == 0 ? "reversed" : "normal";
     }
 
-    public double getEncoderPosition() {
-        double position = frontRight.getCurrentPosition() + frontLeft.getCurrentPosition() + backRight.getCurrentPosition() + backLeft.getCurrentPosition();
-        return position * 0.25;
-    }
-    public double[] getEncoderDelta()
-    {
-        double currentLeft = getLeftEncoderPosition();
-        double currentRight = getRightEncoderPosition();
 
-        double[] encoderDistances = {currentLeft - encoderValues[0], currentRight - encoderValues[1]};
-
-        encoderValues[0] = currentLeft;
-        encoderValues[1] = currentRight;
-
-        return encoderDistances;
-    }
 
     public double getRightEncoderPosition()
     {
@@ -148,21 +133,6 @@ public class TileRunner implements TankDrivetrain {
         return encoderDistances;
     }
 
-    public double getRightEncoderPosition()
-    {
-        //double rightTotal = backRight.getCurrentPosition() + frontRight.getCurrentPosition();
-        //return rightTotal * 0.5;
-        return backRight.getCurrentPosition();
-
-    }
-
-    public double getLeftEncoderPosition()
-    {
-        //double leftTotal = backLeft.getCurrentPosition() +frontLeft.getCurrentPosition();
-        //return leftTotal * 0.5;
-        return backLeft.getCurrentPosition();
-
-    }
 
     @Override
     public double encToMM(double encoderTicks) {
