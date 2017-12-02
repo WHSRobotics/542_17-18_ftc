@@ -24,7 +24,7 @@ public class WHSAuto extends OpMode {
 
     static final int RED = 0;
     static final int BLUE = 1;
-    static final int ALLIANCE = BLUE;
+    static final int ALLIANCE = RED;
     static final int CORNER = 0;
     static final int OFF_CENTER = 1;
     static final int BALANCING_STONE = CORNER;
@@ -95,10 +95,10 @@ public class WHSAuto extends OpMode {
         startingCoordinateArray[BLUE][OFF_CENTER] = new Coordinate(600, 1200, 150, 0); //upper left
 
         //safe zone positions array
-        safeZonePositionsArray[RED][SAFEZONE_1] = new Position(-300, -1500, 150); //mid right
-        safeZonePositionsArray[RED][SAFEZONE_2] = new Position(1500, -900, 150); //upper right
-        safeZonePositionsArray[BLUE][SAFEZONE_1] = new Position(-300, 1500, 150); //mid left
-        safeZonePositionsArray[BLUE][SAFEZONE_2] = new Position(1500, 900, 150); //upper left
+        safeZonePositionsArray[RED][SAFEZONE_1] = new Position(-300, -1200, 150); //mid right
+        safeZonePositionsArray[RED][SAFEZONE_2] = new Position(1200, -900, 150); //upper right
+        safeZonePositionsArray[BLUE][SAFEZONE_1] = new Position(-300, 1200, 150); //mid left
+        safeZonePositionsArray[BLUE][SAFEZONE_2] = new Position(1200, 900, 150); //upper left
 
         defineStateEnabledStatus();
 
@@ -191,9 +191,22 @@ public class WHSAuto extends OpMode {
                 break;
             case DRIVE_INTO_SAFEZONE:
                 currentStateDesc = "driving off platform into safe zone";
-                //works because the starting positions array corresponds to the safezone positions array
-                robot.driveToTarget(safeZonePositionsArray[ALLIANCE][BALANCING_STONE]);
-                advanceState();
+                if(performStateEntry){
+                    robot.driveToTarget(safeZonePositionsArray[ALLIANCE][BALANCING_STONE]);
+                    performStateEntry = false;
+                }
+
+                if(robot.driveToTargetInProgress()){
+                    robot.driveToTarget(safeZonePositionsArray[ALLIANCE][BALANCING_STONE]);
+                } else {
+                    performStateExit = true;
+                }
+
+                if(performStateExit){
+                    performStateEntry = true;
+                    performStateExit = false;
+                    advanceState();
+                }
                 break;
             case DRIVE_TO_BOX:
                 currentStateDesc = "driving to box while scanning target";
@@ -214,6 +227,13 @@ public class WHSAuto extends OpMode {
         telemetry.addData("Current State Number:", currentState);
         telemetry.addData("Jewel Color:", robot.jewelPusher.getJewelColor());
         telemetry.addData("Jewel Matches Alliance?", robot.jewelPusher.getJewelColor().ordinal() == ALLIANCE);
+        telemetry.addData("DriveToTarget in progress: ", robot.driveToTargetInProgress());
+        telemetry.addData("RotateToTarget in progress: ", robot.rotateToTargetInProgress());
+        telemetry.addData("IMU", robot.imu.getHeading());
+        telemetry.addData("X", robot.getCoordinate().getX());
+        telemetry.addData("Y", robot.getCoordinate().getY());
+        telemetry.addData("Z", robot.getCoordinate().getZ());
+        telemetry.addData("Heading", robot.getCoordinate().getHeading());
     }
 
     public void advanceState() {
