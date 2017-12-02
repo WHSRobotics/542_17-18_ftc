@@ -178,7 +178,7 @@ public class WHSRobotImpl extends WHSRobot {
                 double encoderPosL = encoderValues[0];
                 double encoderPosR = encoderValues[1];
 
-                double encoderAvg = (encoderPosL + encoderPosR) * 0.5;
+                double encoderAvg = Math.abs((encoderPosL + encoderPosR) * 0.5);
 
                 double hdg = currentCoord.getHeading();
                 double dist = drivetrain.encToMM(encoderAvg);
