@@ -13,8 +13,8 @@ public class VLiftImpl implements VLift {
 
     private Servo leftLiftServo;
     private Servo rightLiftServo;
-    public static final double[] LEFT_LIFT_POSITIONS = {0.35, 0.7, 0.82}; //Down, middle, up
-    public static final double[] RIGHT_LIFT_POSITIONS = {0.6, 0.25, 0.13}; //Down, middle, up
+    public static final double[] LEFT_LIFT_POSITIONS = {0.28, 0.7, 0.82}; //Down, middle, up
+    public static final double[] RIGHT_LIFT_POSITIONS = {0.67, 0.25, 0.13}; //Down, middle, up
     private static final double GAMEPAD_THRESHOLD = 0.05;
 
 
