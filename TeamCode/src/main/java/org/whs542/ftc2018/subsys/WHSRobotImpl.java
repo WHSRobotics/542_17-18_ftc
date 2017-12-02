@@ -4,7 +4,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.whs542.subsys.drivetrain.TankDrivetrain;
+import org.whs542.subsys.fourbar.FourBar;
+import org.whs542.subsys.intake.Intake;
+import org.whs542.subsys.jewelpusher.JewelPusher;
 import org.whs542.subsys.robot.WHSRobot;
+import org.whs542.subsys.vlift.VLift;
 import org.whs542.util.Coordinate;
 import org.whs542.util.Functions;
 import org.whs542.util.Position;
@@ -18,6 +22,9 @@ public class WHSRobotImpl extends WHSRobot {
     public TileRunner drivetrain;
     public IMU imu;
     public VLift lift;
+    public Intake intake;
+    public FourBar fourBar;
+    public JewelPusher jewelPusher;
 
     Coordinate currentCoord;
     public double targetHeading; //field frame
