@@ -45,7 +45,12 @@ public class DriveToTargetTest extends OpMode {
         telemetry.addData("BL Power", robot.drivetrain.backLeft.getPower());
         telemetry.addData("FR Power", robot.drivetrain.frontRight.getPower());
         telemetry.addData("BR Power", robot.drivetrain.backRight.getPower());
-        telemetry.addData("Distance to target", robot.distanceToTargetDebug);
+        //Method currently not in WHSRobotImpl
+        // telemetry.addData("Distance to target", robot.distanceToTargetDebug);
+        telemetry.addData("BLdelta", robot.drivetrain.backLeft.getCurrentPosition());
+        telemetry.addData("BRdelta", robot.drivetrain.backRight.getCurrentPosition());
+        telemetry.addData("FLdelta", robot.drivetrain.frontLeft.getCurrentPosition());
+        telemetry.addData("FRdelta", robot.drivetrain.frontRight.getCurrentPosition());
 
     }
 }
