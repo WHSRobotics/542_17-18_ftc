@@ -35,6 +35,7 @@ public class WHSRobotImpl extends WHSRobot {
     private static final double[] DRIVE_TO_TARGET_THRESHOLD = {DEADBAND_DRIVE_TO_TARGET, 300, 600, 1200};
     private static final double[] ROTATE_TO_TARGET_POWER_LEVEL = {0.35, 0.6, 0.75};
     private static final double[] ROTATE_TO_TARGET_THRESHOLD = {DEADBAND_ROTATE_TO_TARGET, 45, 90};
+    private static final double ROTATE_TO_TARGET_BIAS = 3;
     private double rightMultiplier = 1.0;
     private int count = 0;
 
@@ -115,6 +116,8 @@ public class WHSRobotImpl extends WHSRobot {
 
     @Override
     public void rotateToTarget(double targetHeading) {
+        //targetHeading -= ROTATE_TO_TARGET_BIAS;
+
         double angleToTarget = targetHeading - currentCoord.getHeading();
         angleToTarget = Functions.normalizeAngle(angleToTarget); //-180 to 180 deg
 

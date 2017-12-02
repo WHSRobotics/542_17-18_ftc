@@ -21,15 +21,18 @@ public class WHSAuto extends OpMode {
     //coordinates and positions
     Coordinate[][] startingCoordinateArray = new Coordinate[2][2];
     Position[][] safeZonePositionsArray = new Position[2][2];
+    Position[][] boxPositionsArray = new Position[2][2];
 
     static final int RED = 0;
     static final int BLUE = 1;
-    static final int ALLIANCE = RED;
+    static final int ALLIANCE = BLUE;
     static final int CORNER = 0;
     static final int OFF_CENTER = 1;
-    static final int BALANCING_STONE = CORNER;
+    static final int BALANCING_STONE = OFF_CENTER;
     static final int SAFEZONE_1 = 0;
     static final int SAFEZONE_2 = 1;
+    static final int BOX_1 = 0;
+    static final int BOX_2 =  1;
 
     //State Definitions
     static final int INIT = 0;
@@ -46,8 +49,8 @@ public class WHSAuto extends OpMode {
     public void defineStateEnabledStatus() {
         stateEnabled[INIT] = true;
         stateEnabled[HIT_JEWEL] = true;
-        stateEnabled[DRIVE_INTO_SAFEZONE] = true;
-        stateEnabled[DRIVE_TO_BOX] = false;
+        stateEnabled[DRIVE_INTO_SAFEZONE] = false;
+        stateEnabled[DRIVE_TO_BOX] = true;
         stateEnabled[PLACE_GLYPH] = false;
         stateEnabled[END] = true;
     }
@@ -99,6 +102,12 @@ public class WHSAuto extends OpMode {
         safeZonePositionsArray[RED][SAFEZONE_2] = new Position(1200, -900, 150); //upper right
         safeZonePositionsArray[BLUE][SAFEZONE_1] = new Position(-300, 1200, 150); //mid left
         safeZonePositionsArray[BLUE][SAFEZONE_2] = new Position(1200, 900, 150); //upper left
+
+        //box positions array
+        boxPositionsArray[RED][BOX_1] = new Position(-300, -1500, 150); //mid right
+        boxPositionsArray[RED][BOX_2] = new Position(1500, -900, 150); //upper right
+        boxPositionsArray[BLUE][BOX_1] = new Position(-300, 1500, 150); //mid left
+        boxPositionsArray[BLUE][BOX_2] = new Position(1500, 900, 150); //upper left
 
         defineStateEnabledStatus();
 
@@ -210,7 +219,21 @@ public class WHSAuto extends OpMode {
                 break;
             case DRIVE_TO_BOX:
                 currentStateDesc = "driving to box while scanning target";
-                advanceState();
+                if (performStateEntry) {
+                    robot.driveToTarget(boxPositionsArray[ALLIANCE][BALANCING_STONE]);
+                }
+
+                if (robot.driveToTargetInProgress()) {
+                    robot.driveToTarget(boxPositionsArray[ALLIANCE][BALANCING_STONE]);
+                } else {
+                    performStateExit = true;
+                }
+
+                if (performStateExit) {
+                    performStateEntry = true;
+                    performStateExit = false;
+                    advanceState();
+                }
                 break;
             case PLACE_GLYPH:
                 currentStateDesc = "moving glyph";
