@@ -11,7 +11,6 @@ import org.whs542.util.Coordinate;
 import org.whs542.util.Functions;
 import org.whs542.util.Position;
 import org.whs542.util.SimpleTimer;
-import org.whs542.util.Timer;
 
 /**
  * Created by Jason on 11/03/2017.
@@ -29,10 +28,10 @@ public class WHSAuto extends OpMode {
 
     static final int RED = 0;
     static final int BLUE = 1;
-    static final int ALLIANCE = RED;
+    static final int ALLIANCE = BLUE;
     static final int CORNER = 0;
     static final int OFF_CENTER = 1;
-    static final int BALANCING_STONE = CORNER;
+    static final int BALANCING_STONE = OFF_CENTER;
     static final int SAFEZONE_1 = 0;
     static final int SAFEZONE_2 = 1;
     static final int BOX_1 = 0;
@@ -54,7 +53,7 @@ public class WHSAuto extends OpMode {
         stateEnabled[INIT] = true;
         stateEnabled[HIT_JEWEL] = true;
         stateEnabled[DRIVE_INTO_SAFEZONE] = true;
-        stateEnabled[DRIVE_TO_BOX] = false;
+        stateEnabled[DRIVE_TO_BOX] = true;
         stateEnabled[PLACE_GLYPH] = false;
         stateEnabled[END] = true;
     }
@@ -65,7 +64,6 @@ public class WHSAuto extends OpMode {
 
     boolean performStateEntry;
     boolean performStateExit;
-    boolean performStateMachineExit = false;
 
     //Timers
     SimpleTimer swivelStoreToMiddleTimer = new SimpleTimer();
@@ -78,10 +76,8 @@ public class WHSAuto extends OpMode {
     SimpleTimer drivetoBoxTimer = new SimpleTimer();
     SimpleTimer operateLiftTimer = new SimpleTimer();
     SimpleTimer driveAwayTimer = new SimpleTimer();
-    SimpleTimer rotateToCryptoTimer = new SimpleTimer();
 
     SimpleTimer jankDriveTimer = new SimpleTimer();
-
 
     //boolean isJewelAllianceColor;
     enum JewelDetection {
@@ -99,7 +95,6 @@ public class WHSAuto extends OpMode {
     static final double DRIVE_TO_BOX_DURATION = 1.25;
     static final double OPERATE_LIFT_DELAY = 1;
     static final double DRIVE_AWAY_DURATION = 1;
-    static final double ROTATE_TO_CRYPTO_DURATION = ((367/2* Math.PI) / 900 ) * 4;
 
     static final double JANK_DRIVE_DURATION = 4;
     boolean rotateToBoxComplete = false;
@@ -251,62 +246,36 @@ public class WHSAuto extends OpMode {
             case DRIVE_TO_BOX:
                 currentStateDesc = "driving to box while scanning target";
                 if (performStateEntry) {
-                    telemetry.log().add("DRIVE_TO_BOX, ");
-                    performStateExit = false;
-                    performStateExit = false;
-                    performStateExit = false;
-                    performStateEntry = false;
-                    performStateEntry = false;
-                    performStateEntry = false;
-
-                    //robot.rotateToTarget(h);
-                    rotateToCryptoTimer.set(ROTATE_TO_CRYPTO_DURATION);
-                    subStateDesc = "Entry";
-                }
-
-                if(!rotateToCryptoTimer.isExpired()){
                     if (ALLIANCE == RED) {
-                        robot.drivetrain.operate(.3, -.3);
-                        //h = Functions.normalizeAngle(270 - 3);
+                        h = Functions.normalizeAngle(270 - 3);
                     } else if (ALLIANCE == BLUE) {
-                        robot.drivetrain.operate(-.3, .3);
-                        //h = Functions.normalizeAngle(90 - 3);
+                        h = Functions.normalizeAngle(90 - 3);
                     }
+                    robot.rotateToTarget(h);
+                    performStateEntry = false;
                 }
 
-
-                /*if (!rotateToCryptoTimer.isExpired()) {
+                if (robot.rotateToTargetInProgress()) {
+                    robot.rotateToTarget(h);
                     drivetoBoxTimer.set(DRIVE_TO_BOX_DURATION);
-                    subStateDesc = "Rotating";
-                }
-
-                /*if (!robot.rotateToTargetInProgress() && rotateToCryptoTimer.isExpired() && !drivetoBoxTimer.isExpired()) {
-                    robot.drivetrain.operate(0, 0);
+                } else if (!drivetoBoxTimer.isExpired()) {
                     rotateToBoxComplete = true;
                     robot.drivetrain.operate(0.3, 0.3);
                     operateLiftTimer.set(OPERATE_LIFT_DELAY);
-                    subStateDesc = "Driving Forward to box";
-                } *//*else if (drivetoBoxTimer.isExpired() && !operateLiftTimer.isExpired()) {
-                    robot.drivetrain.operate(0, 0);
+                } else if (drivetoBoxTimer.isExpired() && !operateLiftTimer.isExpired()) {
                     robot.lift.operateLift(false, 1f);
                     driveAwayTimer.set(DRIVE_AWAY_DURATION);
-                    subStateDesc = "flipping v";
                 } else if (operateLiftTimer.isExpired() && !driveAwayTimer.isExpired()) {
                     robot.lift.operateLift(false, 1f);
-                    robot.drivetrain.operate(-0.3, -0.3);
-                    subStateDesc = "driving backwards";
-                }*/ /*if (driveAwayTimer.isExpired())*/ //{
-                if (rotateToCryptoTimer.isExpired()) {
+                    robot.drivetrain.operate(0.3, 0.3);
+                } else {
                     performStateExit = true;
                     robot.drivetrain.operate(0, 0);
-                    subStateDesc = "sorta exit";
                 }
 
                 if (performStateExit) {
-                    robot.drivetrain.operate(0, 0);
                     performStateEntry = true;
                     performStateExit = false;
-                    subStateDesc = "exit";
                     advanceState();
                 }
             case PLACE_GLYPH:
@@ -315,26 +284,9 @@ public class WHSAuto extends OpMode {
                 break;
             case END:
                 currentStateDesc = "hooray we made it!";
-                performStateMachineExit = true;
             default:
                 break;
         }
-
-        //LMAO THIS *SHOULD* WORK
-        /*if (performStateMachineExit) {
-            rotateToCryptoTimer.set(ROTATE_TO_CRYPTO_DURATION);
-
-            if (!rotateToCryptoTimer.isExpired()){
-                if (ALLIANCE == RED) {
-                    robot.drivetrain.operate(.3, -.3);
-                } else if (ALLIANCE == BLUE) {
-                    robot.drivetrain.operate(-.3, .3);
-                }
-            } else {
-                robot.drivetrain.operate(0, 0);
-            }
-
-        }*/
 
         //Logging the current state
         telemetry.addData("Current State", currentStateDesc + ", " + subStateDesc);
