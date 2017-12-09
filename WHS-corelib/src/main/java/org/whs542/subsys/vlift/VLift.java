@@ -10,5 +10,8 @@ public interface VLift {
 
     void operateLift(boolean gamepadInput1, float gamepadInput2);
 
+    void operateGate(double position);
+
+    void operateGate(boolean gamepadInput);
 
 }

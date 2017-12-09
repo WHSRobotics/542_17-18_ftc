@@ -52,7 +52,7 @@ public class WHSAuto extends OpMode {
         stateEnabled[INIT] = true;
         stateEnabled[HIT_JEWEL] = true;
         stateEnabled[DRIVE_INTO_SAFEZONE] = true;
-        stateEnabled[DRIVE_TO_BOX] = false;
+        stateEnabled[DRIVE_TO_BOX] = true;
         stateEnabled[PLACE_GLYPH] = false;
         stateEnabled[END] = true;
     }
