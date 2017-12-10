@@ -29,7 +29,7 @@ public class DriveToTargetTest extends OpMode {
 
     @Override
     public void loop() {
-        if(robot.driveToTargetInProgress()) {
+        if(robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
             robot.driveToTarget(new Position(1200, 0, 150));
         }
         robot.estimatePosition();
