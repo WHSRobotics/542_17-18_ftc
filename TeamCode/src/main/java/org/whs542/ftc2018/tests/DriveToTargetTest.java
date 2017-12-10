@@ -18,7 +18,7 @@ public class DriveToTargetTest extends OpMode {
     @Override
     public void init() {
         robot = new WHSRobotImpl(hardwareMap);
-        robot.setInitialCoordinate(new Coordinate(0, 0, 150, 0));
+        robot.setInitialCoordinate(new Coordinate(0, 0, 150, 90));
         telemetry.setMsTransmissionInterval(10);
     }
 

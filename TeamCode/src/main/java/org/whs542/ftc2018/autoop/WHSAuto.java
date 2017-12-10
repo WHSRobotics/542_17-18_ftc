@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.whs542.ftc2018.subsys.WHSRobotImpl;
 import org.whs542.subsys.jewelpusher.JewelPusher;
 import org.whs542.util.Coordinate;
+import org.whs542.util.Functions;
 import org.whs542.util.Position;
 import org.whs542.util.SimpleTimer;
 
@@ -72,8 +73,8 @@ public class WHSAuto extends OpMode {
     SimpleTimer armUpToDown = new SimpleTimer();
     SimpleTimer armDownToUpTimer = new SimpleTimer();
     SimpleTimer jewelDeadmanTimer = new SimpleTimer();
-
-    SimpleTimer jankDriveTimer = new SimpleTimer();
+    SimpleTimer operateLiftTimer = new SimpleTimer();
+    SimpleTimer driveAwayTimer = new SimpleTimer();
 
     //boolean isJewelAllianceColor;
     enum JewelDetection {
@@ -81,6 +82,7 @@ public class WHSAuto extends OpMode {
     }
     JewelDetection jewelDetection;
     boolean hasJewelBeenDetected;
+    boolean rotateToBoxComplete = false;
 
     //Timing Constants
     static final double SWIVEL_STORING_DELAY = 0.75;
@@ -88,10 +90,11 @@ public class WHSAuto extends OpMode {
     static final double JEWEL_KNOCK_DELAY2 = 0.4;
     static final double ARM_FOLD_DELAY = 0.9;
     static final double JEWEL_DETECTION_DEADMAN = 2.0;
-
-    static final double JANK_DRIVE_DURATION = 4;
+    static final double OPERATE_LIFT_DELAY = 1.0;
+    static final double DRIVE_AWAY_DURATION = 0.5;
 
     Position p;
+    double h;
 
     @Override
     public void init() {
@@ -114,10 +117,10 @@ public class WHSAuto extends OpMode {
         safeZonePositionsArray[BLUE][SAFEZONE_2] = new Position(1200, 900, 150); //upper left
 
         //box positions array
-        boxPositionsArray[RED][BOX_1] = new Position(-300, -1500, 150); //mid right
-        boxPositionsArray[RED][BOX_2] = new Position(1500, -900, 150); //upper right
-        boxPositionsArray[BLUE][BOX_1] = new Position(-300, 1500, 150); //mid left
-        boxPositionsArray[BLUE][BOX_2] = new Position(1500, 900, 150); //upper left
+        boxPositionsArray[RED][BOX_1] = new Position(-300, -1350, 150); //mid right
+        boxPositionsArray[RED][BOX_2] = new Position(1350, -900, 150); //upper right
+        boxPositionsArray[BLUE][BOX_1] = new Position(-300, 1350, 150); //mid left
+        boxPositionsArray[BLUE][BOX_2] = new Position(1350, 900, 150); //upper left
 
         defineStateEnabledStatus();
 
@@ -238,10 +241,18 @@ public class WHSAuto extends OpMode {
                 currentStateDesc = "driving to box while scanning target";
                 if (performStateEntry) {
                     robot.driveToTarget(boxPositionsArray[ALLIANCE][BALANCING_STONE]);
+                    performStateEntry = false;
                 }
 
-                if (robot.driveToTargetInProgress()) {
+                if (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
                     robot.driveToTarget(boxPositionsArray[ALLIANCE][BALANCING_STONE]);
+                    operateLiftTimer.set(OPERATE_LIFT_DELAY);
+                } else if (!operateLiftTimer.isExpired()) {
+                    robot.lift.operateLift(false, 1f);
+                    driveAwayTimer.set(DRIVE_AWAY_DURATION);
+                } else if (!driveAwayTimer.isExpired()) {
+                    robot.lift.operateLift(false, 1f);
+                    robot.drivetrain.operate(-0.3, -0.3);
                 } else {
                     performStateExit = true;
                 }
