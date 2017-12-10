@@ -258,6 +258,7 @@ public class WHSAuto extends OpMode {
                 }
 
                 if (performStateExit) {
+                    robot.drivetrain.operate(0.0, 0.0);
                     performStateEntry = true;
                     performStateExit = false;
                     advanceState();
@@ -268,7 +269,7 @@ public class WHSAuto extends OpMode {
                 advanceState();
                 break;
             case END:
-                currentStateDesc = "hooray we made it!";
+                currentStateDesc = "we made it?!";
             default:
                 break;
         }
