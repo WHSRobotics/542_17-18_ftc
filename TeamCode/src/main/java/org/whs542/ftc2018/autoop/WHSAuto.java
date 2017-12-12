@@ -117,9 +117,9 @@ public class WHSAuto extends OpMode {
         safeZonePositionsArray[BLUE][SAFEZONE_2] = new Position(1200, 900, 150); //upper left
 
         //box positions array
-        boxPositionsArray[RED][BOX_1] = new Position(-300, -1425, 150); //mid right
+        boxPositionsArray[RED][BOX_1] = new Position(-300, -1500, 150); //mid right
         boxPositionsArray[RED][BOX_2] = new Position(1425, -900, 150); //upper right
-        boxPositionsArray[BLUE][BOX_1] = new Position(-300, 1425, 150); //mid left
+        boxPositionsArray[BLUE][BOX_1] = new Position(-300, 1500, 150); //mid left
         boxPositionsArray[BLUE][BOX_2] = new Position(1425, 900, 150); //upper left
 
         defineStateEnabledStatus();
