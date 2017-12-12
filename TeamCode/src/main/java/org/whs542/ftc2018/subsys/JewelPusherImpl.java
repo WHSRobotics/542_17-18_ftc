@@ -16,7 +16,7 @@ public class JewelPusherImpl implements JewelPusher {
     //TODO: change these to actual values
 
     static final double[] ARM_POSITONS = {0.1, 0.71};               //UP, DOWN
-    static final double[] SWIVEL_POSITIONS = {0.165, 0.29, 0.535, 0.77, 0.22};     //STORED, LEFT, MIDDLE, RIGHT, END_STORED
+    static final double[] SWIVEL_POSITIONS = {0.115, 0.24, 0.485, 0.72, 0.17}; //{0.165, 0.29, 0.535, 0.77, 0.22};     //STORED, LEFT, MIDDLE, RIGHT, END_STORED
 
     public Color colorSensor;
     private static final double COLOR_SENSOR_THRESHOLD = 1.5;

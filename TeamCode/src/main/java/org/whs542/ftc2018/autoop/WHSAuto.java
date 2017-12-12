@@ -94,7 +94,7 @@ public class WHSAuto extends OpMode {
     static final double DRIVE_AWAY_DURATION = 0.5;
 
     Position p;
-    double h;
+    Position q;
 
     @Override
     public void init() {
@@ -117,10 +117,10 @@ public class WHSAuto extends OpMode {
         safeZonePositionsArray[BLUE][SAFEZONE_2] = new Position(1200, 900, 150); //upper left
 
         //box positions array
-        boxPositionsArray[RED][BOX_1] = new Position(-300, -1350, 150); //mid right
-        boxPositionsArray[RED][BOX_2] = new Position(1350, -900, 150); //upper right
-        boxPositionsArray[BLUE][BOX_1] = new Position(-300, 1350, 150); //mid left
-        boxPositionsArray[BLUE][BOX_2] = new Position(1350, 900, 150); //upper left
+        boxPositionsArray[RED][BOX_1] = new Position(-300, -1425, 150); //mid right
+        boxPositionsArray[RED][BOX_2] = new Position(1425, -900, 150); //upper right
+        boxPositionsArray[BLUE][BOX_1] = new Position(-300, 1425, 150); //mid left
+        boxPositionsArray[BLUE][BOX_2] = new Position(1425, 900, 150); //upper left
 
         defineStateEnabledStatus();
 
@@ -240,12 +240,18 @@ public class WHSAuto extends OpMode {
             case DRIVE_TO_BOX:
                 currentStateDesc = "driving to box while scanning target";
                 if (performStateEntry) {
-                    robot.driveToTarget(boxPositionsArray[ALLIANCE][BALANCING_STONE]);
+                    if(ALLIANCE == RED){
+                        q = boxPositionsArray[RED][BOX_1];
+                    }
+                    if(ALLIANCE == BLUE){
+                        q = boxPositionsArray[BLUE][BOX_1];
+                    }
+                    robot.driveToTarget(q);
                     performStateEntry = false;
                 }
 
                 if (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
-                    robot.driveToTarget(boxPositionsArray[ALLIANCE][BALANCING_STONE]);
+                    robot.driveToTarget(q);
                     operateLiftTimer.set(OPERATE_LIFT_DELAY);
                 } else if (!operateLiftTimer.isExpired()) {
                     robot.lift.operateLift(false, 1f);

@@ -30,8 +30,8 @@ public class WHSRobotImpl extends WHSRobot {
     public double targetHeading; //field frame
 
     private static final double DEADBAND_DRIVE_TO_TARGET = 110; //in mm
-    private static final double DEADBAND_ROTATE_TO_TARGET = 1.5; //in degrees
-    private static final double[] DRIVE_TO_TARGET_POWER_LEVEL = {0.4, 0.4, 0.4, 0.4};
+    private static final double DEADBAND_ROTATE_TO_TARGET = 1.75; //in degrees
+    private static final double[] DRIVE_TO_TARGET_POWER_LEVEL = {0.33, 0.6, 0.7, 0.9};
     private static final double[] DRIVE_TO_TARGET_THRESHOLD = {DEADBAND_DRIVE_TO_TARGET, 300, 600, 1200};
     private static final double[] ROTATE_TO_TARGET_POWER_LEVEL = {0.35, 0.6, 0.75};
     private static final double[] ROTATE_TO_TARGET_THRESHOLD = {DEADBAND_ROTATE_TO_TARGET, 45, 90};
@@ -79,7 +79,7 @@ public class WHSRobotImpl extends WHSRobot {
         }
         else {
 
-            /*if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[3]) {
+            if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[3]) {
                 drivetrain.operateRight(DRIVE_TO_TARGET_POWER_LEVEL[3]);
                 drivetrain.operateLeft(DRIVE_TO_TARGET_POWER_LEVEL[3]);
                 driveToTargetInProgress = true;
@@ -98,12 +98,12 @@ public class WHSRobotImpl extends WHSRobot {
                 drivetrain.operateRight(DRIVE_TO_TARGET_POWER_LEVEL[0]);
                 drivetrain.operateLeft(DRIVE_TO_TARGET_POWER_LEVEL[0]);
                 driveToTargetInProgress = true;
-            }*/
-            if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[0]){
+            }
+            /*if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[0]){
                 drivetrain.operateLeft(0.4);
                 drivetrain.operateRight(0.4);
                 driveToTargetInProgress = true;
-            }
+            }*/
             else {
                 drivetrain.operateRight(0.0);
                 drivetrain.operateLeft(0.0);
