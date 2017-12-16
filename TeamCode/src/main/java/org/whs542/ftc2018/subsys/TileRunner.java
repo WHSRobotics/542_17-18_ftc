@@ -45,8 +45,7 @@ public class TileRunner implements TankDrivetrain, MotorSubsystem{
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        
+
         orientationSwitch.setState(1);
 
     }

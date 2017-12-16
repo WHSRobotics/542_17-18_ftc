@@ -14,7 +14,7 @@ public class VLiftImpl implements VLift {
     private Servo leftLiftServo;
     private Servo rightLiftServo;
     //TODO: change phone configs and get actual gate positions
-    private Servo gateServo;
+    //private Servo gateServo;
     public static final double[] LEFT_LIFT_POSITIONS = {0.28, 0.7, 0.82}; //Down, middle, up
     public static final double[] RIGHT_LIFT_POSITIONS = {0.67, 0.25, 0.13}; //Down, middle, up
     public static final double[] GATE_POSITIONS = {0.0, 1.0}; //Closed, open
@@ -49,18 +49,6 @@ public class VLiftImpl implements VLift {
         }
     }
 
-    @Override
-    public void operateGate(double position) {
-        gateServo.setPosition(position);
-    }
 
-    @Override
-    public void operateGate(boolean gamepadInput) {
-        if (gamepadInput) {
-            gateServo.setPosition(GATE_POSITIONS[1]);
-        }
-        else {
-            gateServo.setPosition(GATE_POSITIONS[0]);
-        }
-    }
+
 }
