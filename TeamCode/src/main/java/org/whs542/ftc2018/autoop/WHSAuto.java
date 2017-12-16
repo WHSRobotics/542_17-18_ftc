@@ -1,14 +1,12 @@
 package org.whs542.ftc2018.autoop;
 
-import android.support.annotation.Nullable;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.whs542.ftc2018.subsys.WHSRobotImpl;
 import org.whs542.subsys.jewelpusher.JewelPusher;
 import org.whs542.util.Coordinate;
-import org.whs542.util.Functions;
 import org.whs542.util.Position;
 import org.whs542.util.SimpleTimer;
 
@@ -23,7 +21,7 @@ public class WHSAuto extends OpMode {
 
     //coordinates and positions
     Coordinate[][] startingCoordinateArray = new Coordinate[2][2];
-    Position[][] safeZonePositionsArray = new Position[2][2];
+    Position[][][] safeZonePositionsArray = new Position[2][2][3];
     Position[][] boxPositionsArray = new Position[2][2];
 
     static final int RED = 0;
@@ -36,22 +34,27 @@ public class WHSAuto extends OpMode {
     static final int SAFEZONE_2 = 1;
     static final int BOX_1 = 0;
     static final int BOX_2 =  1;
+    static final int LEFT = 0;
+    static final int CENTER = 1;
+    static final int RIGHT = 2;
 
     //State Definitions
     static final int INIT = 0;
     static final int HIT_JEWEL = 1;
-    static final int DRIVE_INTO_SAFEZONE = 2;
-    static final int DRIVE_TO_BOX = 3;
-    static final int SECURE_GLYPH = 4;
-    static final int END = 5;
+    static final int DRIVE_TO_VUFORIA = 2;
+    static final int DRIVE_INTO_SAFEZONE = 3;
+    static final int DRIVE_TO_BOX = 4;
+    static final int SECURE_GLYPH = 5;
+    static final int END = 6;
 
-    static final int NUM_OF_STATES = 6;
+    static final int NUM_OF_STATES = 7;
 
     boolean[] stateEnabled = new boolean[NUM_OF_STATES];
 
     public void defineStateEnabledStatus() {
         stateEnabled[INIT] = true;
         stateEnabled[HIT_JEWEL] = true;
+        stateEnabled[DRIVE_TO_VUFORIA] = true;
         stateEnabled[DRIVE_INTO_SAFEZONE] = true;
         stateEnabled[DRIVE_TO_BOX] = true;
         stateEnabled[SECURE_GLYPH] = true;
@@ -77,14 +80,18 @@ public class WHSAuto extends OpMode {
     SimpleTimer driveAwayTimer = new SimpleTimer();
     SimpleTimer driveInTimer = new SimpleTimer();
     SimpleTimer driveOutTimer = new SimpleTimer();
+    SimpleTimer vuforiaDriveTimer = new SimpleTimer();
+    SimpleTimer vuforiaDetectionDeadmanTimer = new SimpleTimer();
 
     //boolean isJewelAllianceColor;
     enum JewelDetection {
         MATCH, NOT_MATCH, ERROR
     }
     JewelDetection jewelDetection;
-    boolean hasJewelBeenDetected;
+    boolean hasTargetBeenDetected;
     boolean rotateToBoxComplete = false;
+
+    RelicRecoveryVuMark vuforiaReading = RelicRecoveryVuMark.UNKNOWN;
 
     //Timing Constants
     static final double SWIVEL_STORING_DELAY = 0.75;
@@ -94,11 +101,15 @@ public class WHSAuto extends OpMode {
     static final double JEWEL_DETECTION_DEADMAN = 2.0;
     static final double OPERATE_LIFT_DELAY = 1.0;
     static final double DRIVE_AWAY_DURATION = 1.2;
+    static final double VUFORIA_DRIVE_DURATION = 1.7;
+    static final double VUFORIA_DETECTION_DEADMAN = 5.42;
 
     //jank variables :)
     Position p;
     Position q;
     private double x;
+
+    boolean hasVuforiaBeenDetected;
 
     @Override
     public void init() {
@@ -115,10 +126,15 @@ public class WHSAuto extends OpMode {
         startingCoordinateArray[BLUE][OFF_CENTER] = new Coordinate(600, 1200, 150, 180); //upper left
 
         //safe zone positions array
-        safeZonePositionsArray[RED][SAFEZONE_1] = new Position(-350, -1200, 150); //mid right
-        safeZonePositionsArray[RED][SAFEZONE_2] = new Position(1200, -900, 150); //upper right
-        safeZonePositionsArray[BLUE][SAFEZONE_1] = new Position(-250, 1200, 150); //mid left
-        safeZonePositionsArray[BLUE][SAFEZONE_2] = new Position(1200, 900, 150); //upper left
+        //mid right:
+        safeZonePositionsArray[RED][SAFEZONE_1][LEFT] = new Position(-158, -1200, 150);
+        safeZonePositionsArray[RED][SAFEZONE_1][CENTER] = new Position(-350, -1200, 150);
+        safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-542, -1200, 150); //542!
+        safeZonePositionsArray[RED][SAFEZONE_2][CENTER] = new Position(1200, -900, 150); //upper right
+        safeZonePositionsArray[BLUE][SAFEZONE_1][LEFT] = new Position(-442, 1200, 150); //mid left
+        safeZonePositionsArray[BLUE][SAFEZONE_1][CENTER] = new Position(-250, 1200, 150); //mid left
+        safeZonePositionsArray[BLUE][SAFEZONE_1][RIGHT] = new Position(-58, 1200, 150); //mid left
+        safeZonePositionsArray[BLUE][SAFEZONE_2][CENTER] = new Position(1200, 900, 150); //upper left
 
         //box positions array
         boxPositionsArray[RED][BOX_1] = new Position(-350, -1400, 150); //mid right
@@ -151,7 +167,7 @@ public class WHSAuto extends OpMode {
                 if (performStateEntry) {
                     swivelStoreToMiddleTimer.set(SWIVEL_STORING_DELAY);
                     performStateEntry = false;
-                    hasJewelBeenDetected = false;
+                    hasTargetBeenDetected = false;
                     subStateDesc = "entry";
                 }
                 if(!swivelStoreToMiddleTimer.isExpired()){
@@ -164,7 +180,7 @@ public class WHSAuto extends OpMode {
                     jewelDeadmanTimer.set(JEWEL_DETECTION_DEADMAN);
                     subStateDesc = "arm up to down";
                 }
-                else if (!hasJewelBeenDetected & !jewelDeadmanTimer.isExpired()) {
+                else if (!hasTargetBeenDetected & !jewelDeadmanTimer.isExpired()) {
                     /*checks if the color detected to the left of the swivel (assuming the color sensor is mounted on the left)
                     **matches the alliance, and if so, swings left, otherwise swings right
                      */
@@ -174,10 +190,10 @@ public class WHSAuto extends OpMode {
                     }
                     else if (robot.jewelPusher.getJewelColor().ordinal() == ALLIANCE) {
                         jewelDetection = JewelDetection.MATCH;
-                        hasJewelBeenDetected = true;
+                        hasTargetBeenDetected = true;
                     } else {
                         jewelDetection = JewelDetection.NOT_MATCH;
-                        hasJewelBeenDetected = true;
+                        hasTargetBeenDetected = true;
                     }
                     jewelKnockTimer.set(JEWEL_KNOCK_DELAY);
                 }
@@ -215,15 +231,64 @@ public class WHSAuto extends OpMode {
                     advanceState();
                 }
                 break;
+            case DRIVE_TO_VUFORIA:
+                currentStateDesc = "driving to and stopping to scan vuforia";
+                if(performStateEntry){
+                    vuforiaDriveTimer.set(VUFORIA_DRIVE_DURATION);
+                    performStateEntry = false;
+                    hasTargetBeenDetected = false;
+                }
+
+                if(!vuforiaDriveTimer.isExpired()){
+                    if(ALLIANCE == RED) {
+                        robot.drivetrain.operate(0.08, 0.08);
+                    }
+                    else if(ALLIANCE == BLUE){
+                        robot.drivetrain.operate(-0.08, -0.08);
+                    }
+                    vuforiaDetectionDeadmanTimer.set(VUFORIA_DETECTION_DEADMAN);
+                }
+                else if (!vuforiaDetectionDeadmanTimer.isExpired() || hasTargetBeenDetected){
+                    robot.drivetrain.operate(0.0, 0.0);
+                    vuforiaReading = robot.vuforia.getVuforiaReading();
+                    if(vuforiaReading != RelicRecoveryVuMark.UNKNOWN){
+                        vuforiaReading = robot.vuforia.getVuforiaReading();
+                        hasTargetBeenDetected = true;
+                    }
+                }
+                else {
+                    performStateExit = true;
+                }
+
+
+                if(performStateExit){
+                    performStateEntry = true;
+                    performStateExit = false;
+                    advanceState();
+                }
+                break;
             case DRIVE_INTO_SAFEZONE:
                 currentStateDesc = "driving off platform into safe zone";
                 if(performStateEntry){
+                    int column = 0;
+                    switch (vuforiaReading){
+                        case LEFT:
+                            column = LEFT;
+                        case CENTER:
+                            column = CENTER;
+                        case RIGHT:
+                            column = RIGHT;
+                        case UNKNOWN:
+                            column = CENTER;
+                        default:
+                            column = CENTER;
+                    }
 
                     if(ALLIANCE == RED){
-                        p = safeZonePositionsArray[RED][SAFEZONE_1];
+                        p = safeZonePositionsArray[RED][SAFEZONE_1][column];
                     }
                     if(ALLIANCE == BLUE){
-                        p = safeZonePositionsArray[BLUE][SAFEZONE_1];
+                        p = safeZonePositionsArray[BLUE][SAFEZONE_1][column];
                     }
                     robot.driveToTarget(p);
                     performStateEntry = false;

@@ -25,7 +25,7 @@ public class WHSRobotImpl implements WHSRobot {
     public RollerIntake intake;
     public FourBarImpl fourBar;
     public JewelPusherImpl jewelPusher;
-
+    public Vuforia vuforia;
     Coordinate currentCoord;
     public double targetHeading; //field frame
 
@@ -51,6 +51,7 @@ public class WHSRobotImpl implements WHSRobot {
         imu = new IMU(hardwareMap);
 
         lift = new VLiftImpl(hardwareMap);
+        vuforia = new Vuforia(hardwareMap);
 
     }
 
@@ -187,7 +188,7 @@ public class WHSRobotImpl implements WHSRobot {
             estimatedPos = currentCoord.getPos();
         }
         else {
-            if (driveToTargetInProgress & !rotateToTargetInProgress) {
+            if (/*driveToTargetInProgress & */!rotateToTargetInProgress) {
                 double[] encoderValues = drivetrain.getEncoderDelta();
                 double encoderPosL = encoderValues[0];
                 double encoderPosR = encoderValues[1];
