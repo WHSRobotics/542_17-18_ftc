@@ -42,7 +42,7 @@ public class WHSAuto extends OpMode {
     static final int HIT_JEWEL = 1;
     static final int DRIVE_INTO_SAFEZONE = 2;
     static final int DRIVE_TO_BOX = 3;
-    static final int PLACE_GLYPH = 4;
+    static final int SECURE_GLYPH = 4;
     static final int END = 5;
 
     static final int NUM_OF_STATES = 6;
@@ -54,7 +54,7 @@ public class WHSAuto extends OpMode {
         stateEnabled[HIT_JEWEL] = true;
         stateEnabled[DRIVE_INTO_SAFEZONE] = true;
         stateEnabled[DRIVE_TO_BOX] = true;
-        stateEnabled[PLACE_GLYPH] = false;
+        stateEnabled[SECURE_GLYPH] = true;
         stateEnabled[END] = true;
     }
 
@@ -75,6 +75,8 @@ public class WHSAuto extends OpMode {
     SimpleTimer jewelDeadmanTimer = new SimpleTimer();
     SimpleTimer operateLiftTimer = new SimpleTimer();
     SimpleTimer driveAwayTimer = new SimpleTimer();
+    SimpleTimer driveInTimer = new SimpleTimer();
+    SimpleTimer driveOutTimer = new SimpleTimer();
 
     //boolean isJewelAllianceColor;
     enum JewelDetection {
@@ -91,10 +93,12 @@ public class WHSAuto extends OpMode {
     static final double ARM_FOLD_DELAY = 0.9;
     static final double JEWEL_DETECTION_DEADMAN = 2.0;
     static final double OPERATE_LIFT_DELAY = 1.0;
-    static final double DRIVE_AWAY_DURATION = 0.5;
+    static final double DRIVE_AWAY_DURATION = 1.2;
 
+    //jank variables :)
     Position p;
     Position q;
+    private double x;
 
     @Override
     public void init() {
@@ -111,16 +115,16 @@ public class WHSAuto extends OpMode {
         startingCoordinateArray[BLUE][OFF_CENTER] = new Coordinate(600, 1200, 150, 180); //upper left
 
         //safe zone positions array
-        safeZonePositionsArray[RED][SAFEZONE_1] = new Position(-300, -1200, 150); //mid right
+        safeZonePositionsArray[RED][SAFEZONE_1] = new Position(-350, -1200, 150); //mid right
         safeZonePositionsArray[RED][SAFEZONE_2] = new Position(1200, -900, 150); //upper right
-        safeZonePositionsArray[BLUE][SAFEZONE_1] = new Position(-300, 1200, 150); //mid left
+        safeZonePositionsArray[BLUE][SAFEZONE_1] = new Position(-250, 1200, 150); //mid left
         safeZonePositionsArray[BLUE][SAFEZONE_2] = new Position(1200, 900, 150); //upper left
 
         //box positions array
-        boxPositionsArray[RED][BOX_1] = new Position(-300, -1500, 150); //mid right
-        boxPositionsArray[RED][BOX_2] = new Position(1425, -900, 150); //upper right
-        boxPositionsArray[BLUE][BOX_1] = new Position(-300, 1500, 150); //mid left
-        boxPositionsArray[BLUE][BOX_2] = new Position(1425, 900, 150); //upper left
+        boxPositionsArray[RED][BOX_1] = new Position(-350, -1400, 150); //mid right
+        boxPositionsArray[RED][BOX_2] = new Position(1400, -900, 150); //upper right
+        boxPositionsArray[BLUE][BOX_1] = new Position(-250, 1400, 150); //mid left
+        boxPositionsArray[BLUE][BOX_2] = new Position(1400, 900, 150); //upper left
 
         defineStateEnabledStatus();
 
@@ -240,25 +244,27 @@ public class WHSAuto extends OpMode {
             case DRIVE_TO_BOX:
                 currentStateDesc = "driving to box while scanning target";
                 if (performStateEntry) {
+                    x = robot.getCoordinate().getX();
                     if(ALLIANCE == RED){
                         q = boxPositionsArray[RED][BOX_1];
                     }
                     if(ALLIANCE == BLUE){
                         q = boxPositionsArray[BLUE][BOX_1];
                     }
-                    robot.driveToTarget(q);
+                    robot.driveToTarget(new Position(x, q.getY(), 150));
                     performStateEntry = false;
                 }
 
                 if (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
-                    robot.driveToTarget(q);
+                    robot.driveToTarget(new Position(x, q.getY(), 150));
                     operateLiftTimer.set(OPERATE_LIFT_DELAY);
                 } else if (!operateLiftTimer.isExpired()) {
+                    subStateDesc = "placing glyph";
                     robot.lift.operateLift(false, 1f);
-                    driveAwayTimer.set(DRIVE_AWAY_DURATION);
+                    driveAwayTimer.set(DRIVE_AWAY_DURATION*2.0);
                 } else if (!driveAwayTimer.isExpired()) {
                     robot.lift.operateLift(false, 1f);
-                    robot.drivetrain.operate(-0.3, -0.3);
+                    robot.drivetrain.operate(-0.15, -0.15);
                 } else {
                     performStateExit = true;
                 }
@@ -270,9 +276,31 @@ public class WHSAuto extends OpMode {
                     advanceState();
                 }
                 break;
-            case PLACE_GLYPH:
-                currentStateDesc = "moving glyph";
-                advanceState();
+            case SECURE_GLYPH:
+                currentStateDesc = "securing glyph";
+                if (performStateEntry) {
+                    robot.lift.operateLift(false, 0f);
+                    driveInTimer.set(DRIVE_AWAY_DURATION);
+                    performStateEntry = false;
+                }
+
+                if (!driveInTimer.isExpired()) {
+                    robot.drivetrain.operate(0.3, 0.3);
+                    driveOutTimer.set(DRIVE_AWAY_DURATION/3.0);
+                }
+                else if (!driveOutTimer.isExpired()) {
+                    robot.drivetrain.operate(-0.3, -0.3);
+                }
+                else {
+                    robot.drivetrain.operate(0, 0);
+                    performStateExit = true;
+                }
+
+                if (performStateExit) {
+                    performStateExit = false;
+                    performStateEntry = true;
+                    advanceState();
+                }
                 break;
             case END:
                 currentStateDesc = "we made it?!";
