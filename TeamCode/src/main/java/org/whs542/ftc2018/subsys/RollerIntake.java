@@ -1,5 +1,6 @@
 package org.whs542.ftc2018.subsys;
 
+import org.whs542.subsys.MotorSubsystem;
 import org.whs542.subsys.intake.Intake;
 import org.whs542.util.Toggler;
 
@@ -11,7 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * Created by Jason on 10/20/2017.
  */
 
-public class RollerIntake implements Intake {
+public class RollerIntake implements Intake, MotorSubsystem {
 
     private DcMotor intakeMotor;
     private static final double INTAKE_POWER = 1.0;
@@ -20,6 +21,7 @@ public class RollerIntake implements Intake {
     private static final double GAMEPAD_THRESHOLD = 0.05;
 
     public RollerIntake(HardwareMap intakeMap) {
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor = intakeMap.dcMotor.get("intake");
     }
 
@@ -65,6 +67,11 @@ public class RollerIntake implements Intake {
     @Override
     public void operate(double power) {
         intakeMotor.setPower(power);
+    }
+
+    @Override
+    public void setRunMode(DcMotor.RunMode runMode) {
+        intakeMotor.setMode(runMode);
     }
 
 }

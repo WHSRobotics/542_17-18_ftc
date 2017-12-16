@@ -2,6 +2,7 @@ package org.whs542.ftc2018.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.whs542.ftc2018.subsys.JewelPusherImpl;
 import org.whs542.ftc2018.subsys.WHSRobotImpl;
@@ -41,5 +42,14 @@ public class WHSTeleOp extends OpMode {
 
 
     }
+
+    @Override
+    public void stop(){
+        robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.intake.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.fourBar.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+    }
+
 
 }

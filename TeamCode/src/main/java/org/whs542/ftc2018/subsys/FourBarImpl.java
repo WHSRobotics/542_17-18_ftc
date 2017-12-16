@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.whs542.subsys.MotorSubsystem;
 import org.whs542.subsys.fourbar.FourBar;
 import org.whs542.util.Toggler;
 
@@ -11,7 +12,7 @@ import org.whs542.util.Toggler;
  * Created by Jason on 10/20/2017.
  */
 
-public class FourBarImpl implements FourBar {
+public class FourBarImpl implements FourBar , MotorSubsystem{
 
     private DcMotor leftMotor;
     private DcMotor rightMotor;
@@ -102,5 +103,11 @@ public class FourBarImpl implements FourBar {
     public double[] fourBarTargetPositions() {
         double[] targetPositions = {leftMotor.getTargetPosition(), rightMotor.getTargetPosition()};
         return  targetPositions;
+    }
+
+    @Override
+    public void setRunMode(DcMotor.RunMode runMode) {
+        leftMotor.setMode(runMode);
+        rightMotor.setMode(runMode);
     }
 }

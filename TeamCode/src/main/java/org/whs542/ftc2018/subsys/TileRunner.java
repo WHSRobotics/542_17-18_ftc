@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.whs542.subsys.MotorSubsystem;
 import org.whs542.subsys.drivetrain.TankDrivetrain;
 import org.whs542.util.Toggler;
 
@@ -12,7 +13,7 @@ import org.whs542.util.Toggler;
  * Created by Jason on 10/20/2017.
  */
 
-public class TileRunner implements TankDrivetrain {
+public class TileRunner implements TankDrivetrain, MotorSubsystem{
 
     public DcMotor frontLeft;
     public DcMotor frontRight;
@@ -44,8 +45,8 @@ public class TileRunner implements TankDrivetrain {
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-
-
+        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        
         orientationSwitch.setState(1);
 
     }

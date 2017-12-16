@@ -17,14 +17,14 @@ import org.whs542.util.Position;
  * Created by Jason on 10/20/2017.
  */
 
-public class WHSRobotImpl extends WHSRobot {
+public class WHSRobotImpl implements WHSRobot {
 
     public TileRunner drivetrain;
     public IMU imu;
-    public VLift lift;
-    public Intake intake;
-    public FourBar fourBar;
-    public JewelPusher jewelPusher;
+    public VLiftImpl lift;
+    public RollerIntake intake;
+    public FourBarImpl fourBar;
+    public JewelPusherImpl jewelPusher;
 
     Coordinate currentCoord;
     public double targetHeading; //field frame
