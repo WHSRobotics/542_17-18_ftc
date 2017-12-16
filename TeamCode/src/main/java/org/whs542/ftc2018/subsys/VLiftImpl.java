@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.whs542.subsys.vlift.VLift;
+import org.whs542.util.SimpleTimer;
 
 /**
  * Created by ivanm on 11/1/2017.
@@ -19,6 +20,8 @@ public class VLiftImpl implements VLift {
     public static final double[] RIGHT_LIFT_POSITIONS = {0.67, 0.25, 0.13}; //Down, middle, up
     public static final double[] GATE_POSITIONS = {0.0, 1.0}; //Closed, open
     private static final double GAMEPAD_THRESHOLD = 0.05;
+    private static final double JIGGLE_DURATION = 0.1;
+    SimpleTimer jiggleTimer = new SimpleTimer();
 
 
     public VLiftImpl(HardwareMap liftMap) {
@@ -49,6 +52,18 @@ public class VLiftImpl implements VLift {
         }
     }
 
-
+    @Override
+    public void operateJiggle(boolean gamepadInput1) {
+        if (gamepadInput1) {
+            if (jiggleTimer.isExpired()) {
+                jiggleTimer.set(JIGGLE_DURATION);
+                leftLiftServo.setPosition(LEFT_LIFT_POSITIONS[0]);
+                rightLiftServo.setPosition(RIGHT_LIFT_POSITIONS[0]);
+            } else {
+                leftLiftServo.setPosition(LEFT_LIFT_POSITIONS[0] + 0.1);
+                rightLiftServo.setPosition(RIGHT_LIFT_POSITIONS[0] - 0.1);
+            }
+        }
+    }
 
 }
