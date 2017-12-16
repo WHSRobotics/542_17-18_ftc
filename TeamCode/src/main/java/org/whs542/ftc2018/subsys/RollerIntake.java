@@ -21,8 +21,8 @@ public class RollerIntake implements Intake, MotorSubsystem {
     private static final double GAMEPAD_THRESHOLD = 0.05;
 
     public RollerIntake(HardwareMap intakeMap) {
-        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor = intakeMap.dcMotor.get("intake");
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void operateWithToggle(double gamepadInput) {
