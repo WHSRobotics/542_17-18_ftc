@@ -88,10 +88,12 @@ public class WHSAuto extends OpMode {
         MATCH, NOT_MATCH, ERROR
     }
     JewelDetection jewelDetection;
-    boolean hasTargetBeenDetected;
+    boolean hasJewelBeenDetected;
     boolean rotateToBoxComplete = false;
 
+    boolean hasTargetBeenDetected;
     RelicRecoveryVuMark vuforiaReading = RelicRecoveryVuMark.UNKNOWN;
+    int column = 0;
 
     //Timing Constants
     static final double SWIVEL_STORING_DELAY = 0.75;
@@ -101,7 +103,7 @@ public class WHSAuto extends OpMode {
     static final double JEWEL_DETECTION_DEADMAN = 2.0;
     static final double OPERATE_LIFT_DELAY = 1.0;
     static final double DRIVE_AWAY_DURATION = 1.2;
-    static final double VUFORIA_DRIVE_DURATION = 1.7;
+    static final double VUFORIA_DRIVE_DURATION = 1.6;
     static final double VUFORIA_DETECTION_DEADMAN = 5.42;
 
     //jank variables :)
@@ -109,7 +111,6 @@ public class WHSAuto extends OpMode {
     Position q;
     private double x;
 
-    boolean hasVuforiaBeenDetected;
 
     @Override
     public void init() {
@@ -167,7 +168,7 @@ public class WHSAuto extends OpMode {
                 if (performStateEntry) {
                     swivelStoreToMiddleTimer.set(SWIVEL_STORING_DELAY);
                     performStateEntry = false;
-                    hasTargetBeenDetected = false;
+                    hasJewelBeenDetected = false;
                     subStateDesc = "entry";
                 }
                 if(!swivelStoreToMiddleTimer.isExpired()){
@@ -180,7 +181,7 @@ public class WHSAuto extends OpMode {
                     jewelDeadmanTimer.set(JEWEL_DETECTION_DEADMAN);
                     subStateDesc = "arm up to down";
                 }
-                else if (!hasTargetBeenDetected & !jewelDeadmanTimer.isExpired()) {
+                else if (!hasJewelBeenDetected & !jewelDeadmanTimer.isExpired()) {
                     /*checks if the color detected to the left of the swivel (assuming the color sensor is mounted on the left)
                     **matches the alliance, and if so, swings left, otherwise swings right
                      */
@@ -190,10 +191,10 @@ public class WHSAuto extends OpMode {
                     }
                     else if (robot.jewelPusher.getJewelColor().ordinal() == ALLIANCE) {
                         jewelDetection = JewelDetection.MATCH;
-                        hasTargetBeenDetected = true;
+                        hasJewelBeenDetected = true;
                     } else {
                         jewelDetection = JewelDetection.NOT_MATCH;
-                        hasTargetBeenDetected = true;
+                        hasJewelBeenDetected = true;
                     }
                     jewelKnockTimer.set(JEWEL_KNOCK_DELAY);
                 }
@@ -241,14 +242,14 @@ public class WHSAuto extends OpMode {
 
                 if(!vuforiaDriveTimer.isExpired()){
                     if(ALLIANCE == RED) {
-                        robot.drivetrain.operate(0.08, 0.08);
+                        robot.drivetrain.operate(0.12, 0.12);
                     }
                     else if(ALLIANCE == BLUE){
-                        robot.drivetrain.operate(-0.08, -0.08);
+                        robot.drivetrain.operate(-0.12, -0.12);
                     }
                     vuforiaDetectionDeadmanTimer.set(VUFORIA_DETECTION_DEADMAN);
                 }
-                else if (!vuforiaDetectionDeadmanTimer.isExpired() || hasTargetBeenDetected){
+                else if (!hasTargetBeenDetected && !vuforiaDetectionDeadmanTimer.isExpired()){
                     robot.drivetrain.operate(0.0, 0.0);
                     vuforiaReading = robot.vuforia.getVuforiaReading();
                     if(vuforiaReading != RelicRecoveryVuMark.UNKNOWN){
@@ -270,7 +271,6 @@ public class WHSAuto extends OpMode {
             case DRIVE_INTO_SAFEZONE:
                 currentStateDesc = "driving off platform into safe zone";
                 if(performStateEntry){
-                    int column = 0;
                     switch (vuforiaReading){
                         case LEFT:
                             column = LEFT;
@@ -307,7 +307,7 @@ public class WHSAuto extends OpMode {
                 }
                 break;
             case DRIVE_TO_BOX:
-                currentStateDesc = "driving to box while scanning target";
+                currentStateDesc = "driving to box";
                 if (performStateEntry) {
                     x = robot.getCoordinate().getX();
                     if(ALLIANCE == RED){
@@ -380,6 +380,8 @@ public class WHSAuto extends OpMode {
         telemetry.addData("Jewel Matches Alliance?", robot.jewelPusher.getJewelColor().ordinal() == ALLIANCE);
         telemetry.addData("DriveToTarget in progress: ", robot.driveToTargetInProgress());
         telemetry.addData("RotateToTarget in progress: ", robot.rotateToTargetInProgress());
+        telemetry.addData("Column: ", column);
+        telemetry.addData("Vuforia Reading: ", vuforiaReading);
         telemetry.addData("IMU", robot.imu.getHeading());
         telemetry.addData("X", robot.getCoordinate().getX());
         telemetry.addData("Y", robot.getCoordinate().getY());
