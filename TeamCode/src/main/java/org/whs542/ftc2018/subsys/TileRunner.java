@@ -66,8 +66,8 @@ public class TileRunner implements TankDrivetrain, MotorSubsystem{
 
     @Override
     public void operateWithOrientationScaled(double leftPower, double rightPower) {
-        double rightScaledPower = Math.pow(rightPower, 3);
         double leftScaledPower = Math.pow(leftPower, 3);
+        double rightScaledPower = Math.pow(rightPower, 3);
 
         operateWithOrientation(leftScaledPower, rightScaledPower);
     }
