@@ -2,6 +2,7 @@ package org.whs542.ftc2018.autoop;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.whs542.ftc2018.subsys.WHSRobotImpl;
@@ -103,10 +104,10 @@ public class WHSAuto extends OpMode {
     static final double JEWEL_DETECTION_DEADMAN = 2.0;
     static final double OPERATE_LIFT_DELAY = 1.0;
     static final double DRIVE_AWAY_DURATION = 1.2;
-    static final double VUFORIA_DRIVE_DURATION = 1.6;
+    static final double VUFORIA_DRIVE_DURATION = 2.00;
     static final double VUFORIA_DETECTION_DEADMAN = 5.42;
 
-    //jank variables :)
+    //jank variables :(
     Position p;
     Position q;
     private double x;
@@ -238,14 +239,15 @@ public class WHSAuto extends OpMode {
                     vuforiaDriveTimer.set(VUFORIA_DRIVE_DURATION);
                     performStateEntry = false;
                     hasTargetBeenDetected = false;
+                    robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 }
 
                 if(!vuforiaDriveTimer.isExpired()){
                     if(ALLIANCE == RED) {
-                        robot.drivetrain.operate(0.12, 0.12);
+                        robot.drivetrain.operate(0.10, 0.10);
                     }
                     else if(ALLIANCE == BLUE){
-                        robot.drivetrain.operate(-0.12, -0.12);
+                        robot.drivetrain.operate(-0.10, -0.10);
                     }
                     vuforiaDetectionDeadmanTimer.set(VUFORIA_DETECTION_DEADMAN);
                 }
@@ -263,6 +265,7 @@ public class WHSAuto extends OpMode {
 
 
                 if(performStateExit){
+                    robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     performStateEntry = true;
                     performStateExit = false;
                     advanceState();
