@@ -28,15 +28,17 @@ public class WHSRobotImpl implements WHSRobot {
 
     Coordinate currentCoord;
     public double targetHeading; //field frame
-
+    public double angleToTarget;
     private static final double DEADBAND_DRIVE_TO_TARGET = 110; //in mm
     private static final double DEADBAND_ROTATE_TO_TARGET = 1.75; //in degrees
     private static final double[] DRIVE_TO_TARGET_POWER_LEVEL = {0.33, 0.4, 0.45, 0.5}; //{0.33, 0.6, 0.7, 0.9};
     private static final double[] DRIVE_TO_TARGET_THRESHOLD = {DEADBAND_DRIVE_TO_TARGET, 300, 600, 1200};
     private static final double[] ROTATE_TO_TARGET_POWER_LEVEL = {0.35, 0.6, 0.75};
-    private static final double[] ROTATE_TO_TARGET_THRESHOLD = {DEADBAND_ROTATE_TO_TARGET, 45, 90};
+    private static final double[] ROTATE_TO_TARGET_THRESHOLD = {DEADBAND_ROTATE_TO_TARGET, 30, 60};
     private double rightMultiplier = 1.0;
     private int count = 0;
+
+    public int targetQuadrant;
 
     public boolean rotateToTargetInProgress;
     public boolean driveToTargetInProgress;
@@ -76,7 +78,7 @@ public class WHSRobotImpl implements WHSRobot {
         if (rotateToTargetInProgress) {
             //if rotating, do nothing
         }
-        else {
+        else if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[0]) {
 
             if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[3]) {
                 drivetrain.operateRight(DRIVE_TO_TARGET_POWER_LEVEL[3]);
@@ -98,11 +100,36 @@ public class WHSRobotImpl implements WHSRobot {
                 drivetrain.operateLeft(DRIVE_TO_TARGET_POWER_LEVEL[0]);
                 driveToTargetInProgress = true;
             }
-            /*if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[0]){
-                drivetrain.operateLeft(0.4);
-                drivetrain.operateRight(0.4);
+            else {
+                drivetrain.operateRight(0.0);
+                drivetrain.operateLeft(0.0);
+                driveToTargetInProgress = false;
+                rotateToTargetInProgress = false;
+                count = 0;
+            }
+        }
+        else if (distanceToTarget < -DRIVE_TO_TARGET_THRESHOLD[0]) {
+
+            if (distanceToTarget < -DRIVE_TO_TARGET_THRESHOLD[3]) {
+                drivetrain.operateRight(-DRIVE_TO_TARGET_POWER_LEVEL[3]);
+                drivetrain.operateLeft(-DRIVE_TO_TARGET_POWER_LEVEL[3]);
                 driveToTargetInProgress = true;
-            }*/
+            }
+            else if (distanceToTarget < -DRIVE_TO_TARGET_THRESHOLD[2]) {
+                drivetrain.operateRight(-DRIVE_TO_TARGET_POWER_LEVEL[2]);
+                drivetrain.operateLeft(-DRIVE_TO_TARGET_POWER_LEVEL[2]);
+                driveToTargetInProgress = true;
+            }
+            else if (distanceToTarget < -DRIVE_TO_TARGET_THRESHOLD[1]) {
+                drivetrain.operateRight(-DRIVE_TO_TARGET_POWER_LEVEL[1]);
+                drivetrain.operateLeft(-DRIVE_TO_TARGET_POWER_LEVEL[1]);
+                driveToTargetInProgress = true;
+            }
+            else if (distanceToTarget < -DRIVE_TO_TARGET_THRESHOLD[0]) {
+                drivetrain.operateRight(-DRIVE_TO_TARGET_POWER_LEVEL[0]);
+                drivetrain.operateLeft(-DRIVE_TO_TARGET_POWER_LEVEL[0]);
+                driveToTargetInProgress = true;
+            }
             else {
                 drivetrain.operateRight(0.0);
                 drivetrain.operateLeft(0.0);
@@ -116,49 +143,108 @@ public class WHSRobotImpl implements WHSRobot {
     @Override
     public void rotateToTarget(double targetHeading) {
 
-        double angleToTarget = targetHeading - currentCoord.getHeading();
+        /*double*/ angleToTarget = targetHeading - currentCoord.getHeading();
         angleToTarget = Functions.normalizeAngle(angleToTarget); //-180 to 180 deg
 
         //drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        if(angleToTarget<-DEADBAND_ROTATE_TO_TARGET)
-        {
+        if(angleToTarget < -90) {
 
-            if(angleToTarget < -ROTATE_TO_TARGET_THRESHOLD[2]){
-                drivetrain.operateLeft(ROTATE_TO_TARGET_POWER_LEVEL[2]);
-                drivetrain.operateRight(-ROTATE_TO_TARGET_POWER_LEVEL[2]);
-                rotateToTargetInProgress = true;
-            }
-            else if(angleToTarget < -ROTATE_TO_TARGET_THRESHOLD[1]){
-                drivetrain.operateLeft(ROTATE_TO_TARGET_POWER_LEVEL[1]);
-                drivetrain.operateRight(-ROTATE_TO_TARGET_POWER_LEVEL[1]);
-                rotateToTargetInProgress = true;
-            } else if(angleToTarget < -ROTATE_TO_TARGET_THRESHOLD[0]){
-                drivetrain.operateLeft(ROTATE_TO_TARGET_POWER_LEVEL[0]);
-                drivetrain.operateRight(-ROTATE_TO_TARGET_POWER_LEVEL[0]);
-                rotateToTargetInProgress = true;
-            }
-
-        }
-        else if(angleToTarget>DEADBAND_ROTATE_TO_TARGET)
-        {
-            if(angleToTarget > ROTATE_TO_TARGET_THRESHOLD[2]){
+            targetQuadrant = 3;
+            if(angleToTarget < -(90+ROTATE_TO_TARGET_THRESHOLD[2])) {
                 drivetrain.operateLeft(-ROTATE_TO_TARGET_POWER_LEVEL[2]);
                 drivetrain.operateRight(ROTATE_TO_TARGET_POWER_LEVEL[2]);
                 rotateToTargetInProgress = true;
             }
-            else if (angleToTarget > ROTATE_TO_TARGET_THRESHOLD[1]){
+            else if(angleToTarget < -(90+ROTATE_TO_TARGET_THRESHOLD[1])) {
                 drivetrain.operateLeft(-ROTATE_TO_TARGET_POWER_LEVEL[1]);
                 drivetrain.operateRight(ROTATE_TO_TARGET_POWER_LEVEL[1]);
                 rotateToTargetInProgress = true;
             }
-            else if (angleToTarget > ROTATE_TO_TARGET_THRESHOLD[0]){
+            else if(angleToTarget < -(90+ROTATE_TO_TARGET_THRESHOLD[0])) {
                 drivetrain.operateLeft(-ROTATE_TO_TARGET_POWER_LEVEL[0]);
                 drivetrain.operateRight(ROTATE_TO_TARGET_POWER_LEVEL[0]);
                 rotateToTargetInProgress = true;
             }
+            else {
+                drivetrain.operateLeft(0.0);
+                drivetrain.operateRight(0.0);
+                rotateToTargetInProgress = false;
+            }
         }
-        else{
+        else if (angleToTarget < -DEADBAND_ROTATE_TO_TARGET) {
+
+            targetQuadrant = 4;
+            if(angleToTarget < -ROTATE_TO_TARGET_THRESHOLD[2]) {
+                drivetrain.operateLeft(ROTATE_TO_TARGET_POWER_LEVEL[2]);
+                drivetrain.operateRight(-ROTATE_TO_TARGET_POWER_LEVEL[2]);
+                rotateToTargetInProgress = true;
+            }
+            else if (angleToTarget < -ROTATE_TO_TARGET_THRESHOLD[1]) {
+                drivetrain.operateLeft(ROTATE_TO_TARGET_POWER_LEVEL[1]);
+                drivetrain.operateRight(-ROTATE_TO_TARGET_POWER_LEVEL[1]);
+                rotateToTargetInProgress = true;
+            }
+            else if (angleToTarget < -ROTATE_TO_TARGET_THRESHOLD[0]) {
+                drivetrain.operateLeft(ROTATE_TO_TARGET_POWER_LEVEL[0]);
+                drivetrain.operateRight(-ROTATE_TO_TARGET_POWER_LEVEL[0]);
+                rotateToTargetInProgress = true;
+            }
+            else {
+                drivetrain.operateLeft(0.0);
+                drivetrain.operateRight(0.0);
+                rotateToTargetInProgress = false;
+            }
+        }
+        else if (angleToTarget > 90) {
+
+            targetQuadrant = 2;
+            if (angleToTarget > (90+ROTATE_TO_TARGET_THRESHOLD[2])) {
+                drivetrain.operateLeft(ROTATE_TO_TARGET_POWER_LEVEL[2]);
+                drivetrain.operateRight(-ROTATE_TO_TARGET_POWER_LEVEL[2]);
+                rotateToTargetInProgress = true;
+            }
+            else if (angleToTarget > (90+ROTATE_TO_TARGET_THRESHOLD[1])) {
+                drivetrain.operateLeft(ROTATE_TO_TARGET_POWER_LEVEL[1]);
+                drivetrain.operateRight(-ROTATE_TO_TARGET_POWER_LEVEL[1]);
+                rotateToTargetInProgress = true;
+            }
+            else if (angleToTarget > (90+ROTATE_TO_TARGET_THRESHOLD[0])) {
+                drivetrain.operateLeft(ROTATE_TO_TARGET_POWER_LEVEL[0]);
+                drivetrain.operateRight(-ROTATE_TO_TARGET_POWER_LEVEL[0]);
+                rotateToTargetInProgress = true;
+            }
+            else {
+                drivetrain.operateLeft(0.0);
+                drivetrain.operateRight(0.0);
+                rotateToTargetInProgress = false;
+            }
+        }
+        else if (angleToTarget > DEADBAND_DRIVE_TO_TARGET) {
+
+            targetQuadrant = 1;
+            if(angleToTarget > ROTATE_TO_TARGET_THRESHOLD[2]) {
+                drivetrain.operateLeft(-ROTATE_TO_TARGET_POWER_LEVEL[2]);
+                drivetrain.operateRight(ROTATE_TO_TARGET_POWER_LEVEL[2]);
+                rotateToTargetInProgress = true;
+            }
+            else if (angleToTarget > ROTATE_TO_TARGET_THRESHOLD[1]) {
+                drivetrain.operateLeft(-ROTATE_TO_TARGET_POWER_LEVEL[1]);
+                drivetrain.operateRight(ROTATE_TO_TARGET_POWER_LEVEL[1]);
+                rotateToTargetInProgress = true;
+            }
+            else if (angleToTarget > ROTATE_TO_TARGET_THRESHOLD[0]) {
+                drivetrain.operateLeft(-ROTATE_TO_TARGET_POWER_LEVEL[0]);
+                drivetrain.operateRight(ROTATE_TO_TARGET_POWER_LEVEL[0]);
+                rotateToTargetInProgress = true;
+            }
+            else {
+                drivetrain.operateLeft(0.0);
+                drivetrain.operateRight(0.0);
+                rotateToTargetInProgress = false;
+            }
+        }
+        else {
             drivetrain.operateLeft(0.0);
             drivetrain.operateRight(0.0);
             rotateToTargetInProgress = false;

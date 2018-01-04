@@ -18,23 +18,25 @@ public class DriveToTargetTest extends OpMode {
     @Override
     public void init() {
         robot = new WHSRobotImpl(hardwareMap);
-        robot.setInitialCoordinate(new Coordinate(0, 0, 150, 90));
+        robot.setInitialCoordinate(new Coordinate(0, 0, 150, 0));
         telemetry.setMsTransmissionInterval(10);
     }
 
     @Override
     public void start(){
-        robot.driveToTarget(new Position(1200, 0, 150));
+        robot.driveToTarget(new Position(-600, 600, 150));
     }
 
     @Override
     public void loop() {
         if(robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
-            robot.driveToTarget(new Position(1200, 0, 150));
+            robot.driveToTarget(new Position(-600, 600, 150));
         }
         robot.estimatePosition();
         robot.estimateHeading();
 
+        telemetry.addData("Target Quadrant: ", robot.targetQuadrant);
+        telemetry.addData("Angle to Target: ", robot.angleToTarget);
         telemetry.addData("DriveToTarget in progress: ", robot.driveToTargetInProgress());
         telemetry.addData("RotateToTarget in progress: ", robot.rotateToTargetInProgress());
         telemetry.addData("IMU", robot.imu.getHeading());
