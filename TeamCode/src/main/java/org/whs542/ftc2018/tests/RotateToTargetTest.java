@@ -22,13 +22,13 @@ public class RotateToTargetTest extends OpMode {
 
     @Override
     public void start(){
-        robot.rotateToTarget(90);
+        robot.rotateToTarget(135, true);
     }
 
     @Override
     public void loop() {
         if(robot.rotateToTargetInProgress()) {
-            robot.rotateToTarget(90);
+            robot.rotateToTarget(135, true);
         }
         robot.estimatePosition();
         robot.estimateHeading();
