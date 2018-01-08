@@ -139,6 +139,13 @@ public class WHSRobotImpl implements WHSRobot {
                 count = 0;
             }
         }
+        else {
+                drivetrain.operateRight(0.0);
+                drivetrain.operateLeft(0.0);
+                driveToTargetInProgress = false;
+                rotateToTargetInProgress = false;
+                count = 0;
+        }
     }
 
     @Override
