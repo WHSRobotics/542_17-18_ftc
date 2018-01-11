@@ -104,7 +104,7 @@ public class WHSAuto extends OpMode {
     static final double JEWEL_DETECTION_DEADMAN = 2.0;
     static final double OPERATE_LIFT_DELAY = 1.0;
     static final double DRIVE_AWAY_DURATION = 1.2;
-    static final double VUFORIA_DRIVE_DURATION = 2.00;
+    static final double VUFORIA_DRIVE_DURATION = 2.5;
     static final double VUFORIA_DETECTION_DEADMAN = 5.42;
 
     //jank variables :(
@@ -129,9 +129,9 @@ public class WHSAuto extends OpMode {
 
         //safe zone positions array
         //mid right:
-        safeZonePositionsArray[RED][SAFEZONE_1][LEFT] = new Position(-158, -1200, 150);
+        safeZonePositionsArray[RED][SAFEZONE_1][LEFT] = new Position(/*-158*/100, -1200, 150);
         safeZonePositionsArray[RED][SAFEZONE_1][CENTER] = new Position(-350, -1200, 150);
-        safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-542, -1200, 150); //542!
+        safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-270, -1200, 150); //542!
         safeZonePositionsArray[RED][SAFEZONE_2][CENTER] = new Position(1200, -900, 150); //upper right
         safeZonePositionsArray[BLUE][SAFEZONE_1][LEFT] = new Position(-442, 1200, 150); //mid left
         safeZonePositionsArray[BLUE][SAFEZONE_1][CENTER] = new Position(-250, 1200, 150); //mid left
@@ -244,10 +244,20 @@ public class WHSAuto extends OpMode {
 
                 if(!vuforiaDriveTimer.isExpired()){
                     if(ALLIANCE == RED) {
-                        robot.drivetrain.operate(0.10, 0.10);
+                        robot.drivetrain.operate(0.15, 0.15);
+                        vuforiaReading = robot.vuforia.getVuforiaReading();
+                        if(vuforiaReading != RelicRecoveryVuMark.UNKNOWN){
+                            vuforiaReading = robot.vuforia.getVuforiaReading();
+                            hasTargetBeenDetected = true;
+                        }
                     }
                     else if(ALLIANCE == BLUE){
-                        robot.drivetrain.operate(-0.10, -0.10);
+                        robot.drivetrain.operate(-0.15, -0.15);
+                        vuforiaReading = robot.vuforia.getVuforiaReading();
+                        if(vuforiaReading != RelicRecoveryVuMark.UNKNOWN){
+                            vuforiaReading = robot.vuforia.getVuforiaReading();
+                            hasTargetBeenDetected = true;
+                        }
                     }
                     vuforiaDetectionDeadmanTimer.set(VUFORIA_DETECTION_DEADMAN);
                 }
@@ -329,7 +339,7 @@ public class WHSAuto extends OpMode {
                 } else if (!operateLiftTimer.isExpired()) {
                     subStateDesc = "placing glyph";
                     robot.lift.operateLift(false, 1f);
-                    driveAwayTimer.set(DRIVE_AWAY_DURATION*2.0);
+                    driveAwayTimer.set(DRIVE_AWAY_DURATION*2.1);
                 } else if (!driveAwayTimer.isExpired()) {
                     robot.lift.operateLift(false, 1f);
                     robot.drivetrain.operate(-0.15, -0.15);
