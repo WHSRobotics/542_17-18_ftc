@@ -33,13 +33,11 @@ public class WHSRobotImpl implements WHSRobot {
     private static final double DEADBAND_ROTATE_TO_TARGET = 1.75; //in degrees
     private static final double[] DRIVE_TO_TARGET_POWER_LEVEL = {0.33, 0.4, 0.45, 0.5}; //{0.33, 0.6, 0.7, 0.9};
     private static final double[] DRIVE_TO_TARGET_THRESHOLD = {DEADBAND_DRIVE_TO_TARGET, 300, 600, 1200};
-    private static final double[] ROTATE_TO_TARGET_POWER_LEVEL = {0.25, 0.35, 0.5};
+    private static final double[] ROTATE_TO_TARGET_POWER_LEVEL = {0.22, 0.35, 0.5};
     private static final double[] ROTATE_TO_TARGET_THRESHOLD = {DEADBAND_ROTATE_TO_TARGET, 30, 60};
     private double rightMultiplier = 1.0;
     private int count = 0;
     private boolean driveBackwards;
-
-    public int targetQuadrant;
 
     public boolean rotateToTargetInProgress;
     public boolean driveToTargetInProgress;
@@ -79,7 +77,7 @@ public class WHSRobotImpl implements WHSRobot {
         if (rotateToTargetInProgress) {
             //if rotating, do nothing
         }
-        else if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[0] && !driveBackwards) {
+        else if (!driveBackwards) {
 
             if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[3]) {
                 drivetrain.operateRight(DRIVE_TO_TARGET_POWER_LEVEL[3]);
@@ -101,15 +99,8 @@ public class WHSRobotImpl implements WHSRobot {
                 drivetrain.operateLeft(DRIVE_TO_TARGET_POWER_LEVEL[0]);
                 driveToTargetInProgress = true;
             }
-            else {
-                drivetrain.operateRight(0.0);
-                drivetrain.operateLeft(0.0);
-                driveToTargetInProgress = false;
-                rotateToTargetInProgress = false;
-                count = 0;
-            }
         }
-        else if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[0] && driveBackwards) {
+        else if (driveBackwards) {
 
             if (distanceToTarget > DRIVE_TO_TARGET_THRESHOLD[3]) {
                 drivetrain.operateRight(-DRIVE_TO_TARGET_POWER_LEVEL[3]);
@@ -130,13 +121,6 @@ public class WHSRobotImpl implements WHSRobot {
                 drivetrain.operateRight(-DRIVE_TO_TARGET_POWER_LEVEL[0]);
                 drivetrain.operateLeft(-DRIVE_TO_TARGET_POWER_LEVEL[0]);
                 driveToTargetInProgress = true;
-            }
-            else {
-                drivetrain.operateRight(0.0);
-                drivetrain.operateLeft(0.0);
-                driveToTargetInProgress = false;
-                rotateToTargetInProgress = false;
-                count = 0;
             }
         }
         else {

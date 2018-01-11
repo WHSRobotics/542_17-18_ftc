@@ -35,7 +35,6 @@ public class DriveToTargetTest extends OpMode {
         robot.estimatePosition();
         robot.estimateHeading();
 
-        telemetry.addData("Target Quadrant: ", robot.targetQuadrant);
         telemetry.addData("Angle to Target: ", robot.angleToTargetDebug);
         telemetry.addData("DriveToTarget in progress: ", robot.driveToTargetInProgress());
         telemetry.addData("RotateToTarget in progress: ", robot.rotateToTargetInProgress());
