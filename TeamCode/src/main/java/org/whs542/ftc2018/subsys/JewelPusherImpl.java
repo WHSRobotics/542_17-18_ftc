@@ -24,7 +24,7 @@ public class JewelPusherImpl implements JewelPusher {
     public JewelPusherImpl(HardwareMap jewelMap) {
         armServo = jewelMap.servo.get("armServo");
         swivelServo = jewelMap.servo.get("swivelServo");
-        jewelSensor = new Color(jewelMap);
+        jewelSensor = new Color(jewelMap, "jewelSensor");
     }
 
     @Override

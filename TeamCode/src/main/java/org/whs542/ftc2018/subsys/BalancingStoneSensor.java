@@ -8,21 +8,25 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  */
 
 public class BalancingStoneSensor {
-    ColorSensor balancingStoneSensor;
-    boolean ledOn = true;
-    String state = "";
+    Color balancingStoneSensor;
 
-    public BalancingStoneSensor(HardwareMap colorMap) {
+    public BalancingStoneSensor(HardwareMap balanceMap) {
 
-        balancingStoneSensor = colorMap.colorSensor.get("jewelSensor");
+        balancingStoneSensor = new Color(balanceMap, "balancingStoneSensor");
 
-        // Set the LED in the beginning
-        balancingStoneSensor.enableLed(ledOn);
     }
 
-        public int getR() {return balancingStoneSensor.red();}
-        public int getG() {return balancingStoneSensor.green();}
-        public int getB() {return balancingStoneSensor.blue();}
-        public int getA() {return balancingStoneSensor.alpha();}
+    public boolean balancingStoneDetected (int alliance) {
+        if (alliance == 0 && (balancingStoneSensor.getR()/balancingStoneSensor.getB() > 1.4)) {
+            return true;
+        }
+        //TODO: test threshold for blue balancing stone
+        else if (alliance == 1 && (balancingStoneSensor.getB()/balancingStoneSensor.getR() > 1.4)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
 }

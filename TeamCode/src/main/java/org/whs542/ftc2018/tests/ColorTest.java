@@ -3,6 +3,7 @@ package org.whs542.ftc2018.tests;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.whs542.ftc2018.subsys.BalancingStoneSensor;
 import org.whs542.ftc2018.subsys.Color;
 
 /**
@@ -12,17 +13,23 @@ import org.whs542.ftc2018.subsys.Color;
 public class ColorTest extends OpMode{
 
 
-    Color colorSensor;
+    Color jewelSensor;
+    Color balancingStoneSensor;
 
     @Override
     public void init() {
-        colorSensor = new Color(hardwareMap);
+        jewelSensor = new Color(hardwareMap, "jewelSensor");
+        balancingStoneSensor = new Color(hardwareMap, "balancingStoneSensor");
     }
 
     @Override
     public void loop() {
-        telemetry.addData("Color Sensor Red: ", colorSensor.getR());
-        telemetry.addData("Color Sensor Blue: ", colorSensor.getB());
-        telemetry.addData("Color Sensor Green: ", colorSensor.getG());
+        telemetry.addData("Jewel Sensor Red: ", jewelSensor.getR());
+        telemetry.addData("Jewel Sensor Blue: ", jewelSensor.getB());
+        telemetry.addData("Jewel Sensor Green: ", jewelSensor.getG());
+
+        telemetry.addData("Balancing Stone Sensor Red: ", balancingStoneSensor.getR());
+        telemetry.addData("Balancing Stone Sensor Blue: ", balancingStoneSensor.getB());
+        telemetry.addData("Balancing Stone Sensor Green: ", balancingStoneSensor.getG());
     }
 }
