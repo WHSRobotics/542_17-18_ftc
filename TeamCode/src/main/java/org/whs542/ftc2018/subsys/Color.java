@@ -15,7 +15,7 @@ public class Color {
 
     public Color(HardwareMap colorMap) {
 
-        colorSensor = colorMap.colorSensor.get("colorSensor");
+        colorSensor = colorMap.colorSensor.get("jewelSensor");
 
         // Set the LED in the beginning
         colorSensor.enableLed(ledOn);

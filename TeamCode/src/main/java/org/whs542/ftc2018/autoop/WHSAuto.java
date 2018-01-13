@@ -128,10 +128,10 @@ public class WHSAuto extends OpMode {
         startingCoordinateArray[BLUE][OFF_CENTER] = new Coordinate(600, 1200, 150, 180); //upper left
 
         //safe zone positions array
-        //mid right:
-        safeZonePositionsArray[RED][SAFEZONE_1][LEFT] = new Position(/*-158*/100, -1200, 150);
-        safeZonePositionsArray[RED][SAFEZONE_1][CENTER] = new Position(-350, -1200, 150);
-        safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-270, -1200, 150); //542!
+        safeZonePositionsArray[RED][SAFEZONE_1][LEFT] = new Position(-100, -1200, 150);
+        safeZonePositionsArray[RED][SAFEZONE_1][CENTER] = new Position(-300, -1200, 150); //mid right
+        safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-400, -1200, 150);
+
         safeZonePositionsArray[RED][SAFEZONE_2][CENTER] = new Position(1200, -900, 150); //upper right
         safeZonePositionsArray[BLUE][SAFEZONE_1][LEFT] = new Position(-442, 1200, 150); //mid left
         safeZonePositionsArray[BLUE][SAFEZONE_1][CENTER] = new Position(-250, 1200, 150); //mid left
@@ -269,6 +269,12 @@ public class WHSAuto extends OpMode {
                         hasTargetBeenDetected = true;
                     }
                 }
+                else if (ALLIANCE == RED && robot.balancingStoneSensor.getR() > 50) {
+                    robot.drivetrain.operate(0.15, 0.15);
+                }
+                else if (ALLIANCE == BLUE && robot.balancingStoneSensor.getB() > 50) {
+                    robot.drivetrain.operate(-0.15, -0.15);
+                }
                 else {
                     performStateExit = true;
                 }
@@ -284,17 +290,29 @@ public class WHSAuto extends OpMode {
             case DRIVE_INTO_SAFEZONE:
                 currentStateDesc = "driving off platform into safe zone";
                 if(performStateEntry){
-                    switch (vuforiaReading){
+                    /*switch (vuforiaReading){
                         case LEFT:
                             column = LEFT;
+                            break;
                         case CENTER:
                             column = CENTER;
+                            break;
                         case RIGHT:
                             column = RIGHT;
+                            break;
                         case UNKNOWN:
                             column = CENTER;
+                            break;
                         default:
                             column = CENTER;
+                            break;
+                    }*/
+                    if (vuforiaReading == RelicRecoveryVuMark.LEFT) {
+                        column = LEFT;
+                    } else if (vuforiaReading == RelicRecoveryVuMark.RIGHT) {
+                        column = RIGHT;
+                    } else {
+                        column = CENTER;
                     }
 
                     if(ALLIANCE == RED){

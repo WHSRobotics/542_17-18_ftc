@@ -26,6 +26,7 @@ public class WHSRobotImpl implements WHSRobot {
     public FourBarImpl fourBar;
     public JewelPusherImpl jewelPusher;
     public Vuforia vuforia;
+    public BalancingStoneSensor balancingStoneSensor;
     Coordinate currentCoord;
     public double targetHeading; //field frame
 
@@ -49,6 +50,7 @@ public class WHSRobotImpl implements WHSRobot {
         jewelPusher = new JewelPusherImpl(hardwareMap);
         currentCoord = new Coordinate(0.0, 0.0, 150.0, 0.0);
         imu = new IMU(hardwareMap);
+        balancingStoneSensor = new BalancingStoneSensor(hardwareMap);
 
         lift = new VLiftImpl(hardwareMap);
         vuforia = new Vuforia(hardwareMap);
