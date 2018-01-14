@@ -132,7 +132,7 @@ public class WHSAuto extends OpMode {
         //safe zone positions array
         safeZonePositionsArray[RED][SAFEZONE_1][LEFT] = new Position(-125, -1200, 150);
         safeZonePositionsArray[RED][SAFEZONE_1][CENTER] = new Position(-300, -1200, 150); //mid right
-        safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-425, -1200, 150);
+        safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-500, -1200, 150);
 
         safeZonePositionsArray[RED][SAFEZONE_2][CENTER] = new Position(1200, -900, 150); //upper right
         safeZonePositionsArray[BLUE][SAFEZONE_1][LEFT] = new Position(-442, 1200, 150); //mid left
@@ -333,7 +333,7 @@ public class WHSAuto extends OpMode {
                     performStateEntry = false;
                 }
 
-                if(robot.driveToTargetInProgress()){
+                if(robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()){
                     robot.driveToTarget(p);
                 } else {
                     performStateExit = true;
