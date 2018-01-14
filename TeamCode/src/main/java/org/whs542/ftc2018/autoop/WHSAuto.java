@@ -88,6 +88,8 @@ public class WHSAuto extends OpMode {
     enum JewelDetection {
         MATCH, NOT_MATCH, ERROR
     }
+    //double SWIVEL_OFFSET = 0;
+    //double SWIVEL_OFFSET_MAX = 0.05;
     JewelDetection jewelDetection;
     boolean hasJewelBeenDetected;
     boolean rotateToBoxComplete = false;
@@ -101,13 +103,13 @@ public class WHSAuto extends OpMode {
     static final double JEWEL_KNOCK_DELAY = 0.75;
     static final double JEWEL_KNOCK_DELAY2 = 0.4;
     static final double ARM_FOLD_DELAY = 0.9;
-    static final double JEWEL_DETECTION_DEADMAN = 2.0;
+    static final double JEWEL_DETECTION_DEADMAN = 5.42;
     static final double OPERATE_LIFT_DELAY = 1.0;
     static final double DRIVE_AWAY_DURATION = 1.2;
     static final double VUFORIA_DRIVE_DURATION = 2.5;
     static final double VUFORIA_DETECTION_DEADMAN = 5.42;
 
-    //jank variables :(
+    //jank variables ( ͡° ͜ʖ ͡°)
     Position p;
     Position q;
     private double x;
@@ -128,9 +130,9 @@ public class WHSAuto extends OpMode {
         startingCoordinateArray[BLUE][OFF_CENTER] = new Coordinate(600, 1200, 150, 180); //upper left
 
         //safe zone positions array
-        safeZonePositionsArray[RED][SAFEZONE_1][LEFT] = new Position(-100, -1200, 150);
+        safeZonePositionsArray[RED][SAFEZONE_1][LEFT] = new Position(-125, -1200, 150);
         safeZonePositionsArray[RED][SAFEZONE_1][CENTER] = new Position(-300, -1200, 150); //mid right
-        safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-500, -1200, 150);
+        safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-425, -1200, 150);
 
         safeZonePositionsArray[RED][SAFEZONE_2][CENTER] = new Position(1200, -900, 150); //upper right
         safeZonePositionsArray[BLUE][SAFEZONE_1][LEFT] = new Position(-442, 1200, 150); //mid left
@@ -189,6 +191,10 @@ public class WHSAuto extends OpMode {
                     subStateDesc = "detecting jewel color";
                     if(robot.jewelPusher.getJewelColor() == JewelPusher.JewelColor.ERROR){
                         jewelDetection = JewelDetection.ERROR;
+                        /*if (SWIVEL_OFFSET < SWIVEL_OFFSET_MAX) {
+                            robot.jewelPusher.operateSwivel(robot.jewelPusher.SWIVEL_POSITIONS[CENTER] - SWIVEL_OFFSET);
+                            SWIVEL_OFFSET += 0.005;
+                        }*/
                     }
                     else if (robot.jewelPusher.getJewelColor().ordinal() == ALLIANCE) {
                         jewelDetection = JewelDetection.MATCH;
@@ -245,19 +251,19 @@ public class WHSAuto extends OpMode {
                 if(!vuforiaDriveTimer.isExpired()){
                     if(ALLIANCE == RED) {
                         robot.drivetrain.operate(0.15, 0.15);
-//                        vuforiaReading = robot.vuforia.getVuforiaReading();
-//                        if(vuforiaReading != RelicRecoveryVuMark.UNKNOWN){
-//                            vuforiaReading = robot.vuforia.getVuforiaReading();
-//                            hasTargetBeenDetected = true;
-//                        }
+                        //vuforiaReading = robot.vuforia.getVuforiaReading();
+                        //if(vuforiaReading != RelicRecoveryVuMark.UNKNOWN){
+                            //vuforiaReading = robot.vuforia.getVuforiaReading();
+                            //hasTargetBeenDetected = true;
+                        //}
                     }
                     else if(ALLIANCE == BLUE){
                         robot.drivetrain.operate(-0.15, -0.15);
-//                        vuforiaReading = robot.vuforia.getVuforiaReading();
-//                        if(vuforiaReading != RelicRecoveryVuMark.UNKNOWN){
-//                            vuforiaReading = robot.vuforia.getVuforiaReading();
-//                            hasTargetBeenDetected = true;
-//                        }
+                        //vuforiaReading = robot.vuforia.getVuforiaReading();
+                        //if(vuforiaReading != RelicRecoveryVuMark.UNKNOWN){
+                            //vuforiaReading = robot.vuforia.getVuforiaReading();
+                            //hasTargetBeenDetected = true;
+                        //}
                     }
                     vuforiaDetectionDeadmanTimer.set(VUFORIA_DETECTION_DEADMAN);
                 }
@@ -269,14 +275,14 @@ public class WHSAuto extends OpMode {
                         //hasTargetBeenDetected = true;
                     }
                 }
-                else if (robot.balancingStoneSensor.balancingStoneDetected(ALLIANCE)) {
+                /*else if (robot.balancingStoneSensor.balancingStoneDetected(ALLIANCE)) {
                     if (ALLIANCE == RED) {
                         robot.drivetrain.operate(0.15, 0.15);
                     }
                     else if(ALLIANCE == BLUE) {
                         robot.drivetrain.operate(-0.15, -0.15);
                     }
-                }
+                }*/
                 else {
                     performStateExit = true;
                 }
