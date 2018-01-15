@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.whs542.ftc2018.subsys.JewelPusherImpl;
 import org.whs542.ftc2018.subsys.WHSRobotImpl;
+import org.whs542.ftc2018.subsys.WHSRobotSimple;
 import org.whs542.subsys.jewelpusher.JewelPusher;
 import org.whs542.subsys.robot.WHSRobot;
 
@@ -15,11 +16,11 @@ import org.whs542.subsys.robot.WHSRobot;
 @TeleOp(name = "WHSTeleOp", group = "a")
 public class WHSTeleOp extends OpMode {
 
-    WHSRobotImpl robot;
+    WHSRobotSimple robot;
 
     @Override
     public void init() {
-        robot = new WHSRobotImpl(hardwareMap);
+        robot = new WHSRobotSimple(hardwareMap);
     }
 
     @Override
