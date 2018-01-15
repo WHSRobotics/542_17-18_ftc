@@ -84,7 +84,9 @@ public class IMU {
         imuBias = Functions.normalizeAngle(vuforiaHeading - getHeading()); //-180 to 180 deg
     }
 
-    public double getImuBias() {return imuBias;}
+    public double getImuBias() {
+        return imuBias;
+    }
 
 }
 
