@@ -130,15 +130,21 @@ public class WHSAuto extends OpMode {
         startingCoordinateArray[BLUE][OFF_CENTER] = new Coordinate(600, 1200, 150, 180); //upper left
 
         //safe zone positions array
-        safeZonePositionsArray[RED][SAFEZONE_1][LEFT] = new Position(-125, -1200, 150);
+        safeZonePositionsArray[RED][SAFEZONE_1][LEFT] = new Position(-140, -1200, 150);
         safeZonePositionsArray[RED][SAFEZONE_1][CENTER] = new Position(-300, -1200, 150); //mid right
         safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-500, -1200, 150);
 
+        safeZonePositionsArray[RED][SAFEZONE_2][LEFT] = new Position(1200, -700, 150);
         safeZonePositionsArray[RED][SAFEZONE_2][CENTER] = new Position(1200, -900, 150); //upper right
-        safeZonePositionsArray[BLUE][SAFEZONE_1][LEFT] = new Position(-442, 1200, 150); //mid left
-        safeZonePositionsArray[BLUE][SAFEZONE_1][CENTER] = new Position(-250, 1200, 150); //mid left
-        safeZonePositionsArray[BLUE][SAFEZONE_1][RIGHT] = new Position(-58, 1200, 150); //mid left
+        safeZonePositionsArray[RED][SAFEZONE_2][RIGHT] = new Position(1200, -1100, 150);
+
+        safeZonePositionsArray[BLUE][SAFEZONE_1][LEFT] = new Position(/*-442*/-500, 1200, 150); //mid left
+        safeZonePositionsArray[BLUE][SAFEZONE_1][CENTER] = new Position(/*-250*/-300, 1200, 150); //mid left
+        safeZonePositionsArray[BLUE][SAFEZONE_1][RIGHT] = new Position(/*-58*/-140, 1200, 150); //mid left
+
+        safeZonePositionsArray[BLUE][SAFEZONE_2][LEFT] = new Position(1200, 1100, 150);
         safeZonePositionsArray[BLUE][SAFEZONE_2][CENTER] = new Position(1200, 900, 150); //upper left
+        safeZonePositionsArray[BLUE][SAFEZONE_2][LEFT] = new Position(1200, 700, 150);
 
         //box positions array
         boxPositionsArray[RED][BOX_1] = new Position(-350, -1400, 150); //mid right
