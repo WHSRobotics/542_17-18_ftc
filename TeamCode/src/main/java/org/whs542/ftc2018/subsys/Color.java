@@ -13,9 +13,9 @@ public class Color {
     String state = "";
 
 
-    public Color(HardwareMap colorMap) {
+    public Color(HardwareMap colorMap, String deviceName) {
 
-        colorSensor = colorMap.colorSensor.get("colorSensor");
+        colorSensor = colorMap.colorSensor.get(deviceName);
 
         // Set the LED in the beginning
         colorSensor.enableLed(ledOn);

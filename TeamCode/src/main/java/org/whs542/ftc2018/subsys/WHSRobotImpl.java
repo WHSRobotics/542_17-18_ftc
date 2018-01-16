@@ -25,7 +25,8 @@ public class WHSRobotImpl implements WHSRobot {
     public RollerIntake intake;
     public FourBarImpl fourBar;
     public JewelPusherImpl jewelPusher;
-
+    public Vuforia vuforia;
+    public BalancingStoneSensor balancingStoneSensor;
     Coordinate currentCoord;
     public double targetHeading; //field frame
     public double angleToTargetDebug;
@@ -50,8 +51,10 @@ public class WHSRobotImpl implements WHSRobot {
         jewelPusher = new JewelPusherImpl(hardwareMap);
         currentCoord = new Coordinate(0.0, 0.0, 150.0, 0.0);
         imu = new IMU(hardwareMap);
+        balancingStoneSensor = new BalancingStoneSensor(hardwareMap);
 
         lift = new VLiftImpl(hardwareMap);
+        vuforia = new Vuforia(hardwareMap);
 
     }
 
@@ -219,7 +222,7 @@ public class WHSRobotImpl implements WHSRobot {
             estimatedPos = currentCoord.getPos();
         }
         else {
-            if (driveToTargetInProgress & !rotateToTargetInProgress) {
+            if (/*driveToTargetInProgress & */!rotateToTargetInProgress) {
                 double[] encoderValues = drivetrain.getEncoderDelta();
                 double encoderPosL = encoderValues[0];
                 double encoderPosR = encoderValues[1];

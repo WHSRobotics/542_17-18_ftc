@@ -41,12 +41,10 @@ public class VLiftImpl implements VLift {
         if (gamepadInput2 > GAMEPAD_THRESHOLD) {
             leftLiftServo.setPosition(LEFT_LIFT_POSITIONS[2]);
             rightLiftServo.setPosition(RIGHT_LIFT_POSITIONS[2]);
-        }
-        else if (gamepadInput1) {
+        } else if (gamepadInput1) {
             leftLiftServo.setPosition(LEFT_LIFT_POSITIONS[1]);
             rightLiftServo.setPosition(RIGHT_LIFT_POSITIONS[1]);
-        }
-        else {
+        } else {
             leftLiftServo.setPosition(LEFT_LIFT_POSITIONS[0]);
             rightLiftServo.setPosition(RIGHT_LIFT_POSITIONS[0]);
         }
