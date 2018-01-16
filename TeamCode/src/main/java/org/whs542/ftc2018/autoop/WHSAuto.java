@@ -23,6 +23,7 @@ public class WHSAuto extends OpMode {
     //coordinates and positions
     Coordinate[][] startingCoordinateArray = new Coordinate[2][2];
     Position[][][] safeZonePositionsArray = new Position[2][2][3];
+    Position[] waypointPositionsArray = new Position[2];
     Position[][] boxPositionsArray = new Position[2][2];
 
     static final int RED = 0;
@@ -112,8 +113,10 @@ public class WHSAuto extends OpMode {
     //jank variables ( ͡° ͜ʖ ͡°)
     Position p;
     Position q;
+    Position s;
     private double x;
-
+    private double y;
+    boolean initializeDriveToSafezone = true;
 
     @Override
     public void init() {
@@ -130,21 +133,25 @@ public class WHSAuto extends OpMode {
         startingCoordinateArray[BLUE][OFF_CENTER] = new Coordinate(600, 1200, 150, 180); //upper left
 
         //safe zone positions array
-        safeZonePositionsArray[RED][SAFEZONE_1][LEFT] = new Position(-140, -1200, 150);
+        safeZonePositionsArray[RED][SAFEZONE_1][LEFT] = new Position(-145, -1200, 150);
         safeZonePositionsArray[RED][SAFEZONE_1][CENTER] = new Position(-300, -1200, 150); //mid right
-        safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-500, -1200, 150);
+        safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-520, -1200, 150);
 
         safeZonePositionsArray[RED][SAFEZONE_2][LEFT] = new Position(1200, -700, 150);
         safeZonePositionsArray[RED][SAFEZONE_2][CENTER] = new Position(1200, -900, 150); //upper right
         safeZonePositionsArray[RED][SAFEZONE_2][RIGHT] = new Position(1200, -1100, 150);
 
-        safeZonePositionsArray[BLUE][SAFEZONE_1][LEFT] = new Position(/*-442*/-500, 1200, 150); //mid left
+        safeZonePositionsArray[BLUE][SAFEZONE_1][LEFT] = new Position(/*-442*/-520, 1200, 150); //mid left
         safeZonePositionsArray[BLUE][SAFEZONE_1][CENTER] = new Position(/*-250*/-300, 1200, 150); //mid left
-        safeZonePositionsArray[BLUE][SAFEZONE_1][RIGHT] = new Position(/*-58*/-140, 1200, 150); //mid left
+        safeZonePositionsArray[BLUE][SAFEZONE_1][RIGHT] = new Position(/*-58*/-145, 1200, 150); //mid left
 
         safeZonePositionsArray[BLUE][SAFEZONE_2][LEFT] = new Position(1200, 1100, 150);
         safeZonePositionsArray[BLUE][SAFEZONE_2][CENTER] = new Position(1200, 900, 150); //upper left
         safeZonePositionsArray[BLUE][SAFEZONE_2][LEFT] = new Position(1200, 700, 150);
+
+        //waypoint positions
+        waypointPositionsArray[RED] = new Position(1200, -1200, 150);
+        waypointPositionsArray[BLUE] = new Position(1200, 1200, 150);
 
         //box positions array
         boxPositionsArray[RED][BOX_1] = new Position(-350, -1400, 150); //mid right
@@ -265,20 +272,20 @@ public class WHSAuto extends OpMode {
                     }
                     else if(ALLIANCE == BLUE){
                         robot.drivetrain.operate(-0.15, -0.15);
-                        //vuforiaReading = robot.vuforia.getVuforiaReading();
-                        //if(vuforiaReading != RelicRecoveryVuMark.UNKNOWN){
-                            //vuforiaReading = robot.vuforia.getVuforiaReading();
-                            //hasTargetBeenDetected = true;
-                        //}
+                        vuforiaReading = robot.vuforia.getVuforiaReading();
+                        if(vuforiaReading != RelicRecoveryVuMark.UNKNOWN){
+                            vuforiaReading = robot.vuforia.getVuforiaReading();
+                            hasTargetBeenDetected = true;
+                        }
                     }
                     vuforiaDetectionDeadmanTimer.set(VUFORIA_DETECTION_DEADMAN);
                 }
-                else if (/*!hasTargetBeenDetected && */!vuforiaDetectionDeadmanTimer.isExpired()){
+                else if (!hasTargetBeenDetected && !vuforiaDetectionDeadmanTimer.isExpired()){
                     robot.drivetrain.operate(0.0, 0.0);
                     vuforiaReading = robot.vuforia.getVuforiaReading();
                     if(vuforiaReading != RelicRecoveryVuMark.UNKNOWN){
                         vuforiaReading = robot.vuforia.getVuforiaReading();
-                        //hasTargetBeenDetected = true;
+                        hasTargetBeenDetected = true;
                     }
                 }
                 /*else if (robot.balancingStoneSensor.balancingStoneDetected(ALLIANCE)) {
@@ -333,14 +340,27 @@ public class WHSAuto extends OpMode {
                         p = safeZonePositionsArray[RED][SAFEZONE_1][column];
                     }
                     if(ALLIANCE == BLUE){
-                        p = safeZonePositionsArray[BLUE][SAFEZONE_1][column];
+                        if (BALANCING_STONE == CORNER) {
+                            p = safeZonePositionsArray[BLUE][SAFEZONE_1][column];
+                        }
+                        else if (BALANCING_STONE == OFF_CENTER) {
+                            p = waypointPositionsArray[BLUE];
+                            s = safeZonePositionsArray[BLUE][SAFEZONE_2][column];
+                        }
                     }
                     robot.driveToTarget(p);
                     performStateEntry = false;
                 }
 
-                if(robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()){
+                if(robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
                     robot.driveToTarget(p);
+                }
+                else if (BALANCING_STONE == OFF_CENTER && initializeDriveToSafezone) {
+                    robot.driveToTarget(s);
+                    initializeDriveToSafezone = false;
+                }
+                else if (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
+                    robot.driveToTarget(s);
                 } else {
                     performStateExit = true;
                 }
@@ -355,13 +375,21 @@ public class WHSAuto extends OpMode {
                 currentStateDesc = "driving to box";
                 if (performStateEntry) {
                     x = robot.getCoordinate().getX();
+                    y = robot.getCoordinate().getY();
                     if(ALLIANCE == RED){
                         q = boxPositionsArray[RED][BOX_1];
+                        robot.driveToTarget(new Position(x, q.getY(), 150));
                     }
                     if(ALLIANCE == BLUE){
-                        q = boxPositionsArray[BLUE][BOX_1];
+                        if (BALANCING_STONE == CORNER) {
+                            q = boxPositionsArray[BLUE][BOX_1];
+                            robot.driveToTarget(new Position(x, q.getY(), 150));
+                        }
+                        else if (BALANCING_STONE == OFF_CENTER) {
+                            q = boxPositionsArray[BLUE][BOX_2];
+                            robot.driveToTarget(new Position(q.getX(), y, 150));
+                        }
                     }
-                    robot.driveToTarget(new Position(x, q.getY(), 150));
                     performStateEntry = false;
                 }
 
@@ -396,7 +424,7 @@ public class WHSAuto extends OpMode {
 
                 if (!driveInTimer.isExpired()) {
                     robot.drivetrain.operate(0.3, 0.3);
-                    driveOutTimer.set(DRIVE_AWAY_DURATION/3.0);
+                    driveOutTimer.set(DRIVE_AWAY_DURATION/2.9);
                 }
                 else if (!driveOutTimer.isExpired()) {
                     robot.drivetrain.operate(-0.3, -0.3);

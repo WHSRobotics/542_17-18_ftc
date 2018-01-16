@@ -34,7 +34,7 @@ public class WHSRobotImpl implements WHSRobot {
     private static final double DEADBAND_ROTATE_TO_TARGET = 1.75; //in degrees
     private static final double[] DRIVE_TO_TARGET_POWER_LEVEL = {0.33, 0.4, 0.45, 0.5}; //{0.33, 0.6, 0.7, 0.9};
     private static final double[] DRIVE_TO_TARGET_THRESHOLD = {DEADBAND_DRIVE_TO_TARGET, 300, 600, 1200};
-    private static final double[] ROTATE_TO_TARGET_POWER_LEVEL = {0.3, 0.5, 0.75};
+    private static final double[] ROTATE_TO_TARGET_POWER_LEVEL = {0.25, 0.5, 0.75};
     private static final double[] ROTATE_TO_TARGET_THRESHOLD = {DEADBAND_ROTATE_TO_TARGET, 45, 90};
     private double rightMultiplier = 1.0;
     private int count = 0;
