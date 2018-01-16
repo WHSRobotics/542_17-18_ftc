@@ -32,7 +32,7 @@ public class WHSRobotImpl implements WHSRobot {
     public double angleToTargetDebug;
     private static final double DEADBAND_DRIVE_TO_TARGET = 110; //in mm
     private static final double DEADBAND_ROTATE_TO_TARGET = 1.75; //in degrees
-    private static final double[] DRIVE_TO_TARGET_POWER_LEVEL = {0.33, 0.4, 0.45, 0.5}; //{0.33, 0.6, 0.7, 0.9};
+    private static final double[] DRIVE_TO_TARGET_POWER_LEVEL = {0.33, 0.35, 0.4, 0.45}; //{0.33, 0.6, 0.7, 0.9};
     private static final double[] DRIVE_TO_TARGET_THRESHOLD = {DEADBAND_DRIVE_TO_TARGET, 300, 600, 1200};
     private static final double[] ROTATE_TO_TARGET_POWER_LEVEL = {0.25, 0.35, 0.5};
     private static final double[] ROTATE_TO_TARGET_THRESHOLD = {DEADBAND_ROTATE_TO_TARGET, 30, 60};
@@ -59,7 +59,7 @@ public class WHSRobotImpl implements WHSRobot {
     }
 
     @Override
-    public void driveToTarget(Position targetPos) {
+    public void driveToTarget(Position targetPos, boolean backwards) {
         Position vectorToTarget = Functions.subtractPositions(targetPos, currentCoord.getPos()); //field frame
         vectorToTarget = field2body(vectorToTarget); //body frame
 
@@ -70,11 +70,11 @@ public class WHSRobotImpl implements WHSRobot {
         degreesToRotate = degreesToRotate * 180 / Math.PI;
         /*double*/ targetHeading = Functions.normalizeAngle(currentCoord.getHeading() + degreesToRotate); //-180 to 180 deg
         if(count == 0) {
-            rotateToTarget(targetHeading, true);
+            rotateToTarget(targetHeading, backwards);
             count++;
         }
         else if(rotateToTargetInProgress) {
-            rotateToTarget(targetHeading, true);
+            rotateToTarget(targetHeading, backwards);
         }
 
         if (rotateToTargetInProgress) {

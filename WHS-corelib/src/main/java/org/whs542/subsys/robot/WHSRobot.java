@@ -10,7 +10,7 @@ import org.whs542.util.Position;
 
 public interface WHSRobot {
 
-    public void driveToTarget(Position targetPos);
+    public void driveToTarget(Position targetPos, boolean backwards);
 
     public void rotateToTarget(double targetHeading, boolean backwards); //-180 to 180 degrees
 
