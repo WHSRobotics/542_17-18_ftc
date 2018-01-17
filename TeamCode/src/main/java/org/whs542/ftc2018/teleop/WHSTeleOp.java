@@ -4,11 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.whs542.ftc2018.subsys.JewelPusherImpl;
-import org.whs542.ftc2018.subsys.WHSRobotImpl;
 import org.whs542.ftc2018.subsys.WHSRobotSimple;
 import org.whs542.subsys.jewelpusher.JewelPusher;
-import org.whs542.subsys.robot.WHSRobot;
+import org.whs542.subsys.vlift.VLift;
 
 /**
  * Created by Amar2 on 10/28/2017.
@@ -26,7 +24,7 @@ public class WHSTeleOp extends OpMode {
     @Override
     public void loop() {
 
-        robot.jewelPusher.operateArm(JewelPusherImpl.ArmPosition.UP);
+        robot.jewelPusher.operateArm(JewelPusher.ArmPosition.UP);
         
         robot.intake.operateWithToggle(gamepad1.right_bumper, gamepad1.right_trigger);
 
@@ -35,7 +33,17 @@ public class WHSTeleOp extends OpMode {
 
         robot.fourBar.operate(gamepad2.a, gamepad2.x, gamepad2.y);
 
-        robot.lift.operateLift(gamepad2.right_bumper, gamepad2.right_trigger);
+        //If the four bar is at highest level, Vlift will go up slightly
+        if (gamepad2.right_bumper || gamepad2.right_trigger>0.01 || gamepad2.left_bumper) {
+            robot.lift.operateLift(gamepad2.right_bumper, gamepad2.right_trigger);
+        }
+        else if(robot.fourBar.getFourBarLevel().equals("Scoring on top of 2 glyphs")){  //Jank
+            robot.lift.operateLift(VLift.LiftPosition.MIDDLE_DOWN);
+        }
+        else {
+            robot.lift.operateLift(VLift.LiftPosition.DOWN);
+        }
+        
         robot.lift.operateJiggle(gamepad2.left_bumper);
 
         telemetry.addData("Four Bar Level: ", robot.fourBar.getFourBarLevel());
