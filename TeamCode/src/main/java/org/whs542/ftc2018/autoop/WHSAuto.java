@@ -114,6 +114,7 @@ public class WHSAuto extends OpMode {
     Position p;
     Position q;
     Position s;
+    Boolean b;
     private double x;
     private double y;
     boolean initializeDriveToSafezone = true;
@@ -328,6 +329,7 @@ public class WHSAuto extends OpMode {
                             column = CENTER;
                             break;
                     }*/
+                    b = false;
                     if (vuforiaReading == RelicRecoveryVuMark.LEFT) {
                         column = LEFT;
                     } else if (vuforiaReading == RelicRecoveryVuMark.RIGHT) {
@@ -352,14 +354,15 @@ public class WHSAuto extends OpMode {
                     performStateEntry = false;
                 }
 
-                if(robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
+                if(robot.driveToTargetInProgress() || robot.rotateToTargetInProgress() && !b) {
                     robot.driveToTarget(p);
                 }
                 else if (BALANCING_STONE == OFF_CENTER && initializeDriveToSafezone) {
                     robot.driveToTarget(s);
                     initializeDriveToSafezone = false;
+                    b = true;
                 }
-                else if (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
+                else if (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress() && b) {
                     robot.driveToTarget(s);
                 } else {
                     performStateExit = true;
