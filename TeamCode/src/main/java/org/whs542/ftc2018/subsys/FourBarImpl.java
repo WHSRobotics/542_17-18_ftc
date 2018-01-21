@@ -18,7 +18,7 @@ public class FourBarImpl implements FourBar , MotorSubsystem{
     private DcMotor rightMotor;
     private static final double FOUR_BAR_POWER = 0.3;
     private static final int[] FOUR_BAR_LEVEL_POSITIONS = {0, 220, 400}; //In encoder ticks
-    private String fourBarLevel;
+    private String fourBarLevel = "";
     private static final double FOUR_BAR_DEADBAND = 10.0;
 
     //private Toggler fourBarToggler = new Toggler(2);
@@ -26,6 +26,11 @@ public class FourBarImpl implements FourBar , MotorSubsystem{
     public FourBarImpl(HardwareMap fourBarMap) {
         leftMotor = fourBarMap.dcMotor.get("leftFourBar");
         rightMotor = fourBarMap.dcMotor.get("rightFourBar");
+        try {
+            Thread.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -109,5 +114,10 @@ public class FourBarImpl implements FourBar , MotorSubsystem{
     public void setRunMode(DcMotor.RunMode runMode) {
         leftMotor.setMode(runMode);
         rightMotor.setMode(runMode);
+    }
+
+    @Override
+    public double getAbsPowerAverage() {
+        return (Math.abs(leftMotor.getPower()) + Math.abs(rightMotor.getPower()))/2;
     }
 }

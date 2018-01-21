@@ -31,6 +31,13 @@ public class WHSTeleOp extends OpMode {
         robot.drivetrain.operateWithOrientationScaled(gamepad1.left_stick_y, gamepad1.right_stick_y);
         robot.drivetrain.switchOrientation(gamepad1.a);
 
+        if (robot.drivetrain.getOrientation() == "normal") {
+            robot.lighting.operateLED(1.0);
+        }
+        else {
+            robot.lighting.operateLED(0.0);
+        }
+
         robot.fourBar.operate(gamepad2.a, gamepad2.x, gamepad2.y);
 
         //If the four bar is at highest level, Vlift will go up slightly

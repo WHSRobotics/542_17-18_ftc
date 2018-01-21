@@ -10,4 +10,6 @@ public interface MotorSubsystem {
 
     void setRunMode (DcMotor.RunMode runMode);
 
+    double getAbsPowerAverage();
+
 }

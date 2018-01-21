@@ -148,4 +148,9 @@ public class TileRunner implements TankDrivetrain, MotorSubsystem{
         backLeft.setMode(runMode);
         backRight.setMode(runMode);
     }
+
+    @Override
+    public double getAbsPowerAverage() {
+        return (Math.abs(frontLeft.getPower()) + Math.abs(frontRight.getPower()))/2;
+    }
 }

@@ -73,4 +73,9 @@ public class RollerIntake implements Intake, MotorSubsystem {
         intakeMotor.setMode(runMode);
     }
 
+    @Override
+    public double getAbsPowerAverage() {
+        return Math.abs(intakeMotor.getPower());
+    }
+
 }

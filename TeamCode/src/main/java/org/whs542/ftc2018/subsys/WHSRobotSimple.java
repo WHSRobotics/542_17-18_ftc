@@ -11,19 +11,20 @@ import org.whs542.util.Coordinate;
 public class WHSRobotSimple {
 
     public TileRunner drivetrain;
-    public IMU imu;
     public VLiftImpl lift;
     public RollerIntake intake;
     public FourBarImpl fourBar;
     public JewelPusherImpl jewelPusher;
+    public Lighting lighting;
 
     public WHSRobotSimple (HardwareMap hardwareMap){
         drivetrain = new TileRunner(hardwareMap);
         intake = new RollerIntake(hardwareMap);
         fourBar = new FourBarImpl(hardwareMap);
         jewelPusher = new JewelPusherImpl(hardwareMap);
-        imu = new IMU(hardwareMap);
+        //imu = new IMU(hardwareMap);
         lift = new VLiftImpl(hardwareMap);
+        lighting = new Lighting(hardwareMap);
     }
 
 }
