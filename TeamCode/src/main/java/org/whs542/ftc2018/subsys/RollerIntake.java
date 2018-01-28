@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
  * Created by Jason on 10/20/2017.
  */
 
-public class RollerIntake implements Intake, MotorSubsystem {
+public class RollerIntake implements Intake {
 
     private DcMotor intakeMotor;
     private static final double INTAKE_POWER = 1.0;
@@ -68,14 +68,5 @@ public class RollerIntake implements Intake, MotorSubsystem {
         intakeMotor.setPower(power);
     }
 
-    @Override
-    public void setRunMode(DcMotor.RunMode runMode) {
-        intakeMotor.setMode(runMode);
-    }
-
-    @Override
-    public double getAbsPowerAverage() {
-        return Math.abs(intakeMotor.getPower());
-    }
 
 }

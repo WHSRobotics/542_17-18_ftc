@@ -12,7 +12,7 @@ import org.whs542.util.Toggler;
  * Created by Jason on 10/20/2017.
  */
 
-public class FourBarImpl implements FourBar , MotorSubsystem{
+public class FourBarImpl implements FourBar, MotorSubsystem{
 
     private DcMotor leftMotor;
     private DcMotor rightMotor;
@@ -26,12 +26,17 @@ public class FourBarImpl implements FourBar , MotorSubsystem{
     public FourBarImpl(HardwareMap fourBarMap) {
         leftMotor = fourBarMap.dcMotor.get("leftFourBar");
         rightMotor = fourBarMap.dcMotor.get("rightFourBar");
+
+        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         try {
-            Thread.sleep(2);
+            Thread.sleep(42);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -114,6 +119,12 @@ public class FourBarImpl implements FourBar , MotorSubsystem{
     public void setRunMode(DcMotor.RunMode runMode) {
         leftMotor.setMode(runMode);
         rightMotor.setMode(runMode);
+    }
+
+    @Override
+    public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
+        leftMotor.setZeroPowerBehavior(zeroPowerBehavior);
+        rightMotor.setZeroPowerBehavior(zeroPowerBehavior);
     }
 
     @Override

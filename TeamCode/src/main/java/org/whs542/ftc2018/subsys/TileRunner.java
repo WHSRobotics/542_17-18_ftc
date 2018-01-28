@@ -150,6 +150,14 @@ public class TileRunner implements TankDrivetrain, MotorSubsystem{
     }
 
     @Override
+    public void setZeroPowerBehavior(DcMotor.ZeroPowerBehavior zeroPowerBehavior) {
+        frontLeft.setZeroPowerBehavior(zeroPowerBehavior);
+        frontRight.setZeroPowerBehavior(zeroPowerBehavior);
+        backLeft.setZeroPowerBehavior(zeroPowerBehavior);
+        backRight.setZeroPowerBehavior(zeroPowerBehavior);
+    }
+
+    @Override
     public double getAbsPowerAverage() {
         return (Math.abs(frontLeft.getPower()) + Math.abs(frontRight.getPower()))/2;
     }

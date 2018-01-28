@@ -9,12 +9,13 @@ import org.whs542.subsys.jewelpusher.JewelPusher;
 import org.whs542.subsys.vlift.VLift;
 
 /**
- * Created by Amar2 on 10/28/2017.
+ * Main TeleOp Class for 2017-18
  */
 @TeleOp(name = "WHSTeleOp", group = "a")
 public class WHSTeleOp extends OpMode {
 
     WHSRobotSimple robot;
+    int fourBarResetState = 0;
 
     @Override
     public void init() {
@@ -28,7 +29,12 @@ public class WHSTeleOp extends OpMode {
         
         robot.intake.operateWithToggle(gamepad1.right_bumper, gamepad1.right_trigger);
 
-        robot.drivetrain.operateWithOrientationScaled(gamepad1.left_stick_y, gamepad1.right_stick_y);
+        if(gamepad1.left_bumper){
+            robot.drivetrain.operateWithOrientation(gamepad1.left_stick_y/2.54, gamepad1.right_stick_y/2.54);
+        }
+        else {
+            robot.drivetrain.operateWithOrientation(gamepad1.left_stick_y, gamepad1.right_stick_y);
+        }
         robot.drivetrain.switchOrientation(gamepad1.a);
 
         if (robot.drivetrain.getOrientation() == "normal") {
@@ -50,6 +56,19 @@ public class WHSTeleOp extends OpMode {
         else {
             robot.lift.operateLift(VLift.LiftPosition.DOWN);
         }
+
+        if(gamepad2.left_trigger>0.05 && gamepad2.dpad_down){
+            robot.fourBar.operate(0.0);
+            robot.fourBar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            fourBarResetState = 1;
+        }
+        else if(fourBarResetState == 1){
+            robot.fourBar.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            fourBarResetState = 2;
+        }
+        else if(fourBarResetState == 2){
+            robot.fourBar.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
         
         robot.lift.operateJiggle(gamepad2.left_bumper);
 
@@ -61,10 +80,8 @@ public class WHSTeleOp extends OpMode {
 
     @Override
     public void stop(){
-        robot.drivetrain.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.intake.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //robot.fourBar.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        robot.drivetrain.operate(0.0, 0.0);
+        robot.intake.operate(0.0);
     }
 
 

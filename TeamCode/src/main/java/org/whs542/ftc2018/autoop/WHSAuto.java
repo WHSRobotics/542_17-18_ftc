@@ -35,7 +35,7 @@ public class WHSAuto extends OpMode {
     static final int SAFEZONE_1 = 0;
     static final int SAFEZONE_2 = 1;
     static final int BOX_1 = 0;
-    static final int BOX_2 =  1;
+    static final int BOX_2 = 1;
     static final int LEFT = 0;
     static final int CENTER = 1;
     static final int RIGHT = 2;
@@ -89,6 +89,7 @@ public class WHSAuto extends OpMode {
     enum JewelDetection {
         MATCH, NOT_MATCH, ERROR
     }
+
     //double SWIVEL_OFFSET = 0;
     //double SWIVEL_OFFSET_MAX = 0.05;
     JewelDetection jewelDetection;
@@ -191,29 +192,26 @@ public class WHSAuto extends OpMode {
                     hasJewelBeenDetected = false;
                     subStateDesc = "entry";
                 }
-                if(!swivelStoreToMiddleTimer.isExpired()){
+                if (!swivelStoreToMiddleTimer.isExpired()) {
                     robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.MIDDLE);
                     armUpToDown.set(ARM_FOLD_DELAY);
                     subStateDesc = "swivel to middle";
-                }
-                else if (!armUpToDown.isExpired()) {
+                } else if (!armUpToDown.isExpired()) {
                     robot.jewelPusher.operateArm(JewelPusher.ArmPosition.DOWN);
                     jewelDeadmanTimer.set(JEWEL_DETECTION_DEADMAN);
                     subStateDesc = "arm up to down";
-                }
-                else if (!hasJewelBeenDetected & !jewelDeadmanTimer.isExpired()) {
+                } else if (!hasJewelBeenDetected & !jewelDeadmanTimer.isExpired()) {
                     /*checks if the color detected to the left of the swivel (assuming the color sensor is mounted on the left)
                     **matches the alliance, and if so, swings left, otherwise swings right
                      */
                     subStateDesc = "detecting jewel color";
-                    if(robot.jewelPusher.getJewelColor() == JewelPusher.JewelColor.ERROR){
+                    if (robot.jewelPusher.getJewelColor() == JewelPusher.JewelColor.ERROR) {
                         jewelDetection = JewelDetection.ERROR;
                         /*if (SWIVEL_OFFSET < SWIVEL_OFFSET_MAX) {
                             robot.jewelPusher.operateSwivel(robot.jewelPusher.SWIVEL_POSITIONS[CENTER] - SWIVEL_OFFSET);
                             SWIVEL_OFFSET += 0.005;
                         }*/
-                    }
-                    else if (robot.jewelPusher.getJewelColor().ordinal() == ALLIANCE) {
+                    } else if (robot.jewelPusher.getJewelColor().ordinal() == ALLIANCE) {
                         jewelDetection = JewelDetection.MATCH;
                         hasJewelBeenDetected = true;
                     } else {
@@ -221,30 +219,26 @@ public class WHSAuto extends OpMode {
                         hasJewelBeenDetected = true;
                     }
                     jewelKnockTimer.set(JEWEL_KNOCK_DELAY);
-                }
-                else if (!jewelKnockTimer.isExpired()) {
+                } else if (!jewelKnockTimer.isExpired()) {
                     subStateDesc = "knocking jewel";
 
-                    if(jewelDetection == JewelDetection.MATCH){
+                    if (jewelDetection == JewelDetection.MATCH) {
                         robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.RIGHT);
-                    }
-                    else if (jewelDetection == JewelDetection.NOT_MATCH) {
+                    } else if (jewelDetection == JewelDetection.NOT_MATCH) {
                         robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.LEFT);
                     } else {
                         //do nothing
                     }
                     jewelKnockTimer2.set(JEWEL_KNOCK_DELAY2);
-                }
-                else if (!jewelKnockTimer2.isExpired()) {
+                } else if (!jewelKnockTimer2.isExpired()) {
                     subStateDesc = "resetting swivel to middle";
                     robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.MIDDLE);
                     armDownToUpTimer.set(ARM_FOLD_DELAY);
-                }
-                else if (!armDownToUpTimer.isExpired()) {
+                } else if (!armDownToUpTimer.isExpired()) {
                     subStateDesc = "arm down to up";
                     robot.jewelPusher.operateArm(JewelPusher.ArmPosition.UP);
                     swivelMiddleToStoreTimer.set(SWIVEL_STORING_DELAY);
-                } else if (!swivelMiddleToStoreTimer.isExpired()){
+                } else if (!swivelMiddleToStoreTimer.isExpired()) {
                     subStateDesc = "swivel middle to store end";
                     robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.END_STORED);
                 } else {
@@ -258,14 +252,14 @@ public class WHSAuto extends OpMode {
                 break;
             case DRIVE_TO_VUFORIA:
                 currentStateDesc = "driving to and stopping to scan vuforia";
-                if(performStateEntry){
+                if (performStateEntry) {
                     vuforiaDriveTimer.set(VUFORIA_DRIVE_DURATION);
                     performStateEntry = false;
                     hasTargetBeenDetected = false;
                     robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 }
 
-                if(!vuforiaDriveTimer.isExpired()) {
+                if (!vuforiaDriveTimer.isExpired()) {
                     robot.drivetrain.operate(0.15, 0.15);
 
                     vuforiaReading = robot.vuforia.getVuforiaReading();
@@ -275,11 +269,10 @@ public class WHSAuto extends OpMode {
                     }
                     vuforiaDetectionDeadmanTimer.set(VUFORIA_DETECTION_DEADMAN);
 
-                }
-                else if (!hasTargetBeenDetected && !vuforiaDetectionDeadmanTimer.isExpired()){
+                } else if (!hasTargetBeenDetected && !vuforiaDetectionDeadmanTimer.isExpired()) {
                     robot.drivetrain.operate(0.0, 0.0);
                     vuforiaReading = robot.vuforia.getVuforiaReading();
-                    if(vuforiaReading != RelicRecoveryVuMark.UNKNOWN){
+                    if (vuforiaReading != RelicRecoveryVuMark.UNKNOWN) {
                         vuforiaReading = robot.vuforia.getVuforiaReading();
                         hasTargetBeenDetected = true;
                     }
@@ -297,7 +290,7 @@ public class WHSAuto extends OpMode {
                 }
 
 
-                if(performStateExit){
+                if (performStateExit) {
                     robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                     performStateEntry = true;
                     performStateExit = false;
@@ -306,7 +299,7 @@ public class WHSAuto extends OpMode {
                 break;
             case DRIVE_INTO_SAFEZONE:
                 currentStateDesc = "driving off platform into safe zone";
-                if(performStateEntry){
+                if (performStateEntry) {
                     /*switch (vuforiaReading){
                         case LEFT:
                             column = LEFT;
@@ -335,8 +328,7 @@ public class WHSAuto extends OpMode {
 
                     if (BALANCING_STONE == CORNER) {
                         p = safeZonePositionsArray[ALLIANCE][SAFEZONE_1][column];
-                    }
-                    else if (BALANCING_STONE == OFF_CENTER) {
+                    } else if (BALANCING_STONE == OFF_CENTER) {
                         p = waypointPositionsArray[ALLIANCE];
                         s = safeZonePositionsArray[ALLIANCE][SAFEZONE_2][column];
                     }
@@ -345,21 +337,19 @@ public class WHSAuto extends OpMode {
                     performStateEntry = false;
                 }
 
-                if((robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) && !b) {
+                if ((robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) && !b) {
                     robot.driveToTarget(p, true);
-                }
-                else if (BALANCING_STONE == OFF_CENTER && initializeDriveToSafezone) {
+                } else if (BALANCING_STONE == OFF_CENTER && initializeDriveToSafezone) {
                     robot.driveToTarget(s, false);
                     initializeDriveToSafezone = false;
                     b = true;
-                }
-                else if ((robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) && b) {
+                } else if ((robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) && b) {
                     robot.driveToTarget(s, false);
                 } else {
                     performStateExit = true;
                 }
 
-                if(performStateExit){
+                if (performStateExit) {
                     performStateEntry = true;
                     performStateExit = false;
                     advanceState();
@@ -374,8 +364,7 @@ public class WHSAuto extends OpMode {
                     if (BALANCING_STONE == CORNER) {
                         q = boxPositionsArray[ALLIANCE][BOX_1];
                         robot.driveToTarget(new Position(x, q.getY(), 150), false);
-                    }
-                    else if (BALANCING_STONE == OFF_CENTER) {
+                    } else if (BALANCING_STONE == OFF_CENTER) {
                         q = boxPositionsArray[ALLIANCE][BOX_2];
                         robot.driveToTarget(new Position(q.getX(), y, 150), false);
                     }
@@ -385,15 +374,14 @@ public class WHSAuto extends OpMode {
                 if (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
                     if (BALANCING_STONE == CORNER) {
                         robot.driveToTarget(new Position(x, q.getY(), 150), false);
-                    }
-                    else {
+                    } else {
                         robot.driveToTarget(new Position(q.getX(), y, 150), false);
                     }
                     operateLiftTimer.set(OPERATE_LIFT_DELAY);
                 } else if (!operateLiftTimer.isExpired()) {
                     subStateDesc = "placing glyph";
                     robot.lift.operateLift(false, 1f);
-                    driveAwayTimer.set(DRIVE_AWAY_DURATION*2.1);
+                    driveAwayTimer.set(DRIVE_AWAY_DURATION * 2.1);
                 } else if (!driveAwayTimer.isExpired()) {
                     robot.lift.operateLift(false, 1f);
                     robot.drivetrain.operate(-0.15, -0.15);
@@ -418,12 +406,10 @@ public class WHSAuto extends OpMode {
 
                 if (!driveInTimer.isExpired()) {
                     robot.drivetrain.operate(0.3, 0.3);
-                    driveOutTimer.set(DRIVE_AWAY_DURATION/2.4);
-                }
-                else if (!driveOutTimer.isExpired()) {
+                    driveOutTimer.set(DRIVE_AWAY_DURATION / 2.4);
+                } else if (!driveOutTimer.isExpired()) {
                     robot.drivetrain.operate(-0.3, -0.3);
-                }
-                else {
+                } else {
                     robot.drivetrain.operate(0, 0);
                     performStateExit = true;
                 }
@@ -448,8 +434,7 @@ public class WHSAuto extends OpMode {
 
         if (robot.drivetrain.getAbsPowerAverage() > 0.5) {
             robot.lighting.operateLED(1.0);
-        }
-        else {
+        } else {
             robot.lighting.operateLED(robot.drivetrain.getAbsPowerAverage() * 2.0);
         }
 
@@ -477,4 +462,81 @@ public class WHSAuto extends OpMode {
             advanceState();
         }
     }
+    /*
+                                    ,--,
+                   .---.      ,--.'|  .--.--.
+                  /. ./|   ,--,  | : /  /    '.
+              .--'.  ' ;,---.'|  : '|  :  /`. /
+             /__./ \ : ||   | : _' |;  |  |--`
+         .--'.  '   \' .:   : |.'  ||  :  ;_
+        /___/ \ |    ' '|   ' '  ; : \  \    `.
+        ;   \  \;      :'   |  .'. |  `----.   \
+         \   ;  `      ||   | :  | '  __ \  \  |
+          .   \    .\  ;'   : |  : ; /  /`--'  /
+           \   \   ' \ ||   | '  ,/ '--'.     /
+            :   '  |--" ;   : ;--'    `--'---'
+             \   \ ;    |   ,/
+              '---"     '---'
+               ,----,.
+             ,'   ,' |        ,--,
+           ,'   .'   |      ,--.'|      ,----,
+         ,----.'    .'   ,--,  | :    .'   .' \
+         |    |   .'  ,---.'|  : '  ,----,'    |
+         :    :  |--, ;   : |  | ;  |    :  .  ;
+         :    |  ;.' \|   | : _' |  ;    |.'  /
+         |    |      |:   : |.'  |  `----'/  ;
+         `----'.'\   ;|   ' '  ; :    /  ;  /
+           __  \  .  |\   \  .'. |   ;  /  /-,
+         /   /\/  /  : `---`:  | '  /  /  /.`|
+        / ,,/  ',-   .      '  ; |./__;      :
+        \ ''\       ;       |  : ;|   :    .'
+         \   \    .'        '  ,/ ;   | .'
+          `--`-,-'          '--'  `---'
+
+                                           */
+    /*
+          _____                _____                    _____                    _____                    _____
+         /\    \              /\    \                  /\    \                  /\    \                  /\    \
+        /::\    \            /::\    \                /::\    \                /::\    \                /::\____\
+       /::::\    \           \:::\    \              /::::\    \              /::::\    \              /:::/    /
+      /::::::\    \           \:::\    \            /::::::\    \            /::::::\    \            /:::/    /
+     /:::/\:::\    \           \:::\    \          /:::/\:::\    \          /:::/\:::\    \          /:::/    /
+    /:::/__\:::\    \           \:::\    \        /:::/__\:::\    \        /:::/  \:::\    \        /:::/____/
+    \:::\   \:::\    \          /::::\    \      /::::\   \:::\    \      /:::/    \:::\    \      /::::\    \
+  ___\:::\   \:::\    \        /::::::\    \    /::::::\   \:::\    \    /:::/    / \:::\    \    /::::::\____\________
+ /\   \:::\   \:::\    \      /:::/\:::\    \  /:::/\:::\   \:::\    \  /:::/    /   \:::\    \  /:::/\:::::::::::\    \
+/::\   \:::\   \:::\____\    /:::/  \:::\____\/:::/  \:::\   \:::\____\/:::/____/     \:::\____\/:::/  |:::::::::::\____\
+\:::\   \:::\   \::/    /   /:::/    \::/    /\::/    \:::\  /:::/    /\:::\    \      \::/    /\::/   |::|~~~|~~~~~
+ \:::\   \:::\   \/____/   /:::/    / \/____/  \/____/ \:::\/:::/    /  \:::\    \      \/____/  \/____|::|   |
+  \:::\   \:::\    \      /:::/    /                    \::::::/    /    \:::\    \                    |::|   |
+   \:::\   \:::\____\    /:::/    /                      \::::/    /      \:::\    \                   |::|   |
+    \:::\  /:::/    /    \::/    /                       /:::/    /        \:::\    \                  |::|   |
+     \:::\/:::/    /      \/____/                       /:::/    /          \:::\    \                 |::|   |
+      \::::::/    /                                    /:::/    /            \:::\    \                |::|   |
+       \::::/    /                                    /:::/    /              \:::\____\               \::|   |
+        \::/    /                                     \::/    /                \::/    /                \:|   |
+         \/____/                                       \/____/                  \/____/                  \|___|
+
+                                                 _______                   _____                    _____                    _____                    _____                    _____           _______                   _____
+                                                /::\    \                 /\    \                  /\    \                  /\    \                  /\    \                  /\    \         /::\    \                 /\    \
+                                               /::::\    \               /::\____\                /::\    \                /::\    \                /::\    \                /::\____\       /::::\    \               /::\____\
+                                              /::::::\    \             /:::/    /               /::::\    \              /::::\    \              /::::\    \              /:::/    /      /::::::\    \             /:::/    /
+                                             /::::::::\    \           /:::/    /               /::::::\    \            /::::::\    \            /::::::\    \            /:::/    /      /::::::::\    \           /:::/   _/___
+                                            /:::/~~\:::\    \         /:::/    /               /:::/\:::\    \          /:::/\:::\    \          /:::/\:::\    \          /:::/    /      /:::/~~\:::\    \         /:::/   /\    \
+                                           /:::/    \:::\    \       /:::/____/               /:::/__\:::\    \        /:::/__\:::\    \        /:::/__\:::\    \        /:::/    /      /:::/    \:::\    \       /:::/   /::\____\
+                                          /:::/    / \:::\    \      |::|    |               /::::\   \:::\    \      /::::\   \:::\    \      /::::\   \:::\    \      /:::/    /      /:::/    / \:::\    \     /:::/   /:::/    /
+                                         /:::/____/   \:::\____\     |::|    |     _____    /::::::\   \:::\    \    /::::::\   \:::\    \    /::::::\   \:::\    \    /:::/    /      /:::/____/   \:::\____\   /:::/   /:::/   _/___
+                                        |:::|    |     |:::|    |    |::|    |    /\    \  /:::/\:::\   \:::\    \  /:::/\:::\   \:::\____\  /:::/\:::\   \:::\    \  /:::/    /      |:::|    |     |:::|    | /:::/___/:::/   /\    \
+                                        |:::|____|     |:::|    |    |::|    |   /::\____\/:::/__\:::\   \:::\____\/:::/  \:::\   \:::|    |/:::/  \:::\   \:::\____\/:::/____/       |:::|____|     |:::|    ||:::|   /:::/   /::\____\
+                                         \:::\    \   /:::/    /     |::|    |  /:::/    /\:::\   \:::\   \::/    /\::/   |::::\  /:::|____|\::/    \:::\   \::/    /\:::\    \        \:::\    \   /:::/    / |:::|__/:::/   /:::/    /
+                                          \:::\    \ /:::/    /      |::|    | /:::/    /  \:::\   \:::\   \/____/  \/____|:::::\/:::/    /  \/____/ \:::\   \/____/  \:::\    \        \:::\    \ /:::/    /   \:::\/:::/   /:::/    /
+                                           \:::\    /:::/    /       |::|____|/:::/    /    \:::\   \:::\    \            |:::::::::/    /            \:::\    \       \:::\    \        \:::\    /:::/    /     \::::::/   /:::/    /
+                                            \:::\__/:::/    /        |:::::::::::/    /      \:::\   \:::\____\           |::|\::::/    /              \:::\____\       \:::\    \        \:::\__/:::/    /       \::::/___/:::/    /
+                                             \::::::::/    /         \::::::::::/____/        \:::\   \::/    /           |::| \::/____/                \::/    /        \:::\    \        \::::::::/    /         \:::\__/:::/    /
+                                              \::::::/    /           ~~~~~~~~~~               \:::\   \/____/            |::|  ~|                       \/____/          \:::\    \        \::::::/    /           \::::::::/    /
+                                               \::::/    /                                      \:::\    \                |::|   |                                         \:::\    \        \::::/    /             \::::::/    /
+                                                \::/____/                                        \:::\____\               \::|   |                                          \:::\____\        \::/____/               \::::/    /
+                                                 ~~                                               \::/    /                \:|   |                                           \::/    /         ~~                      \::/____/
+                                                                                                   \/____/                  \|___|                                            \/____/                                   ~~
+     */
 }
