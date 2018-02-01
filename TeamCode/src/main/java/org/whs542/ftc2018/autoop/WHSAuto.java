@@ -112,10 +112,10 @@ public class WHSAuto extends OpMode {
     static final double VUFORIA_DETECTION_DEADMAN = 5.42;
 
     //jank variables ( ͡° ͜ʖ ͡°)
-    Position p;
-    Position q;
-    Position s;
-    boolean b;
+    Position p1;
+    Position p2;
+    Position p3;
+    boolean drivingToP2;
     private double x;
     private double y;
     boolean initializeDriveToSafezone = true;
@@ -193,13 +193,13 @@ public class WHSAuto extends OpMode {
                     subStateDesc = "entry";
                 }
                 if (!swivelStoreToMiddleTimer.isExpired()) {
+                    subStateDesc = "swivel to middle";
                     robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.MIDDLE);
                     armUpToDown.set(ARM_FOLD_DELAY);
-                    subStateDesc = "swivel to middle";
                 } else if (!armUpToDown.isExpired()) {
+                    subStateDesc = "arm up to down";
                     robot.jewelPusher.operateArm(JewelPusher.ArmPosition.DOWN);
                     jewelDeadmanTimer.set(JEWEL_DETECTION_DEADMAN);
-                    subStateDesc = "arm up to down";
                 } else if (!hasJewelBeenDetected & !jewelDeadmanTimer.isExpired()) {
                     /*checks if the color detected to the left of the swivel (assuming the color sensor is mounted on the left)
                     **matches the alliance, and if so, swings left, otherwise swings right
@@ -221,7 +221,6 @@ public class WHSAuto extends OpMode {
                     jewelKnockTimer.set(JEWEL_KNOCK_DELAY);
                 } else if (!jewelKnockTimer.isExpired()) {
                     subStateDesc = "knocking jewel";
-
                     if (jewelDetection == JewelDetection.MATCH) {
                         robot.jewelPusher.operateSwivel(JewelPusher.SwivelPosition.RIGHT);
                     } else if (jewelDetection == JewelDetection.NOT_MATCH) {
@@ -260,16 +259,17 @@ public class WHSAuto extends OpMode {
                 }
 
                 if (!vuforiaDriveTimer.isExpired()) {
+                    subStateDesc = "driving to vuforia";
                     robot.drivetrain.operate(0.15, 0.15);
-
+                    //scan while driving in case the robot drives too far
                     vuforiaReading = robot.vuforia.getVuforiaReading();
                     if (vuforiaReading != RelicRecoveryVuMark.UNKNOWN) {
                         vuforiaReading = robot.vuforia.getVuforiaReading();
                         hasTargetBeenDetected = true;
                     }
                     vuforiaDetectionDeadmanTimer.set(VUFORIA_DETECTION_DEADMAN);
-
                 } else if (!hasTargetBeenDetected && !vuforiaDetectionDeadmanTimer.isExpired()) {
+                    subStateDesc = "scanning vuforia target";
                     robot.drivetrain.operate(0.0, 0.0);
                     vuforiaReading = robot.vuforia.getVuforiaReading();
                     if (vuforiaReading != RelicRecoveryVuMark.UNKNOWN) {
@@ -278,17 +278,16 @@ public class WHSAuto extends OpMode {
                     }
                 }
                 /*else if (robot.balancingStoneSensor.balancingStoneDetected(ALLIANCE)) {
+                    subStateDesc = "driving off balancing stone";
                     if (ALLIANCE == RED) {
                         robot.drivetrain.operate(0.15, 0.15);
-                    }
-                    else if(ALLIANCE == BLUE) {
+                    } else if (ALLIANCE == BLUE) {
                         robot.drivetrain.operate(-0.15, -0.15);
                     }
                 }*/
                 else {
                     performStateExit = true;
                 }
-
 
                 if (performStateExit) {
                     robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -300,24 +299,7 @@ public class WHSAuto extends OpMode {
             case DRIVE_INTO_SAFEZONE:
                 currentStateDesc = "driving off platform into safe zone";
                 if (performStateEntry) {
-                    /*switch (vuforiaReading){
-                        case LEFT:
-                            column = LEFT;
-                            break;
-                        case CENTER:
-                            column = CENTER;
-                            break;
-                        case RIGHT:
-                            column = RIGHT;
-                            break;
-                        case UNKNOWN:
-                            column = CENTER;
-                            break;
-                        default:
-                            column = CENTER;
-                            break;
-                    }*/
-                    b = false;
+                    drivingToP2 = false;
                     if (vuforiaReading == RelicRecoveryVuMark.LEFT) {
                         column = LEFT;
                     } else if (vuforiaReading == RelicRecoveryVuMark.RIGHT) {
@@ -327,24 +309,27 @@ public class WHSAuto extends OpMode {
                     }
 
                     if (BALANCING_STONE == CORNER) {
-                        p = safeZonePositionsArray[ALLIANCE][SAFEZONE_1][column];
+                        subStateDesc = "driving to safezone";
+                        p1 = safeZonePositionsArray[ALLIANCE][SAFEZONE_1][column];
                     } else if (BALANCING_STONE == OFF_CENTER) {
-                        p = waypointPositionsArray[ALLIANCE];
-                        s = safeZonePositionsArray[ALLIANCE][SAFEZONE_2][column];
+                        subStateDesc = "driving to waypoint";
+                        p1 = waypointPositionsArray[ALLIANCE];
+                        p2 = safeZonePositionsArray[ALLIANCE][SAFEZONE_2][column];
                     }
 
-                    robot.driveToTarget(p, true);
+                    robot.driveToTarget(p1, true);
                     performStateEntry = false;
                 }
 
-                if ((robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) && !b) {
-                    robot.driveToTarget(p, true);
+                if ((robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) && !drivingToP2) {
+                    robot.driveToTarget(p1, true);
                 } else if (BALANCING_STONE == OFF_CENTER && initializeDriveToSafezone) {
-                    robot.driveToTarget(s, false);
+                    subStateDesc = "driving to safezone";
+                    robot.driveToTarget(p2, false);
                     initializeDriveToSafezone = false;
-                    b = true;
-                } else if ((robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) && b) {
-                    robot.driveToTarget(s, false);
+                    drivingToP2 = true;
+                } else if ((robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) && drivingToP2) {
+                    robot.driveToTarget(p2, false);
                 } else {
                     performStateExit = true;
                 }
@@ -356,26 +341,27 @@ public class WHSAuto extends OpMode {
                 }
                 break;
             case DRIVE_TO_BOX:
-                currentStateDesc = "driving to box";
+                currentStateDesc = "driving to box and placing glyph";
                 if (performStateEntry) {
                     x = robot.getCoordinate().getX();
                     y = robot.getCoordinate().getY();
 
                     if (BALANCING_STONE == CORNER) {
-                        q = boxPositionsArray[ALLIANCE][BOX_1];
-                        robot.driveToTarget(new Position(x, q.getY(), 150), false);
+                        p3 = boxPositionsArray[ALLIANCE][BOX_1];
+                        robot.driveToTarget(new Position(x, p3.getY(), 150), false);
                     } else if (BALANCING_STONE == OFF_CENTER) {
-                        q = boxPositionsArray[ALLIANCE][BOX_2];
-                        robot.driveToTarget(new Position(q.getX(), y, 150), false);
+                        p3 = boxPositionsArray[ALLIANCE][BOX_2];
+                        robot.driveToTarget(new Position(p3.getX(), y, 150), false);
                     }
                     performStateEntry = false;
                 }
 
                 if (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
+                    subStateDesc = "driving to box";
                     if (BALANCING_STONE == CORNER) {
-                        robot.driveToTarget(new Position(x, q.getY(), 150), false);
+                        robot.driveToTarget(new Position(x, p3.getY(), 150), false);
                     } else {
-                        robot.driveToTarget(new Position(q.getX(), y, 150), false);
+                        robot.driveToTarget(new Position(p3.getX(), y, 150), false);
                     }
                     operateLiftTimer.set(OPERATE_LIFT_DELAY);
                 } else if (!operateLiftTimer.isExpired()) {
@@ -383,6 +369,7 @@ public class WHSAuto extends OpMode {
                     robot.lift.operateLift(false, 1f);
                     driveAwayTimer.set(DRIVE_AWAY_DURATION * 2.1);
                 } else if (!driveAwayTimer.isExpired()) {
+                    subStateDesc = "driving away";
                     robot.lift.operateLift(false, 1f);
                     robot.drivetrain.operate(-0.15, -0.15);
                 } else {
@@ -405,9 +392,11 @@ public class WHSAuto extends OpMode {
                 }
 
                 if (!driveInTimer.isExpired()) {
+                    subStateDesc = "pushing in glyph";
                     robot.drivetrain.operate(0.3, 0.3);
                     driveOutTimer.set(DRIVE_AWAY_DURATION / 2.4);
                 } else if (!driveOutTimer.isExpired()) {
+                    subStateDesc = "backing out";
                     robot.drivetrain.operate(-0.3, -0.3);
                 } else {
                     robot.drivetrain.operate(0, 0);

@@ -26,50 +26,60 @@ public class WHSTeleOp extends OpMode {
     public void loop() {
 
         robot.jewelPusher.operateArm(JewelPusher.ArmPosition.UP);
-        
+
         robot.intake.operateWithToggle(gamepad1.right_bumper, gamepad1.right_trigger);
 
-        if(gamepad1.left_bumper){
-            robot.drivetrain.operateWithOrientation(gamepad1.left_stick_y/2.54, gamepad1.right_stick_y/2.54);
-        }
-        else {
+        /* DRIVETRAIN */
+        //Precision driving mode
+        if (gamepad1.left_bumper) {
+            robot.drivetrain.operateWithOrientation(gamepad1.left_stick_y / 2.54, gamepad1.right_stick_y / 2.54);
+        } else {
             robot.drivetrain.operateWithOrientation(gamepad1.left_stick_y, gamepad1.right_stick_y);
         }
+
         robot.drivetrain.switchOrientation(gamepad1.a);
 
         if (robot.drivetrain.getOrientation() == "normal") {
             robot.lighting.operateLED(1.0);
-        }
-        else {
+        } else {
             robot.lighting.operateLED(0.0);
         }
 
+        /* FOUR BAR */
         robot.fourBar.operate(gamepad2.a, gamepad2.x, gamepad2.y);
 
-        //If the four bar is at highest level, Vlift will go up slightly
-        if (gamepad2.right_bumper || gamepad2.right_trigger>0.01 || gamepad2.left_bumper) {
-            robot.lift.operateLift(gamepad2.right_bumper, gamepad2.right_trigger);
-        }
-        else if(robot.fourBar.getFourBarLevel().equals("Scoring on top of 2 glyphs")){  //Jank
-            robot.lift.operateLift(VLift.LiftPosition.MIDDLE_DOWN);
-        }
-        else {
-            robot.lift.operateLift(VLift.LiftPosition.DOWN);
-        }
-
-        if(gamepad2.left_trigger>0.05 && gamepad2.dpad_down){
+        //Resets four bar
+        if (gamepad2.start && gamepad2.dpad_down) {
             robot.fourBar.operate(0.0);
             robot.fourBar.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             fourBarResetState = 1;
-        }
-        else if(fourBarResetState == 1){
+        } else if (fourBarResetState == 1) {
             robot.fourBar.setRunMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             fourBarResetState = 2;
+        } else if (fourBarResetState == 2) {
+            robot.fourBar.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
+            fourBarResetState = 0;
         }
-        else if(fourBarResetState == 2){
-            robot.fourBar.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        /* VLIFT */
+        //If the four bar is at highest level, the Vlift will go up slightly
+        if (gamepad2.right_bumper || gamepad2.right_trigger > 0.01 || gamepad2.left_bumper) {
+            robot.lift.operateLift(gamepad2.right_bumper, gamepad2.right_trigger);
+        } else if (robot.fourBar.getFourBarLevel().equals("Scoring on top of 2 glyphs")) {  //Jank
+            robot.lift.operateLift(VLift.LiftPosition.MIDDLE_DOWN);
+        } else {
+            robot.lift.operateLift(VLift.LiftPosition.DOWN);
         }
-        
+
+        //If the Vlift is up (flipped), the gate will go to middle
+        if (gamepad2.left_trigger > 0.05) {
+            robot.lift.operateGate(VLift.GatePosition.OPEN);
+        } else if (robot.lift.getCurrentLiftPos() == "up") {
+            robot.lift.operateGate(VLift.GatePosition.MIDDLE);
+        } else {
+            robot.lift.operateGate(VLift.GatePosition.CLOSED);
+        }
+
         robot.lift.operateJiggle(gamepad2.left_bumper);
 
         telemetry.addData("Four Bar Level: ", robot.fourBar.getFourBarLevel());
@@ -79,7 +89,7 @@ public class WHSTeleOp extends OpMode {
     }
 
     @Override
-    public void stop(){
+    public void stop() {
         robot.drivetrain.operate(0.0, 0.0);
         robot.intake.operate(0.0);
     }

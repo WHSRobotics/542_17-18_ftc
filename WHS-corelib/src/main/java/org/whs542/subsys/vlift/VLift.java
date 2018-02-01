@@ -10,6 +10,10 @@ public interface VLift {
         DOWN, MIDDLE_DOWN, MIDDLE_UP, UP
     }
 
+    enum GatePosition {
+        CLOSED, MIDDLE, OPEN
+    }
+
     void operateLift(double leftPosition, double rightPosition);
 
     void operateLift(boolean gamepadInput1, float gamepadInput2);
@@ -17,5 +21,13 @@ public interface VLift {
     void operateLift(LiftPosition liftPosition);
 
     void operateJiggle(boolean gamepadInput1);
+
+    void operateGate(double position);
+
+    void operateGate(boolean gamepadInput);
+
+    void operateGate(GatePosition gatePosition);
+
+    String getCurrentLiftPos();
 
 }
