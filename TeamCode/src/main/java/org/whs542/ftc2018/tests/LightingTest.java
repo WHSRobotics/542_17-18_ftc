@@ -2,25 +2,25 @@ package org.whs542.ftc2018.tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Light;
 
-import org.whs542.ftc2018.subsys.VLiftImpl;
-import org.whs542.subsys.vlift.VLift;
+import org.whs542.ftc2018.subsys.Lighting;
 import org.whs542.util.Toggler;
 
 /**
- * Created by ivanm on 1/31/2018.
+ * Created by Amar2 on 2/2/2018.
  */
+@TeleOp(name = "LightingTest", group = "tests")
+public class LightingTest extends OpMode{
 
-@TeleOp(group = "tests", name = "GateTest")
-public class GateTest extends OpMode {
-
-    VLift lift;
+    Lighting LED;
     Toggler toggler;
-    long i;
+    int i;
+
 
     @Override
     public void init() {
-        lift = new VLiftImpl(hardwareMap);
+        LED = new Lighting(hardwareMap);
         toggler = new Toggler(200);
     }
 
@@ -36,7 +36,6 @@ public class GateTest extends OpMode {
                 toggler.setState(toggler.currentState() - 1);
             }
         }
-        lift.operateGate(toggler.currentState()/200f);
-        telemetry.addData("Position: ", toggler.currentState()/200f);
+        LED.operateLED(toggler.currentState()/200f);
     }
 }

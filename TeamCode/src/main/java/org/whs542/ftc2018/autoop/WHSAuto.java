@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.whs542.ftc2018.subsys.WHSRobotImpl;
 import org.whs542.subsys.jewelpusher.JewelPusher;
+import org.whs542.subsys.vlift.VLift;
 import org.whs542.util.Coordinate;
 import org.whs542.util.Position;
 import org.whs542.util.SimpleTimer;
@@ -55,11 +56,11 @@ public class WHSAuto extends OpMode {
 
     public void defineStateEnabledStatus() {
         stateEnabled[INIT] = true;
-        stateEnabled[HIT_JEWEL] = true;
-        stateEnabled[DRIVE_TO_VUFORIA] = true;
-        stateEnabled[DRIVE_INTO_SAFEZONE] = true;
-        stateEnabled[DRIVE_TO_BOX] = true;
-        stateEnabled[SECURE_GLYPH] = true;
+        stateEnabled[HIT_JEWEL] = false;
+        stateEnabled[DRIVE_TO_VUFORIA] = false;
+        stateEnabled[DRIVE_INTO_SAFEZONE] = false;
+        stateEnabled[DRIVE_TO_BOX] = false;
+        stateEnabled[SECURE_GLYPH] = false;
         stateEnabled[END] = true;
     }
 
@@ -181,6 +182,7 @@ public class WHSAuto extends OpMode {
             case INIT:
                 currentStateDesc = "beginning AutoOp";
                 robot.setInitialCoordinate(startingCoordinateArray[ALLIANCE][BALANCING_STONE]);
+                robot.lift.operateGate(VLift.GatePosition.MIDDLE);
                 advanceState();
                 break;
             case HIT_JEWEL:
@@ -366,11 +368,11 @@ public class WHSAuto extends OpMode {
                     operateLiftTimer.set(OPERATE_LIFT_DELAY);
                 } else if (!operateLiftTimer.isExpired()) {
                     subStateDesc = "placing glyph";
-                    robot.lift.operateLift(false, 1f);
+                    robot.lift.operateLift(VLift.LiftPosition.UP);
                     driveAwayTimer.set(DRIVE_AWAY_DURATION * 2.1);
                 } else if (!driveAwayTimer.isExpired()) {
                     subStateDesc = "driving away";
-                    robot.lift.operateLift(false, 1f);
+                    robot.lift.operateLift(VLift.LiftPosition.UP);
                     robot.drivetrain.operate(-0.15, -0.15);
                 } else {
                     performStateExit = true;
@@ -386,7 +388,8 @@ public class WHSAuto extends OpMode {
             case SECURE_GLYPH:
                 currentStateDesc = "securing glyph";
                 if (performStateEntry) {
-                    robot.lift.operateLift(false, 0f);
+                    robot.lift.operateLift(VLift.LiftPosition.DOWN);
+                    robot.lift.operateGate(VLift.GatePosition.CLOSED);
                     driveInTimer.set(DRIVE_AWAY_DURATION + 0.3);
                     performStateEntry = false;
                 }
@@ -411,10 +414,13 @@ public class WHSAuto extends OpMode {
                 break;
             case END:
                 currentStateDesc = "we made it?!";
+                if(performStateEntry){
+                    finishTime = System.currentTimeMillis()/1000;
+                    performStateEntry = false;
+                }
 
                 // pulsing LEDs :D
-                finishTime = System.currentTimeMillis();
-                currentTime = (System.currentTimeMillis() - finishTime) / 1000;
+                currentTime = (System.currentTimeMillis()/1000 - finishTime);
                 robot.lighting.operateLED(Math.sin(currentTime) * 0.5 + 0.5);
 
             default:
@@ -423,7 +429,7 @@ public class WHSAuto extends OpMode {
 
         if (robot.drivetrain.getAbsPowerAverage() > 0.5) {
             robot.lighting.operateLED(1.0);
-        } else {
+        } else if (currentState != END){
             robot.lighting.operateLED(robot.drivetrain.getAbsPowerAverage() * 2.0);
         }
 
@@ -483,6 +489,11 @@ public class WHSAuto extends OpMode {
           `--`-,-'          '--'  `---'
 
                                            */
+
+
+
+
+
     /*
           _____                _____                    _____                    _____                    _____
          /\    \              /\    \                  /\    \                  /\    \                  /\    \
@@ -528,4 +539,5 @@ public class WHSAuto extends OpMode {
                                                  ~~                                               \::/    /                \:|   |                                           \::/    /         ~~                      \::/____/
                                                                                                    \/____/                  \|___|                                            \/____/                                   ~~
      */
+
 }
