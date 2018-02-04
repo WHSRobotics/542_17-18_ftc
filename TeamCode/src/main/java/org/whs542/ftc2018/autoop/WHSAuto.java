@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.whs542.ftc2018.subsys.IMU;
 import org.whs542.ftc2018.subsys.WHSRobotImpl;
 import org.whs542.subsys.jewelpusher.JewelPusher;
 import org.whs542.subsys.vlift.VLift;
@@ -29,7 +30,7 @@ public class WHSAuto extends OpMode {
 
     static final int RED = 0;
     static final int BLUE = 1;
-    static final int ALLIANCE = BLUE;
+    static final int ALLIANCE = RED;
     static final int CORNER = 0;
     static final int OFF_CENTER = 1;
     static final int BALANCING_STONE = CORNER;
@@ -56,11 +57,11 @@ public class WHSAuto extends OpMode {
 
     public void defineStateEnabledStatus() {
         stateEnabled[INIT] = true;
-        stateEnabled[HIT_JEWEL] = false;
-        stateEnabled[DRIVE_TO_VUFORIA] = false;
-        stateEnabled[DRIVE_INTO_SAFEZONE] = false;
-        stateEnabled[DRIVE_TO_BOX] = false;
-        stateEnabled[SECURE_GLYPH] = false;
+        stateEnabled[HIT_JEWEL] = true;
+        stateEnabled[DRIVE_TO_VUFORIA] = true;
+        stateEnabled[DRIVE_INTO_SAFEZONE] = true;
+        stateEnabled[DRIVE_TO_BOX] = true;
+        stateEnabled[SECURE_GLYPH] = true;
         stateEnabled[END] = true;
     }
 
@@ -85,6 +86,7 @@ public class WHSAuto extends OpMode {
     SimpleTimer driveOutTimer = new SimpleTimer();
     SimpleTimer vuforiaDriveTimer = new SimpleTimer();
     SimpleTimer vuforiaDetectionDeadmanTimer = new SimpleTimer();
+    SimpleTimer imuResetTimer = new SimpleTimer();
 
     //boolean isJewelAllianceColor;
     enum JewelDetection {
@@ -111,6 +113,7 @@ public class WHSAuto extends OpMode {
     static final double DRIVE_AWAY_DURATION = 1.2;
     static final double VUFORIA_DRIVE_DURATION = 2.5;
     static final double VUFORIA_DETECTION_DEADMAN = 5.42;
+    static final double IMU_RESET_DURATION = 5.42;
 
     //jank variables ( ͡° ͜ʖ ͡°)
     Position p1;
@@ -119,7 +122,11 @@ public class WHSAuto extends OpMode {
     boolean drivingToP2;
     private double x;
     private double y;
-    boolean initializeDriveToSafezone = true;
+    boolean initializeDriveToSafezone = false;
+    boolean initializeDriveToBox = false;
+    boolean initializeResetIMU = true;
+    double lastImuReading = 0.0;
+    boolean imuResetComplete = false;
 
     private double finishTime;
     private double currentTime;
@@ -325,14 +332,28 @@ public class WHSAuto extends OpMode {
 
                 if ((robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) && !drivingToP2) {
                     robot.driveToTarget(p1, true);
-                } else if (BALANCING_STONE == OFF_CENTER && initializeDriveToSafezone) {
+                } else if (BALANCING_STONE == OFF_CENTER && initializeResetIMU) {
+                    subStateDesc = "resetting IMU";
+                    if (ALLIANCE == RED) {
+                        lastImuReading = robot.imu.getHeading();
+                    }
+                    else {
+                        lastImuReading = robot.imu.getHeading() + 180.0;
+                    }
+                    robot.imu = new IMU(hardwareMap);
+                    initializeDriveToSafezone = true;
+                    initializeResetIMU = false;
+                    imuResetTimer.set(IMU_RESET_DURATION);
+                } else if (BALANCING_STONE == OFF_CENTER && imuResetTimer.isExpired() && initializeDriveToSafezone) {
                     subStateDesc = "driving to safezone";
+                    imuResetComplete = true;
+                    robot.imu.setImuBias(lastImuReading);
                     robot.driveToTarget(p2, false);
                     initializeDriveToSafezone = false;
                     drivingToP2 = true;
                 } else if ((robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) && drivingToP2) {
                     robot.driveToTarget(p2, false);
-                } else {
+                } else if (BALANCING_STONE == CORNER || imuResetComplete){
                     performStateExit = true;
                 }
 
@@ -348,23 +369,38 @@ public class WHSAuto extends OpMode {
                     x = robot.getCoordinate().getX();
                     y = robot.getCoordinate().getY();
 
-                    if (BALANCING_STONE == CORNER) {
-                        p3 = boxPositionsArray[ALLIANCE][BOX_1];
-                        robot.driveToTarget(new Position(x, p3.getY(), 150), false);
-                    } else if (BALANCING_STONE == OFF_CENTER) {
+                    if (BALANCING_STONE == OFF_CENTER) {
                         p3 = boxPositionsArray[ALLIANCE][BOX_2];
                         robot.driveToTarget(new Position(p3.getX(), y, 150), false);
                     }
                     performStateEntry = false;
                 }
 
-                if (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
+                if (BALANCING_STONE == OFF_CENTER && (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress())) {
                     subStateDesc = "driving to box";
-                    if (BALANCING_STONE == CORNER) {
-                        robot.driveToTarget(new Position(x, p3.getY(), 150), false);
+                    robot.driveToTarget(new Position(p3.getX(), y, 150), false);
+                    operateLiftTimer.set(OPERATE_LIFT_DELAY);
+                } else if (BALANCING_STONE == CORNER && initializeResetIMU) {
+                    subStateDesc = "resetting IMU";
+                    if (ALLIANCE == RED) {
+                        lastImuReading = robot.imu.getHeading();
                     } else {
-                        robot.driveToTarget(new Position(p3.getX(), y, 150), false);
+                        lastImuReading = robot.imu.getHeading() + 180;
                     }
+                    robot.imu = new IMU(hardwareMap);
+                    initializeResetIMU = false;
+                    initializeDriveToBox = true;
+                    imuResetTimer.set(IMU_RESET_DURATION);
+                } else if (BALANCING_STONE == CORNER && imuResetTimer.isExpired() && initializeDriveToBox) {
+                    subStateDesc = "driving to box";
+                    imuResetComplete = true;
+                    robot.imu.setImuBias(lastImuReading);
+                    p3 = boxPositionsArray[ALLIANCE][BOX_1];
+                    robot.driveToTarget(new Position(x, p3.getY(), 150), false);
+                    initializeDriveToBox = false;
+                } else if ((BALANCING_STONE == CORNER) && (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress())) {
+                    subStateDesc = "driving to box";
+                    robot.driveToTarget(new Position(x, p3.getY(), 150), false);
                     operateLiftTimer.set(OPERATE_LIFT_DELAY);
                 } else if (!operateLiftTimer.isExpired()) {
                     subStateDesc = "placing glyph";
@@ -374,7 +410,7 @@ public class WHSAuto extends OpMode {
                     subStateDesc = "driving away";
                     robot.lift.operateLift(VLift.LiftPosition.UP);
                     robot.drivetrain.operate(-0.15, -0.15);
-                } else {
+                } else if (BALANCING_STONE == OFF_CENTER || imuResetComplete){
                     performStateExit = true;
                 }
 
@@ -415,12 +451,12 @@ public class WHSAuto extends OpMode {
             case END:
                 currentStateDesc = "we made it?!";
                 if(performStateEntry){
-                    finishTime = System.currentTimeMillis()/1000;
+                    finishTime = System.currentTimeMillis();
                     performStateEntry = false;
                 }
 
                 // pulsing LEDs :D
-                currentTime = (System.currentTimeMillis()/1000 - finishTime);
+                currentTime = (System.currentTimeMillis() - finishTime)/1000;
                 robot.lighting.operateLED(Math.sin(currentTime) * 0.5 + 0.5);
 
             default:
