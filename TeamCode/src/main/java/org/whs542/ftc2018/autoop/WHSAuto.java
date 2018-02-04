@@ -336,8 +336,7 @@ public class WHSAuto extends OpMode {
                     subStateDesc = "resetting IMU";
                     if (ALLIANCE == RED) {
                         lastImuReading = robot.imu.getHeading();
-                    }
-                    else {
+                    } else {
                         lastImuReading = robot.imu.getHeading() + 180.0;
                     }
                     robot.imu = new IMU(hardwareMap);
@@ -346,6 +345,8 @@ public class WHSAuto extends OpMode {
                     imuResetTimer.set(IMU_RESET_DURATION);
                 } else if (BALANCING_STONE == OFF_CENTER && imuResetTimer.isExpired() && initializeDriveToSafezone) {
                     subStateDesc = "driving to safezone";
+                    /*imuResetComplete makes sure that it won't advance states during the 5 seconds
+                    it takes to reset imu*/
                     imuResetComplete = true;
                     robot.imu.setImuBias(lastImuReading);
                     robot.driveToTarget(p2, false);
@@ -353,7 +354,7 @@ public class WHSAuto extends OpMode {
                     drivingToP2 = true;
                 } else if ((robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) && drivingToP2) {
                     robot.driveToTarget(p2, false);
-                } else if (BALANCING_STONE == CORNER || imuResetComplete){
+                } else if (BALANCING_STONE == CORNER || imuResetComplete) {
                     performStateExit = true;
                 }
 
@@ -398,7 +399,7 @@ public class WHSAuto extends OpMode {
                     p3 = boxPositionsArray[ALLIANCE][BOX_1];
                     robot.driveToTarget(new Position(x, p3.getY(), 150), false);
                     initializeDriveToBox = false;
-                } else if ((BALANCING_STONE == CORNER) && (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress())) {
+                } else if (BALANCING_STONE == CORNER && (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress())) {
                     subStateDesc = "driving to box";
                     robot.driveToTarget(new Position(x, p3.getY(), 150), false);
                     operateLiftTimer.set(OPERATE_LIFT_DELAY);
@@ -410,7 +411,7 @@ public class WHSAuto extends OpMode {
                     subStateDesc = "driving away";
                     robot.lift.operateLift(VLift.LiftPosition.UP);
                     robot.drivetrain.operate(-0.15, -0.15);
-                } else if (BALANCING_STONE == OFF_CENTER || imuResetComplete){
+                } else if (BALANCING_STONE == OFF_CENTER || imuResetComplete) {
                     performStateExit = true;
                 }
 
@@ -450,13 +451,13 @@ public class WHSAuto extends OpMode {
                 break;
             case END:
                 currentStateDesc = "we made it?!";
-                if(performStateEntry){
+                if (performStateEntry) {
                     finishTime = System.currentTimeMillis();
                     performStateEntry = false;
                 }
 
                 // pulsing LEDs :D
-                currentTime = (System.currentTimeMillis() - finishTime)/1000;
+                currentTime = (System.currentTimeMillis() - finishTime) / 1000;
                 robot.lighting.operateLED(Math.sin(currentTime) * 0.5 + 0.5);
 
             default:
@@ -465,7 +466,7 @@ public class WHSAuto extends OpMode {
 
         if (robot.drivetrain.getAbsPowerAverage() > 0.5) {
             robot.lighting.operateLED(1.0);
-        } else if (currentState != END){
+        } else if (currentState != END) {
             robot.lighting.operateLED(robot.drivetrain.getAbsPowerAverage() * 2.0);
         }
 
@@ -494,43 +495,6 @@ public class WHSAuto extends OpMode {
         }
     }
     /*
-                                    ,--,
-                   .---.      ,--.'|  .--.--.
-                  /. ./|   ,--,  | : /  /    '.
-              .--'.  ' ;,---.'|  : '|  :  /`. /
-             /__./ \ : ||   | : _' |;  |  |--`
-         .--'.  '   \' .:   : |.'  ||  :  ;_
-        /___/ \ |    ' '|   ' '  ; : \  \    `.
-        ;   \  \;      :'   |  .'. |  `----.   \
-         \   ;  `      ||   | :  | '  __ \  \  |
-          .   \    .\  ;'   : |  : ; /  /`--'  /
-           \   \   ' \ ||   | '  ,/ '--'.     /
-            :   '  |--" ;   : ;--'    `--'---'
-             \   \ ;    |   ,/
-              '---"     '---'
-               ,----,.
-             ,'   ,' |        ,--,
-           ,'   .'   |      ,--.'|      ,----,
-         ,----.'    .'   ,--,  | :    .'   .' \
-         |    |   .'  ,---.'|  : '  ,----,'    |
-         :    :  |--, ;   : |  | ;  |    :  .  ;
-         :    |  ;.' \|   | : _' |  ;    |.'  /
-         |    |      |:   : |.'  |  `----'/  ;
-         `----'.'\   ;|   ' '  ; :    /  ;  /
-           __  \  .  |\   \  .'. |   ;  /  /-,
-         /   /\/  /  : `---`:  | '  /  /  /.`|
-        / ,,/  ',-   .      '  ; |./__;      :
-        \ ''\       ;       |  : ;|   :    .'
-         \   \    .'        '  ,/ ;   | .'
-          `--`-,-'          '--'  `---'
-
-                                           */
-
-
-
-
-
-    /*
           _____                _____                    _____                    _____                    _____
          /\    \              /\    \                  /\    \                  /\    \                  /\    \
         /::\    \            /::\    \                /::\    \                /::\    \                /::\____\
@@ -553,27 +517,26 @@ public class WHSAuto extends OpMode {
         \::/    /                                     \::/    /                \::/    /                \:|   |
          \/____/                                       \/____/                  \/____/                  \|___|
 
-                                                 _______                   _____                    _____                    _____                    _____                    _____           _______                   _____
-                                                /::\    \                 /\    \                  /\    \                  /\    \                  /\    \                  /\    \         /::\    \                 /\    \
-                                               /::::\    \               /::\____\                /::\    \                /::\    \                /::\    \                /::\____\       /::::\    \               /::\____\
-                                              /::::::\    \             /:::/    /               /::::\    \              /::::\    \              /::::\    \              /:::/    /      /::::::\    \             /:::/    /
-                                             /::::::::\    \           /:::/    /               /::::::\    \            /::::::\    \            /::::::\    \            /:::/    /      /::::::::\    \           /:::/   _/___
-                                            /:::/~~\:::\    \         /:::/    /               /:::/\:::\    \          /:::/\:::\    \          /:::/\:::\    \          /:::/    /      /:::/~~\:::\    \         /:::/   /\    \
-                                           /:::/    \:::\    \       /:::/____/               /:::/__\:::\    \        /:::/__\:::\    \        /:::/__\:::\    \        /:::/    /      /:::/    \:::\    \       /:::/   /::\____\
-                                          /:::/    / \:::\    \      |::|    |               /::::\   \:::\    \      /::::\   \:::\    \      /::::\   \:::\    \      /:::/    /      /:::/    / \:::\    \     /:::/   /:::/    /
-                                         /:::/____/   \:::\____\     |::|    |     _____    /::::::\   \:::\    \    /::::::\   \:::\    \    /::::::\   \:::\    \    /:::/    /      /:::/____/   \:::\____\   /:::/   /:::/   _/___
-                                        |:::|    |     |:::|    |    |::|    |    /\    \  /:::/\:::\   \:::\    \  /:::/\:::\   \:::\____\  /:::/\:::\   \:::\    \  /:::/    /      |:::|    |     |:::|    | /:::/___/:::/   /\    \
-                                        |:::|____|     |:::|    |    |::|    |   /::\____\/:::/__\:::\   \:::\____\/:::/  \:::\   \:::|    |/:::/  \:::\   \:::\____\/:::/____/       |:::|____|     |:::|    ||:::|   /:::/   /::\____\
-                                         \:::\    \   /:::/    /     |::|    |  /:::/    /\:::\   \:::\   \::/    /\::/   |::::\  /:::|____|\::/    \:::\   \::/    /\:::\    \        \:::\    \   /:::/    / |:::|__/:::/   /:::/    /
-                                          \:::\    \ /:::/    /      |::|    | /:::/    /  \:::\   \:::\   \/____/  \/____|:::::\/:::/    /  \/____/ \:::\   \/____/  \:::\    \        \:::\    \ /:::/    /   \:::\/:::/   /:::/    /
-                                           \:::\    /:::/    /       |::|____|/:::/    /    \:::\   \:::\    \            |:::::::::/    /            \:::\    \       \:::\    \        \:::\    /:::/    /     \::::::/   /:::/    /
-                                            \:::\__/:::/    /        |:::::::::::/    /      \:::\   \:::\____\           |::|\::::/    /              \:::\____\       \:::\    \        \:::\__/:::/    /       \::::/___/:::/    /
-                                             \::::::::/    /         \::::::::::/____/        \:::\   \::/    /           |::| \::/____/                \::/    /        \:::\    \        \::::::::/    /         \:::\__/:::/    /
-                                              \::::::/    /           ~~~~~~~~~~               \:::\   \/____/            |::|  ~|                       \/____/          \:::\    \        \::::::/    /           \::::::::/    /
-                                               \::::/    /                                      \:::\    \                |::|   |                                         \:::\    \        \::::/    /             \::::::/    /
-                                                \::/____/                                        \:::\____\               \::|   |                                          \:::\____\        \::/____/               \::::/    /
-                                                 ~~                                               \::/    /                \:|   |                                           \::/    /         ~~                      \::/____/
-                                                                                                   \/____/                  \|___|                                            \/____/                                   ~~
-     */
-
+                         _______                   _____                    _____                    _____                    _____                    _____           _______                   _____
+                        /::\    \                 /\    \                  /\    \                  /\    \                  /\    \                  /\    \         /::\    \                 /\    \
+                       /::::\    \               /::\____\                /::\    \                /::\    \                /::\    \                /::\____\       /::::\    \               /::\____\
+                      /::::::\    \             /:::/    /               /::::\    \              /::::\    \              /::::\    \              /:::/    /      /::::::\    \             /:::/    /
+                     /::::::::\    \           /:::/    /               /::::::\    \            /::::::\    \            /::::::\    \            /:::/    /      /::::::::\    \           /:::/   _/___
+                    /:::/~~\:::\    \         /:::/    /               /:::/\:::\    \          /:::/\:::\    \          /:::/\:::\    \          /:::/    /      /:::/~~\:::\    \         /:::/   /\    \
+                   /:::/    \:::\    \       /:::/____/               /:::/__\:::\    \        /:::/__\:::\    \        /:::/__\:::\    \        /:::/    /      /:::/    \:::\    \       /:::/   /::\____\
+                  /:::/    / \:::\    \      |::|    |               /::::\   \:::\    \      /::::\   \:::\    \      /::::\   \:::\    \      /:::/    /      /:::/    / \:::\    \     /:::/   /:::/    /
+                 /:::/____/   \:::\____\     |::|    |     _____    /::::::\   \:::\    \    /::::::\   \:::\    \    /::::::\   \:::\    \    /:::/    /      /:::/____/   \:::\____\   /:::/   /:::/   _/___
+                |:::|    |     |:::|    |    |::|    |    /\    \  /:::/\:::\   \:::\    \  /:::/\:::\   \:::\____\  /:::/\:::\   \:::\    \  /:::/    /      |:::|    |     |:::|    | /:::/___/:::/   /\    \
+                |:::|____|     |:::|    |    |::|    |   /::\____\/:::/__\:::\   \:::\____\/:::/  \:::\   \:::|    |/:::/  \:::\   \:::\____\/:::/____/       |:::|____|     |:::|    ||:::|   /:::/   /::\____\
+                 \:::\    \   /:::/    /     |::|    |  /:::/    /\:::\   \:::\   \::/    /\::/   |::::\  /:::|____|\::/    \:::\   \::/    /\:::\    \        \:::\    \   /:::/    / |:::|__/:::/   /:::/    /
+                  \:::\    \ /:::/    /      |::|    | /:::/    /  \:::\   \:::\   \/____/  \/____|:::::\/:::/    /  \/____/ \:::\   \/____/  \:::\    \        \:::\    \ /:::/    /   \:::\/:::/   /:::/    /
+                   \:::\    /:::/    /       |::|____|/:::/    /    \:::\   \:::\    \            |:::::::::/    /            \:::\    \       \:::\    \        \:::\    /:::/    /     \::::::/   /:::/    /
+                    \:::\__/:::/    /        |:::::::::::/    /      \:::\   \:::\____\           |::|\::::/    /              \:::\____\       \:::\    \        \:::\__/:::/    /       \::::/___/:::/    /
+                     \::::::::/    /         \::::::::::/____/        \:::\   \::/    /           |::| \::/____/                \::/    /        \:::\    \        \::::::::/    /         \:::\__/:::/    /
+                      \::::::/    /           ~~~~~~~~~~               \:::\   \/____/            |::|  ~|                       \/____/          \:::\    \        \::::::/    /           \::::::::/    /
+                       \::::/    /                                      \:::\    \                |::|   |                                         \:::\    \        \::::/    /             \::::::/    /
+                        \::/____/                                        \:::\____\               \::|   |                                          \:::\____\        \::/____/               \::::/    /
+                         ~~                                               \::/    /                \:|   |                                           \::/    /         ~~                      \::/____/
+                                                                           \/____/                  \|___|                                            \/____/                                   ~~
+    */
 }
