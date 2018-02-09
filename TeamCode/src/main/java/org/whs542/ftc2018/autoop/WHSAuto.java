@@ -30,10 +30,10 @@ public class WHSAuto extends OpMode {
 
     static final int RED = 0;
     static final int BLUE = 1;
-    static final int ALLIANCE = RED;
+    static final int ALLIANCE = BLUE;
     static final int CORNER = 0;
     static final int OFF_CENTER = 1;
-    static final int BALANCING_STONE = CORNER;
+    static final int BALANCING_STONE = OFF_CENTER;
     static final int SAFEZONE_1 = 0;
     static final int SAFEZONE_2 = 1;
     static final int BOX_1 = 0;
@@ -434,7 +434,7 @@ public class WHSAuto extends OpMode {
                 if (!driveInTimer.isExpired()) {
                     subStateDesc = "pushing in glyph";
                     robot.drivetrain.operate(0.3, 0.3);
-                    driveOutTimer.set(DRIVE_AWAY_DURATION / 2.4);
+                    driveOutTimer.set(DRIVE_AWAY_DURATION / 2.0);
                 } else if (!driveOutTimer.isExpired()) {
                     subStateDesc = "backing out";
                     robot.drivetrain.operate(-0.3, -0.3);
