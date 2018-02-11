@@ -108,12 +108,12 @@ public class WHSAuto extends OpMode {
     static final double JEWEL_KNOCK_DELAY = 0.75;
     static final double JEWEL_KNOCK_DELAY2 = 0.4;
     static final double ARM_FOLD_DELAY = 0.9;
-    static final double JEWEL_DETECTION_DEADMAN = 5.42;
+    static final double JEWEL_DETECTION_DEADMAN = 1.0;
     static final double OPERATE_LIFT_DELAY = 1.0;
     static final double DRIVE_AWAY_DURATION = 1.2;
     static final double VUFORIA_DRIVE_DURATION = 2.5;
-    static final double VUFORIA_DETECTION_DEADMAN = 5.42;
-    static final double IMU_RESET_DURATION = 5.42;
+    static final double VUFORIA_DETECTION_DEADMAN = 2.0;
+    static final double IMU_RESET_DURATION = 4.2;
 
     //jank variables ( ͡° ͜ʖ ͡°)
     Position p1;
@@ -189,7 +189,7 @@ public class WHSAuto extends OpMode {
             case INIT:
                 currentStateDesc = "beginning AutoOp";
                 robot.setInitialCoordinate(startingCoordinateArray[ALLIANCE][BALANCING_STONE]);
-                robot.lift.operateGate(VLift.GatePosition.MIDDLE);
+                robot.lift.operateGate(VLift.GatePosition.CLOSED);
                 advanceState();
                 break;
             case HIT_JEWEL:
@@ -426,7 +426,7 @@ public class WHSAuto extends OpMode {
                 currentStateDesc = "securing glyph";
                 if (performStateEntry) {
                     robot.lift.operateLift(VLift.LiftPosition.DOWN);
-                    robot.lift.operateGate(VLift.GatePosition.CLOSED);
+                    robot.lift.operateGate(VLift.GatePosition.MIDDLE);
                     driveInTimer.set(DRIVE_AWAY_DURATION + 0.3);
                     performStateEntry = false;
                 }
