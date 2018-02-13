@@ -270,6 +270,11 @@ public class WHSRobotImpl implements WHSRobot {
     }
 
     @Override
+    public void setPosition(Position pos) {
+        currentCoord.setPos(pos);
+    }
+
+    @Override
     public Coordinate getCoordinate() {
         return currentCoord;
     }

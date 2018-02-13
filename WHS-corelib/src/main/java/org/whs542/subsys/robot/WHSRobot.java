@@ -25,6 +25,8 @@ public interface WHSRobot {
 
     public void setCoordinate(Coordinate coord);
 
+    void setPosition(Position pos);
+
     public Coordinate getCoordinate();
 
 }

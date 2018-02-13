@@ -15,6 +15,8 @@ import org.whs542.util.SimpleTimer;
 @Autonomous(name = "DriveToTargetTest", group = "tests")
 public class DriveToTargetTest extends OpMode {
     WHSRobotImpl robot;
+    boolean i = true;
+    boolean b = true;
     @Override
     public void init() {
         robot = new WHSRobotImpl(hardwareMap);
@@ -24,14 +26,21 @@ public class DriveToTargetTest extends OpMode {
 
     @Override
     public void start(){
-        robot.driveToTarget(new Position(-600, 600, 150), true);
+        robot.driveToTarget(new Position(-900, 0, 150), true);
+        robot.intake.operate(1.0);
     }
 
     @Override
     public void loop() {
-        if(robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
-            robot.driveToTarget(new Position(-600, 600, 150), true);
+        if(b && (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress())) {
+            robot.driveToTarget(new Position(-900, 0, 150), true);
         }
+        else if (i) {
+            robot.driveToTarget(new Position(0,0,150), true);
+            i = false;
+            b = false;
+        } else if (!b && (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()))
+            robot.driveToTarget(new Position(0,0,150), true);
         robot.estimatePosition();
         robot.estimateHeading();
 

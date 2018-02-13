@@ -33,7 +33,7 @@ public class WHSAuto extends OpMode {
     static final int ALLIANCE = RED;
     static final int CORNER = 0;
     static final int OFF_CENTER = 1;
-    static final int BALANCING_STONE = CORNER;
+    static final int BALANCING_STONE = OFF_CENTER;
     static final int SAFEZONE_1 = 0;
     static final int SAFEZONE_2 = 1;
     static final int BOX_1 = 0;
@@ -49,9 +49,10 @@ public class WHSAuto extends OpMode {
     static final int DRIVE_INTO_SAFEZONE = 3;
     static final int DRIVE_TO_BOX = 4;
     static final int SECURE_GLYPH = 5;
-    static final int END = 6;
+    static final int SECOND_GLYPH = 6;
+    static final int END = 7;
 
-    static final int NUM_OF_STATES = 7;
+    static final int NUM_OF_STATES = 8;
 
     boolean[] stateEnabled = new boolean[NUM_OF_STATES];
 
@@ -62,6 +63,7 @@ public class WHSAuto extends OpMode {
         stateEnabled[DRIVE_INTO_SAFEZONE] = true;
         stateEnabled[DRIVE_TO_BOX] = true;
         stateEnabled[SECURE_GLYPH] = true;
+        stateEnabled[SECOND_GLYPH] = true;
         stateEnabled[END] = true;
     }
 
@@ -102,9 +104,10 @@ public class WHSAuto extends OpMode {
     boolean hasTargetBeenDetected;
     RelicRecoveryVuMark vuforiaReading = RelicRecoveryVuMark.UNKNOWN;
     int column = 0;
+    int column2 = 0;
 
     //Timing Constants
-    static final double SWIVEL_STORING_DELAY = 0.75;
+    static final double SWIVEL_STORING_DELAY = 0.25;
     static final double JEWEL_KNOCK_DELAY = 0.75;
     static final double JEWEL_KNOCK_DELAY2 = 0.4;
     static final double ARM_FOLD_DELAY = 0.9;
@@ -122,6 +125,7 @@ public class WHSAuto extends OpMode {
     Position p2;
     Position p3;
     boolean drivingToP2;
+    boolean drivingToGlyphPit;
     private double x;
     private double y;
     boolean initializeDriveToSafezone = false;
@@ -453,6 +457,61 @@ public class WHSAuto extends OpMode {
                     advanceState();
                 }
                 break;
+            case SECOND_GLYPH:
+                currentStateDesc = "scoring second glyph";
+                if (performStateEntry) {
+                    if (ALLIANCE != RED || BALANCING_STONE != CORNER) {
+                        performStateExit = true;
+                    }
+                    robot.setPosition(safeZonePositionsArray[ALLIANCE][BALANCING_STONE][column]);
+                    if (column == LEFT) {
+                        column2 = CENTER;
+                        robot.driveToTarget(new Position(-300, -150, 150), true);
+                    } else {
+                        column2 = LEFT;
+                        robot.driveToTarget(new Position(-100, -150, 150), false);
+                    }
+                    subStateDesc = "driving to glyph pit and intaking";
+                    robot.intake.operate(1.0);
+                    robot.lift.operateGate(VLift.GatePosition.CLOSED);
+                    drivingToGlyphPit = true;
+                    performStateEntry = false;
+                }
+
+                if (drivingToGlyphPit && robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
+                    if (column == LEFT) {
+                        robot.driveToTarget(new Position(-300, -150, 150), true);
+                    } else {
+                        robot.driveToTarget(new Position(-100, -150, 150), true);
+                    }
+                    initializeDriveToBox = true;
+                } else if (initializeDriveToBox) {
+                    subStateDesc = "driving to box";
+                    x = robot.getCoordinate().getX();
+                    robot.driveToTarget(new Position(x, p3.getY(), 150), false);
+                    initializeDriveToBox = false;
+                } else if (!drivingToGlyphPit && robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
+                    robot.driveToTarget(new Position(x, p3.getY(), 150), false);
+                    operateLiftTimer.set(OPERATE_LIFT_DELAY);
+                } else if (!operateLiftTimer.isExpired()) {
+                    robot.intake.operate(0.0);
+                    subStateDesc = "placing glyph";
+                    robot.lift.operateLift(VLift.LiftPosition.UP);
+                    robot.lift.operateGate(VLift.GatePosition.OPEN);
+                    driveOutTimer.set(DRIVE_OUT_DURATION);
+                } else if (!driveOutTimer.isExpired()) {
+                    subStateDesc = "backing out";
+                    robot.drivetrain.operate(-0.3, -0.3);
+                } else {
+                    robot.drivetrain.operate(0, 0);
+                    performStateExit = true;
+                }
+
+                if (performStateExit) {
+                    performStateExit = false;
+                    performStateEntry = true;
+                    advanceState();
+                }
             case END:
                 currentStateDesc = "we made it?!";
                 if (performStateEntry) {
