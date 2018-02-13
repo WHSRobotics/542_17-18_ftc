@@ -1,14 +1,8 @@
 package org.whs542.ftc2018.subsys;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.whs542.subsys.drivetrain.TankDrivetrain;
-import org.whs542.subsys.fourbar.FourBar;
-import org.whs542.subsys.intake.Intake;
-import org.whs542.subsys.jewelpusher.JewelPusher;
 import org.whs542.subsys.robot.WHSRobot;
-import org.whs542.subsys.vlift.VLift;
 import org.whs542.util.Coordinate;
 import org.whs542.util.Functions;
 import org.whs542.util.Position;
@@ -31,9 +25,10 @@ public class WHSRobotImpl implements WHSRobot {
     Coordinate currentCoord;
     public double targetHeading; //field frame
     public double angleToTargetDebug;
+    private double lastKnownHeading = 0.1;
     private static final double DEADBAND_DRIVE_TO_TARGET = 110; //in mm
     private static final double DEADBAND_ROTATE_TO_TARGET = 2.5; //in degrees
-    private static final double[] DRIVE_TO_TARGET_POWER_LEVEL = {0.42, 0.45, 0.47, 0.48}; //{0.33, 0.6, 0.7, 0.9};
+    private static final double[] DRIVE_TO_TARGET_POWER_LEVEL = {0.37, 0.4, 0.43, 0.46}; //{0.33, 0.6, 0.7, 0.9};
     private static final double[] DRIVE_TO_TARGET_THRESHOLD = {DEADBAND_DRIVE_TO_TARGET, 300, 600, 1200};
     private static final double[] ROTATE_TO_TARGET_POWER_LEVEL = {0.30, 0.35, 0.5};
     private static final double[] ROTATE_TO_TARGET_THRESHOLD = {DEADBAND_ROTATE_TO_TARGET, 30, 60};
@@ -214,7 +209,7 @@ public class WHSRobotImpl implements WHSRobot {
     }
 
     @Override
-    public Position estimatePosition() {
+    public void estimatePosition() {
 
         Position estimatedPos;
         if(rotateToTargetInProgress) {
@@ -230,7 +225,6 @@ public class WHSRobotImpl implements WHSRobot {
                 double encoderPosR = encoderValues[1];
 
                 double encoderAvg = (encoderPosL + encoderPosR) * 0.5;
-
                 double hdg = currentCoord.getHeading();
                 double dist = drivetrain.encToMM(encoderAvg);
 
@@ -251,17 +245,16 @@ public class WHSRobotImpl implements WHSRobot {
         }
 
 
-        return estimatedPos;
     }
 
     @Override
-    public double estimateHeading() {
+    public void estimateHeading() {
         double currentHeading;
-
         currentHeading = Functions.normalizeAngle(imu.getHeading() + imu.getImuBias()); //-180 to 180 deg
-        currentCoord.setHeading(currentHeading); //updates global variable
-
-        return currentHeading;
+        if (currentHeading != 0.0) {
+            lastKnownHeading = currentHeading;
+        }
+        currentCoord.setHeading(lastKnownHeading); //updates global variable
     }
 
     @Override

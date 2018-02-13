@@ -1,6 +1,5 @@
 package org.whs542.subsys.robot;
 
-import org.whs542.subsys.intake.Intake;
 import org.whs542.util.Coordinate;
 import org.whs542.util.Position;
 
@@ -18,9 +17,9 @@ public interface WHSRobot {
 
     public boolean rotateToTargetInProgress();
 
-    public Position estimatePosition();
+    public void estimatePosition();
 
-    public double estimateHeading();
+    public void estimateHeading();
 
     public void setInitialCoordinate(Coordinate initCoord);
 

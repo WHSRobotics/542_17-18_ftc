@@ -30,10 +30,10 @@ public class WHSAuto extends OpMode {
 
     static final int RED = 0;
     static final int BLUE = 1;
-    static final int ALLIANCE = BLUE;
+    static final int ALLIANCE = RED;
     static final int CORNER = 0;
     static final int OFF_CENTER = 1;
-    static final int BALANCING_STONE = OFF_CENTER;
+    static final int BALANCING_STONE = CORNER;
     static final int SAFEZONE_1 = 0;
     static final int SAFEZONE_2 = 1;
     static final int BOX_1 = 0;
@@ -110,8 +110,10 @@ public class WHSAuto extends OpMode {
     static final double ARM_FOLD_DELAY = 0.9;
     static final double JEWEL_DETECTION_DEADMAN = 1.0;
     static final double OPERATE_LIFT_DELAY = 1.0;
-    static final double DRIVE_AWAY_DURATION = 1.2;
-    static final double VUFORIA_DRIVE_DURATION = 2.5;
+    static final double DRIVE_AWAY_DURATION = 2.5;
+    static final double DRIVE_IN_DURATION = 1.5;
+    static final double DRIVE_OUT_DURATION = 0.6;
+    static final double VUFORIA_DRIVE_DURATION = 1.25;
     static final double VUFORIA_DETECTION_DEADMAN = 2.0;
     static final double IMU_RESET_DURATION = 4.2;
 
@@ -148,23 +150,23 @@ public class WHSAuto extends OpMode {
         //safe zone positions array
         safeZonePositionsArray[RED][SAFEZONE_1][LEFT] = new Position(-100, -1200, 150);
         safeZonePositionsArray[RED][SAFEZONE_1][CENTER] = new Position(-300, -1200, 150); //mid right
-        safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-460, -1200, 150);
+        safeZonePositionsArray[RED][SAFEZONE_1][RIGHT] = new Position(-475, -1200, 150);
 
-        safeZonePositionsArray[RED][SAFEZONE_2][LEFT] = new Position(1200, -670, 150);
-        safeZonePositionsArray[RED][SAFEZONE_2][CENTER] = new Position(1200, -850, 150); //upper right
-        safeZonePositionsArray[RED][SAFEZONE_2][RIGHT] = new Position(1200, -1000, 150);
+        safeZonePositionsArray[RED][SAFEZONE_2][LEFT] = new Position(1265, -670, 150);
+        safeZonePositionsArray[RED][SAFEZONE_2][CENTER] = new Position(1265, -850, 150); //upper right
+        safeZonePositionsArray[RED][SAFEZONE_2][RIGHT] = new Position(1265, -1000, 150);
 
         safeZonePositionsArray[BLUE][SAFEZONE_1][LEFT] = new Position(/*-442*/-460, 1200, 150); //mid left
         safeZonePositionsArray[BLUE][SAFEZONE_1][CENTER] = new Position(/*-250*/-280, 1200, 150); //mid left
         safeZonePositionsArray[BLUE][SAFEZONE_1][RIGHT] = new Position(/*-58*/-100, 1200, 150); //mid left
 
-        safeZonePositionsArray[BLUE][SAFEZONE_2][LEFT] = new Position(1200, 1000, 150);
-        safeZonePositionsArray[BLUE][SAFEZONE_2][CENTER] = new Position(1200, 850, 150); //upper left
-        safeZonePositionsArray[BLUE][SAFEZONE_2][RIGHT] = new Position(1200, 670, 150);
+        safeZonePositionsArray[BLUE][SAFEZONE_2][LEFT] = new Position(1265, 1000, 150);
+        safeZonePositionsArray[BLUE][SAFEZONE_2][CENTER] = new Position(1265, 850, 150); //upper left
+        safeZonePositionsArray[BLUE][SAFEZONE_2][RIGHT] = new Position(1265, 670, 150);
 
         //waypoint positions
-        waypointPositionsArray[RED] = new Position(1200, -1200, 150);
-        waypointPositionsArray[BLUE] = new Position(1200, 1200, 150);
+        waypointPositionsArray[RED] = new Position(1265, -1200, 150);
+        waypointPositionsArray[BLUE] = new Position(1265, 1200, 150);
 
         //box positions array
         boxPositionsArray[RED][BOX_1] = new Position(-350, -1400, 150); //mid right
@@ -269,7 +271,7 @@ public class WHSAuto extends OpMode {
 
                 if (!vuforiaDriveTimer.isExpired()) {
                     subStateDesc = "driving to vuforia";
-                    robot.drivetrain.operate(0.15, 0.15);
+                    robot.drivetrain.operate(0.3, 0.3);
                     //scan while driving in case the robot drives too far
                     vuforiaReading = robot.vuforia.getVuforiaReading();
                     if (vuforiaReading != RelicRecoveryVuMark.UNKNOWN) {
@@ -406,10 +408,12 @@ public class WHSAuto extends OpMode {
                 } else if (!operateLiftTimer.isExpired()) {
                     subStateDesc = "placing glyph";
                     robot.lift.operateLift(VLift.LiftPosition.UP);
-                    driveAwayTimer.set(DRIVE_AWAY_DURATION * 2.1);
+                    robot.lift.operateGate(VLift.GatePosition.OPEN);
+                    driveAwayTimer.set(DRIVE_AWAY_DURATION);
                 } else if (!driveAwayTimer.isExpired()) {
                     subStateDesc = "driving away";
                     robot.lift.operateLift(VLift.LiftPosition.UP);
+                    robot.lift.operateGate(VLift.GatePosition.OPEN);
                     robot.drivetrain.operate(-0.15, -0.15);
                 } else if (BALANCING_STONE == OFF_CENTER || imuResetComplete) {
                     performStateExit = true;
@@ -427,14 +431,14 @@ public class WHSAuto extends OpMode {
                 if (performStateEntry) {
                     robot.lift.operateLift(VLift.LiftPosition.DOWN);
                     robot.lift.operateGate(VLift.GatePosition.MIDDLE);
-                    driveInTimer.set(DRIVE_AWAY_DURATION + 0.3);
+                    driveInTimer.set(DRIVE_IN_DURATION);
                     performStateEntry = false;
                 }
 
                 if (!driveInTimer.isExpired()) {
                     subStateDesc = "pushing in glyph";
                     robot.drivetrain.operate(0.3, 0.3);
-                    driveOutTimer.set(DRIVE_AWAY_DURATION / 2.0);
+                    driveOutTimer.set(DRIVE_OUT_DURATION);
                 } else if (!driveOutTimer.isExpired()) {
                     subStateDesc = "backing out";
                     robot.drivetrain.operate(-0.3, -0.3);
