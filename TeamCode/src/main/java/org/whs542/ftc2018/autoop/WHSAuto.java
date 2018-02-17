@@ -33,7 +33,7 @@ public class WHSAuto extends OpMode {
     static final int ALLIANCE = RED;
     static final int CORNER = 0;
     static final int OFF_CENTER = 1;
-    static final int BALANCING_STONE = OFF_CENTER;
+    static final int BALANCING_STONE = CORNER;
     static final int SAFEZONE_1 = 0;
     static final int SAFEZONE_2 = 1;
     static final int BOX_1 = 0;
@@ -487,6 +487,14 @@ public class WHSAuto extends OpMode {
                     initializeDriveToBox = true;
                 } else if (initializeDriveToBox) {
                     subStateDesc = "driving to box";
+                    drivingToGlyphPit = false;
+                    if (column == LEFT) {
+                        column2 = CENTER;
+                        robot.setPosition(new Position(-300, -150, 150));
+                    } else {
+                        column2 = LEFT;
+                        robot.setPosition(new Position(-100, -150, 150));
+                    }
                     x = robot.getCoordinate().getX();
                     robot.driveToTarget(new Position(x, p3.getY(), 150), false);
                     initializeDriveToBox = false;
