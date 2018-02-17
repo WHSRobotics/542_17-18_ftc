@@ -31,7 +31,7 @@ public class WHSTeleOp extends OpMode {
 
         /* DRIVETRAIN */
         //Precision driving mode
-        if (gamepad1.left_bumper) {
+        if (gamepad1.left_bumper || gamepad2.b) {
             robot.drivetrain.operateWithOrientation(gamepad1.left_stick_y / 2.54, gamepad1.right_stick_y / 2.54);
         } else {
             robot.drivetrain.operateWithOrientation(gamepad1.left_stick_y, gamepad1.right_stick_y);

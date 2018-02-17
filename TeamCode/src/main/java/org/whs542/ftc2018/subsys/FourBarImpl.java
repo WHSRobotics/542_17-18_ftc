@@ -17,7 +17,7 @@ public class FourBarImpl implements FourBar, MotorSubsystem{
     private DcMotor leftMotor;
     private DcMotor rightMotor;
     private static final double FOUR_BAR_POWER = 0.3;
-    private static final int[] FOUR_BAR_LEVEL_POSITIONS = {0, 220, 400}; //In encoder ticks
+    private static final int[] FOUR_BAR_LEVEL_POSITIONS = {0, 220, 440}; //In encoder ticks
     private String fourBarLevel = "";
     private static final double FOUR_BAR_DEADBAND = 10.0;
 
