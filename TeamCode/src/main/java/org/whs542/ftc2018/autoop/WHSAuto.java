@@ -89,6 +89,7 @@ public class WHSAuto extends OpMode {
     SimpleTimer vuforiaDriveTimer = new SimpleTimer();
     SimpleTimer vuforiaDetectionDeadmanTimer = new SimpleTimer();
     SimpleTimer imuResetTimer = new SimpleTimer();
+    SimpleTimer driveToBoxTimer = new SimpleTimer();
 
     //boolean isJewelAllianceColor;
     enum JewelDetection {
@@ -119,6 +120,7 @@ public class WHSAuto extends OpMode {
     static final double VUFORIA_DRIVE_DURATION = 1.25;
     static final double VUFORIA_DETECTION_DEADMAN = 2.0;
     static final double IMU_RESET_DURATION = 4.2;
+    static final double DRIVE_TO_BOX_DURATION = 2.5;
 
     //jank variables ( ͡° ͜ʖ ͡°)
     Position p1;
@@ -133,6 +135,7 @@ public class WHSAuto extends OpMode {
     boolean initializeResetIMU = true;
     double lastImuReading = 0.0;
     boolean imuResetComplete = false;
+    double[] driveToTargetPowerLevels = new double[4];
 
     private double finishTime;
     private double currentTime;
@@ -177,6 +180,11 @@ public class WHSAuto extends OpMode {
         boxPositionsArray[RED][BOX_2] = new Position(1400, -900, 150); //upper right
         boxPositionsArray[BLUE][BOX_1] = new Position(-250, 1400, 150); //mid left
         boxPositionsArray[BLUE][BOX_2] = new Position(1400, 900, 150); //upper left
+
+        driveToTargetPowerLevels[0] = 0.5;
+        driveToTargetPowerLevels[1] = 0.65;
+        driveToTargetPowerLevels[2] = 0.7;
+        driveToTargetPowerLevels[3] = 0.85;
 
         defineStateEnabledStatus();
 
@@ -460,16 +468,16 @@ public class WHSAuto extends OpMode {
             case SECOND_GLYPH:
                 currentStateDesc = "scoring second glyph";
                 if (performStateEntry) {
-                    if (ALLIANCE != RED || BALANCING_STONE != CORNER) {
+                    if ((ALLIANCE != RED) || (BALANCING_STONE != CORNER)) {
                         performStateExit = true;
                     }
                     robot.setPosition(safeZonePositionsArray[ALLIANCE][BALANCING_STONE][column]);
                     if (column == LEFT) {
                         column2 = CENTER;
-                        robot.driveToTarget(new Position(-300, -150, 150), true);
+                        robot.driveToTarget(new Position(-300, -150, 150), true, driveToTargetPowerLevels);
                     } else {
                         column2 = LEFT;
-                        robot.driveToTarget(new Position(-100, -150, 150), false);
+                        robot.driveToTarget(new Position(-100, -150, 150), true, driveToTargetPowerLevels);
                     }
                     subStateDesc = "driving to glyph pit and intaking";
                     robot.intake.operate(1.0);
@@ -478,30 +486,38 @@ public class WHSAuto extends OpMode {
                     performStateEntry = false;
                 }
 
-                if (drivingToGlyphPit && robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
+                if (drivingToGlyphPit && (robot.driveToTargetInProgress() || robot.rotateToTargetInProgress())) {
                     if (column == LEFT) {
-                        robot.driveToTarget(new Position(-300, -150, 150), true);
+                        robot.driveToTarget(new Position(-300, -150, 150), true, driveToTargetPowerLevels);
                     } else {
-                        robot.driveToTarget(new Position(-100, -150, 150), true);
+                        robot.driveToTarget(new Position(-100, -150, 150), true, driveToTargetPowerLevels);
                     }
                     initializeDriveToBox = true;
                 } else if (initializeDriveToBox) {
                     subStateDesc = "driving to box";
                     drivingToGlyphPit = false;
-                    if (column == LEFT) {
-                        column2 = CENTER;
-                        robot.setPosition(new Position(-300, -150, 150));
-                    } else {
-                        column2 = LEFT;
-                        robot.setPosition(new Position(-100, -150, 150));
-                    }
-                    x = robot.getCoordinate().getX();
-                    robot.driveToTarget(new Position(x, p3.getY(), 150), false);
+//                    if (column == LEFT) {
+//                        column2 = CENTER;
+//                        robot.setPosition(new Position(-300, -150, 150));
+//                    } else {
+//                        column2 = LEFT;
+//                        robot.setPosition(new Position(-100, -150, 150));
+//                    }
+//                    x = robot.getCoordinate().getX();
+//                    robot.driveToTarget(new Position(x, p3.getY(), 150), false);
+                    robot.rotateToTarget(-90, false);
                     initializeDriveToBox = false;
-                } else if (!drivingToGlyphPit && robot.driveToTargetInProgress() || robot.rotateToTargetInProgress()) {
-                    robot.driveToTarget(new Position(x, p3.getY(), 150), false);
+                } else if (!drivingToGlyphPit && (/*robot.driveToTargetInProgress() || */robot.rotateToTargetInProgress())) {
+//                    robot.driveToTarget(new Position(x, p3.getY(), 150), false);
+                    robot.rotateToTarget(-90, false);
+                    driveToBoxTimer.set(DRIVE_TO_BOX_DURATION);
+                } else if (!driveToBoxTimer.isExpired()) {
+                    robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    robot.drivetrain.operate(0.6, 0.6);
                     operateLiftTimer.set(OPERATE_LIFT_DELAY);
                 } else if (!operateLiftTimer.isExpired()) {
+                    robot.drivetrain.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    robot.drivetrain.operate(0.0, 0.0);
                     robot.intake.operate(0.0);
                     subStateDesc = "placing glyph";
                     robot.lift.operateLift(VLift.LiftPosition.UP);

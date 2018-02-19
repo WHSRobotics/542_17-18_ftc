@@ -11,6 +11,8 @@ public interface WHSRobot {
 
     public void driveToTarget(Position targetPos, boolean backwards);
 
+    public void driveToTarget(Position targetPos, boolean backwards, double[] power);
+
     public void rotateToTarget(double targetHeading, boolean backwards); //-180 to 180 degrees
 
     public boolean driveToTargetInProgress();
