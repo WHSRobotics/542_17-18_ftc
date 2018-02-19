@@ -108,7 +108,7 @@ public class TileRunner implements TankDrivetrain, MotorSubsystem{
     {
         /*double rightTotal = backRight.getCurrentPosition() + frontRight.getCurrentPosition();
         return rightTotal * 0.5;*/
-        return frontRight.getCurrentPosition();
+        return backRight.getCurrentPosition();
     }
 
     public double getLeftEncoderPosition()
