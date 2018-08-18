@@ -15,8 +15,8 @@ public class VLiftImpl implements VLift {
     private Servo leftLiftServo;
     private Servo rightLiftServo;
     private Servo gateServo;
-    public static final double[] LEFT_LIFT_POSITIONS = {0.28, 0.38, 0.7, 0.82}; //DOWN, MIDDLE_DOWN, MIDDLE_UP, UP
-    public static final double[] RIGHT_LIFT_POSITIONS = {0.67, 0.57, 0.25, 0.13}; //DOWN, MIDDLE_DOWN, MIDDLE_UP, UP
+    public static final double[] LEFT_LIFT_POSITIONS = {0.240, 0.315, 0.53, 0.65}; //DOWN, MIDDLE_DOWN, MIDDLE_UP, UP
+    public static final double[] RIGHT_LIFT_POSITIONS = {0.47, 0.43, 0.25, 0.11}; //DOWN, MIDDLE_DOWN, MIDDLE_UP, UP
     public static final double[] GATE_POSITIONS = {0.09, 0.35, 0.59}; //Closed, middle, open
     private static final double GAMEPAD_THRESHOLD = 0.05;
     private static final double JIGGLE_DURATION = 0.1;
