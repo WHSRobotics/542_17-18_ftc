@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
 @TeleOp(name = "ColorSensorAcquireTest", group = "tests")
-public class ColorSensorAcquireTest extends OpMode{
+public class ColorSensorAcquireTimeTest extends OpMode{
 
 	ColorSensor color;
 	boolean jewelDetected = false;
@@ -17,10 +17,10 @@ public class ColorSensorAcquireTest extends OpMode{
 
 
 	public void init(){
-		color = hardwareMap.color.get("color");
+		color = hardwareMap.colorSensor.get("color");
 		color.enableLed(true);
 		telemetry.log().add("Controls: b/x|red/blue");
-		telemetry.log().add("A: Restart timer")
+		telemetry.log().add("A: Restart timer");
 	}
 
 	public void loop(){
@@ -39,13 +39,13 @@ public class ColorSensorAcquireTest extends OpMode{
 		}
 
 		if (jewelColor=="red"){
-			if ((color.getRed() / (color.getBlue()+0.001)) > COLOR_SENSOR_THRESHOLD) {
+			if ((color.red() / (color.blue()+0.001)) > COLOR_SENSOR_THRESHOLD) {
 				jewelDetected = true;
 				timeToAcquire = getRuntime()-millisIndex;
 			}
 		}
 		if (jewelColor=="blue"){
-			if ((color.getBlue() / (color.getRed()+0.001)) > COLOR_SENSOR_THRESHOLD) {
+			if ((color.blue() / (color.red()+0.001)) > COLOR_SENSOR_THRESHOLD) {
 				jewelDetected = true;
 				timeToAcquire = getRuntime()-millisIndex;
 			}
